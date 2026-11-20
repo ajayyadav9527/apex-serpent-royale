@@ -45,6 +45,26 @@
   };
 
   /* =========================================================
+   *  STATIC CONSTANT DIRECTIONAL VECTORS (Zero-GC Optimization)
+   * ========================================================= */
+  let DIR_RIGHT = null;
+  let DIR_LEFT  = null;
+  let DIR_DOWN  = null;
+  let DIR_UP    = null;
+  let CARDINAL_DIRECTIONS = null;
+  let ZERO_VEC  = null;
+
+  function initStaticVectors(THREE) {
+    if (DIR_RIGHT) return;
+    DIR_RIGHT = Object.freeze(new THREE.Vector3(1, 0, 0));
+    DIR_LEFT  = Object.freeze(new THREE.Vector3(-1, 0, 0));
+    DIR_DOWN  = Object.freeze(new THREE.Vector3(0, 0, 1));
+    DIR_UP    = Object.freeze(new THREE.Vector3(0, 0, -1));
+    CARDINAL_DIRECTIONS = Object.freeze([DIR_RIGHT, DIR_LEFT, DIR_DOWN, DIR_UP]);
+    ZERO_VEC  = Object.freeze(new THREE.Vector3(0, 0, 0));
+  }
+
+  /* =========================================================
    *  WEB AUDIO ENGINE (Procedural Synthesizer)
    * ========================================================= */
   class AudioEngine {
@@ -274,6 +294,7 @@
       this.THREE = THREE;
       this.scene = scene;
       this.pool = [];
+      this.burstScale = 1.0;
       this._buildPool();
     }
 
@@ -289,8 +310,9 @@
     }
 
     burst(position, color, count = 20) {
+      const effectiveCount = Math.max(1, Math.round(count * (this.burstScale || 1.0)));
       let spawned = 0;
-      for (let i = 0; i < this.pool.length && spawned < count; i++) {
+      for (let i = 0; i < this.pool.length && spawned < effectiveCount; i++) {
         const p = this.pool[i];
         if (p.life > 0) continue;
         p.mesh.material.color.set(color);
@@ -420,9 +442,10 @@
   const POWERUP_TYPES = ['LIGHTNING_BOOST', 'MAGNET', 'SHIELD', 'GHOST', 'SCORE_2X'];
 
   class Snake {
-    constructor(id, isPlayer, color, startPos, scene, THREE) {
+    constructor(id, isPlayer, color, startPos, scene, THREE, engine = null) {
       this.THREE    = THREE;
       this.scene    = scene;
+      this.engine   = engine;
       this.id       = id;
       this.isPlayer = isPlayer;
       this.alive    = true;
@@ -480,7 +503,7 @@
         this.positions.push(pos.clone());
         const mesh = new THREE.Mesh(this._geo, i === 0 ? this._headMat : this._mat);
         mesh.position.copy(pos);
-        mesh.castShadow = true;
+        mesh.castShadow = i === 0 || (this.engine ? this.engine.castBodyShadows : true);
         scene.add(mesh);
         this.segments.push(mesh);
       }
@@ -602,7 +625,7 @@
         this.positions.push(tail);
         const mesh = new this.THREE.Mesh(this._geo, this._mat);
         mesh.position.copy(tail);
-        mesh.castShadow = true;
+        mesh.castShadow = this.engine ? this.engine.castBodyShadows : true;
         this.scene.add(mesh);
         this.segments.push(mesh);
         this.length++;
@@ -613,9 +636,10 @@
     step() {
       if (!this.alive) return;
       this.dir.copy(this.nextDir);
-      const newHead = this.positions[0].clone().addScaledVector(this.dir, CFG.GRID);
-      this.positions.unshift(newHead);
-      this.positions.pop();
+      // Zero-allocation: recycle tail vector instead of allocating a new Vector3 every step
+      const tailPos = this.positions.pop();
+      tailPos.copy(this.positions[0]).addScaledVector(this.dir, CFG.GRID);
+      this.positions.unshift(tailPos);
       for (let i = 0; i < this.segments.length; i++) {
         this.segments[i].position.copy(this.positions[i]);
       }
@@ -652,33 +676,27 @@
   }
 
   /* =========================================================
-   *  AI DIRECTOR
+   *  AI DIRECTOR (Zero-Allocation GC Optimization)
    * ========================================================= */
   class AIDirector {
-    constructor(THREE) { this.THREE = THREE; }
+    constructor(THREE) {
+      this.THREE = THREE;
+      initStaticVectors(THREE);
+      this._scratchNext = new THREE.Vector3();
+    }
 
     steer(snake, foods, powerups, stormCenter, stormRadius, allSnakes, now) {
       if (!snake.alive || snake.isPlayer) return;
 
       const head = snake.headPos();
-      const directions = [
-        new this.THREE.Vector3(1, 0, 0),
-        new this.THREE.Vector3(-1, 0, 0),
-        new this.THREE.Vector3(0, 0, 1),
-        new this.THREE.Vector3(0, 0, -1),
-      ];
-
-      // Filter out 180° reverse
-      const valid = directions.filter(d => {
-        const dot = d.dot(snake.dir);
-        return dot >= 0; // no 180
-      });
-
       let best = null;
       let bestScore = -Infinity;
 
-      for (const d of valid) {
-        const next = head.clone().addScaledVector(d, CFG.GRID);
+      for (let i = 0; i < CARDINAL_DIRECTIONS.length; i++) {
+        const d = CARDINAL_DIRECTIONS[i];
+        if (d.dot(snake.dir) < 0) continue; // filter out 180° reverse
+
+        const next = this._scratchNext.copy(head).addScaledVector(d, CFG.GRID);
         let score = 0;
 
         // Stay inside storm
@@ -691,14 +709,15 @@
         if (Math.abs(next.x) > A || Math.abs(next.z) > A) score -= 2000;
 
         // Avoid own body
-        for (let i = 1; i < snake.positions.length; i++) {
-          if (next.distanceTo(snake.positions[i]) < CFG.GRID * 0.9) score -= 500;
+        for (let j = 1; j < snake.positions.length; j++) {
+          if (next.distanceTo(snake.positions[j]) < CFG.GRID * 0.9) score -= 500;
         }
 
         // Mode-based scoring
         if (snake.aiMode === 'aggressive') {
           // Chase nearest other snake's head
-          for (const other of allSnakes) {
+          for (let j = 0; j < allSnakes.length; j++) {
+            const other = allSnakes[j];
             if (other === snake || !other.alive || other.isPlayer) continue;
             const d2 = next.distanceTo(other.headPos());
             score -= d2 * 0.3;
@@ -707,27 +726,28 @@
 
         if (snake.aiMode === 'opportunist' || snake.aiMode === 'aggressive') {
           // Seek food
-          for (const f of foods) {
-            const d2 = next.distanceTo(f.mesh.position);
+          for (let j = 0; j < foods.length; j++) {
+            const d2 = next.distanceTo(foods[j].mesh.position);
             score += (50 - d2) * 0.4;
           }
           // Seek power-ups
-          for (const p of powerups) {
-            const d2 = next.distanceTo(p.mesh.position);
+          for (let j = 0; j < powerups.length; j++) {
+            const d2 = next.distanceTo(powerups[j].mesh.position);
             score += (30 - d2) * 0.3;
           }
         }
 
         if (snake.aiMode === 'defensive') {
           // Avoid other snakes' heads
-          for (const other of allSnakes) {
+          for (let j = 0; j < allSnakes.length; j++) {
+            const other = allSnakes[j];
             if (other === snake || !other.alive) continue;
             const d2 = next.distanceTo(other.headPos());
             if (d2 < 10) score -= (10 - d2) * 15;
           }
           // Still want food
-          for (const f of foods) {
-            const d2 = next.distanceTo(f.mesh.position);
+          for (let j = 0; j < foods.length; j++) {
+            const d2 = next.distanceTo(foods[j].mesh.position);
             score += (40 - d2) * 0.2;
           }
         }
@@ -736,7 +756,10 @@
           score += Math.random() * 100;
         }
 
-        if (score > bestScore) { bestScore = score; best = d; }
+        if (score > bestScore) {
+          bestScore = score;
+          best = d;
+        }
       }
 
       if (best) snake.nextDir.copy(best);
@@ -912,7 +935,7 @@
   /* =========================================================
    *  ARENA BUILDER
    * ========================================================= */
-  function buildArena(scene, THREE) {
+  function buildArena(scene, THREE, isMobile = false) {
     // Ground
     const groundGeo = new THREE.PlaneGeometry(CFG.ARENA_SIZE * 2, CFG.ARENA_SIZE * 2, 40, 40);
     const groundMat = new THREE.MeshStandardMaterial({
@@ -952,8 +975,9 @@
     const sun = new THREE.DirectionalLight(0xffffff, 1.2);
     sun.position.set(30, 60, 20);
     sun.castShadow = true;
-    sun.shadow.mapSize.width  = 2048;
-    sun.shadow.mapSize.height = 2048;
+    const initialShadowSize = isMobile ? 1024 : 2048;
+    sun.shadow.mapSize.width  = initialShadowSize;
+    sun.shadow.mapSize.height = initialShadowSize;
     scene.add(sun);
 
     // Neon point lights (4 corners)
@@ -964,6 +988,8 @@
       pt.position.set(Math.cos(ang) * A * 0.9, 10, Math.sin(ang) * A * 0.9);
       scene.add(pt);
     }
+
+    return { sun, ground };
   }
 
   /* =========================================================
@@ -1043,10 +1069,30 @@
         onKingUpdate:       null, // (kingData: { id, isPlayer, position, score, bearingAngleDeg, distanceToPlayer })
         onPhaseShield:      null, // (active, remainingMs)
         onFloatingPop:      null, // (text, worldPos, colorHex)
+        onQualityTierChange: null, // (qualityData: { tier, averageFps, pixelRatio, shadowMapType })
       };
 
-      // Player direction input queue
+      // Player direction input queue & recyclable vector pool
       this._inputQueue = [];
+      this._inputVecPool = [];
+
+      // Adaptive FPS Monitor & Quality Tier
+      this.fpsWindow = new Float32Array(60);
+      this.fpsWindowIndex = 0;
+      this.fpsSampleCount = 0;
+      this.runningFpsSum = 0;
+      this.averageFps = 60;
+      this.isPerformanceTier = false;
+      this.particleBurstScale = 1.0;
+      this.castBodyShadows = true;
+      this.isMobile = false;
+      this.sunLight = null;
+
+      // Zero-Allocation Scratch Calculation Vectors
+      this._scratchVec   = null;
+      this._camOffset    = null;
+      this._camDesired   = null;
+      this._inputScratch = null;
     }
 
     /* ── init ───────────────────────────────────────────────── */
@@ -1055,10 +1101,32 @@
         await this._loadThree();
       }
       this.THREE = global.THREE;
+      initStaticVectors(this.THREE);
 
-      // Renderer
-      this.renderer = new this.THREE.WebGLRenderer({ canvas, antialias: true });
-      this.renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, 2));
+      this._scratchVec   = new this.THREE.Vector3();
+      this._camOffset    = new this.THREE.Vector3();
+      this._camDesired   = new this.THREE.Vector3();
+      this._inputScratch = new this.THREE.Vector3();
+      for (let i = 0; i < 6; i++) {
+        this._inputVecPool.push(new this.THREE.Vector3());
+      }
+
+      // Detect mobile / coarse pointer / low power
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (global.matchMedia && (global.matchMedia('(pointer: coarse)').matches || global.matchMedia('(max-width: 768px)').matches));
+      this.isMobile = !!isMobile;
+
+      // Cap initial pixel ratio to Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2)
+      const maxInitialDpr = this.isMobile ? 1.5 : 2.0;
+      const initialPixelRatio = Math.min(global.devicePixelRatio || 1, maxInitialDpr);
+
+      // WebGLRenderer setup with high-performance powerPreference
+      this.renderer = new this.THREE.WebGLRenderer({
+        canvas,
+        antialias: !this.isMobile,
+        powerPreference: 'high-performance'
+      });
+      this.renderer.setPixelRatio(initialPixelRatio);
       this.renderer.setSize(canvas.clientWidth || 800, canvas.clientHeight || 600);
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type    = this.THREE.PCFSoftShadowMap;
@@ -1078,7 +1146,8 @@
       this._camPos    = new this.THREE.Vector3(0, 35, 40);
 
       // Build arena world
-      buildArena(this.scene, this.THREE);
+      const arena = buildArena(this.scene, this.THREE, this.isMobile);
+      this.sunLight = arena.sun;
 
       // Systems
       this.particles = new ParticleSystem(this.scene, this.THREE);
@@ -1107,7 +1176,7 @@
         this.camera.aspect = w / h;
         this.camera.updateProjectionMatrix();
       };
-      global.addEventListener('resize', this._onResize);
+      global.addEventListener('resize', this._onResize, { passive: true });
 
       this.running   = true;
       this.startTime = performance.now();
@@ -1116,6 +1185,61 @@
 
       this._fire('onGameReady');
       this._loop();
+    }
+
+    /* ── Dynamic Quality Scaling & Performance Tier ───────────── */
+    setPerformanceTier() {
+      if (this.isPerformanceTier) return;
+      this.isPerformanceTier = true;
+      console.warn(`[Apex Engine] Dynamic Adaptive Scaler: Running average FPS dropped to ${this.averageFps.toFixed(1)} (< 48 FPS). Throttling to Performance Tier.`);
+
+      // 1. Lower pixelRatio to 1.0 or 1.25
+      const targetPixelRatio = this.isMobile ? 1.0 : 1.25;
+      if (this.renderer) {
+        this.renderer.setPixelRatio(targetPixelRatio);
+      }
+
+      // 2. Switch renderer.shadowMap.type from PCFSoftShadowMap to BasicShadowMap
+      // and disable shadows on snake body segments (retaining head and ground shadows)
+      if (this.renderer && this.renderer.shadowMap) {
+        this.renderer.shadowMap.type = this.THREE.BasicShadowMap;
+        this.renderer.shadowMap.needsUpdate = true;
+      }
+      this.castBodyShadows = false;
+      for (let s = 0; s < this.snakes.length; s++) {
+        const snake = this.snakes[s];
+        // Keep head segment (index 0) casting shadow, disable body segments (index >= 1)
+        for (let i = 1; i < snake.segments.length; i++) {
+          snake.segments[i].castShadow = false;
+        }
+      }
+
+      // 3. Reduce shadowMap size from 2048 to 1024/512 on mobile
+      if (this.sunLight && this.sunLight.shadow) {
+        const targetMapSize = this.isMobile ? 512 : 1024;
+        this.sunLight.shadow.mapSize.width = targetMapSize;
+        this.sunLight.shadow.mapSize.height = targetMapSize;
+        if (this.sunLight.shadow.map) {
+          this.sunLight.shadow.map.dispose();
+          this.sunLight.shadow.map = null;
+        }
+        if (this.renderer && this.renderer.shadowMap) {
+          this.renderer.shadowMap.needsUpdate = true;
+        }
+      }
+
+      // 4. Scale particle burst count from 20 to 10
+      this.particleBurstScale = 0.5;
+      if (this.particles) {
+        this.particles.burstScale = 0.5;
+      }
+
+      this._fire('onQualityTierChange', {
+        tier: 'performance',
+        averageFps: this.averageFps,
+        pixelRatio: targetPixelRatio,
+        shadowMapType: 'BasicShadowMap'
+      });
     }
 
     /* ── Three.js dynamic loader ─────────────────────────────── */
@@ -1184,15 +1308,9 @@
           0.6,
           Math.sin(angle) * radius
         );
-        const snake = new Snake(i, i === 0, SNAKE_COLORS[i], startPos, this.scene, this.THREE);
+        const snake = new Snake(i, i === 0, SNAKE_COLORS[i], startPos, this.scene, this.THREE, this);
         if (i > 0) {
-          const dirs = [
-            new this.THREE.Vector3(1, 0, 0),
-            new this.THREE.Vector3(-1, 0, 0),
-            new this.THREE.Vector3(0, 0, 1),
-            new this.THREE.Vector3(0, 0, -1),
-          ];
-          const d = dirs[Math.floor(Math.random() * 4)];
+          const d = CARDINAL_DIRECTIONS[Math.floor(Math.random() * 4)];
           snake.dir.copy(d);
           snake.nextDir.copy(d);
         }
@@ -1201,22 +1319,24 @@
       this.player = this.snakes[0];
     }
 
-    /* ── Keyboard & Input Handling ──────────────────────────── */
+    /* ── Keyboard & Input Handling (Zero-Allocation Pool) ────── */
     _bindInput() {
+      const dirMap = {
+        ArrowUp:    DIR_UP,
+        ArrowDown:  DIR_DOWN,
+        ArrowLeft:  DIR_LEFT,
+        ArrowRight: DIR_RIGHT,
+        KeyW:       DIR_UP,
+        KeyS:       DIR_DOWN,
+        KeyA:       DIR_LEFT,
+        KeyD:       DIR_RIGHT,
+      };
+
       this._keyHandler = (e) => {
-        const dirMap = {
-          ArrowUp:    new this.THREE.Vector3(0, 0, -1),
-          ArrowDown:  new this.THREE.Vector3(0, 0, 1),
-          ArrowLeft:  new this.THREE.Vector3(-1, 0, 0),
-          ArrowRight: new this.THREE.Vector3(1, 0, 0),
-          KeyW:       new this.THREE.Vector3(0, 0, -1),
-          KeyS:       new this.THREE.Vector3(0, 0, 1),
-          KeyA:       new this.THREE.Vector3(-1, 0, 0),
-          KeyD:       new this.THREE.Vector3(1, 0, 0),
-        };
-        if (dirMap[e.code]) {
+        const targetDir = dirMap[e.code];
+        if (targetDir) {
           e.preventDefault();
-          this._inputQueue.push(dirMap[e.code]);
+          this._queueDirection(targetDir);
         }
         if (e.code === 'Space') {
           e.preventDefault();
@@ -1234,11 +1354,30 @@
       global.addEventListener('keyup', this._keyUpHandler);
     }
 
+    _queueDirection(targetDir) {
+      if (!this.player || !this.player.alive) return;
+      if (targetDir.dot(this.player.dir) < 0) return; // filter out 180 reverse
+      if (this._inputQueue.length > 0) {
+        this._inputQueue[this._inputQueue.length - 1].copy(targetDir);
+      } else {
+        const v = this._inputVecPool.pop() || new this.THREE.Vector3();
+        v.copy(targetDir);
+        this._inputQueue.push(v);
+      }
+    }
+
     setPlayerDirection(dx, dz) {
       if (!this.player || !this.player.alive) return;
-      const d = new this.THREE.Vector3(dx, 0, dz).normalize();
-      if (d.dot(this.player.dir) >= 0) {
-        this._inputQueue.push(d);
+      if (Math.abs(dx) < 0.001 && Math.abs(dz) < 0.001) return;
+      this._inputScratch.set(dx, 0, dz).normalize();
+      if (this._inputScratch.dot(this.player.dir) >= 0) {
+        if (this._inputQueue.length > 0) {
+          this._inputQueue[this._inputQueue.length - 1].copy(this._inputScratch);
+        } else {
+          const v = this._inputVecPool.pop() || new this.THREE.Vector3();
+          v.copy(this._inputScratch);
+          this._inputQueue.push(v);
+        }
       }
     }
 
@@ -1259,9 +1398,34 @@
       if (!this.running || this.paused) return;
 
       const now = performance.now();
-      const dt  = Math.min((now - this._lastFrame) / 1000, 0.1);
+      const rawDt = (now - this._lastFrame) / 1000;
+      // Requirement 3: Clamp game loop delta time dt to Math.min(dt, 0.05) to prevent physics stutter or jumpiness
+      const dt  = Math.min(rawDt, 0.05);
       this._lastFrame = now;
       this.elapsed = (now - this.startTime) / 1000;
+
+      // Adaptive FPS Monitor: Track running average FPS over 60 frames
+      if (rawDt > 0.0001) {
+        const instantFps = 1 / rawDt;
+        if (this.fpsSampleCount < 60) {
+          this.fpsWindow[this.fpsWindowIndex] = instantFps;
+          this.runningFpsSum += instantFps;
+          this.fpsSampleCount++;
+          this.fpsWindowIndex = (this.fpsWindowIndex + 1) % 60;
+          this.averageFps = this.runningFpsSum / this.fpsSampleCount;
+        } else {
+          this.runningFpsSum -= this.fpsWindow[this.fpsWindowIndex];
+          this.fpsWindow[this.fpsWindowIndex] = instantFps;
+          this.runningFpsSum += instantFps;
+          this.fpsWindowIndex = (this.fpsWindowIndex + 1) % 60;
+          this.averageFps = this.runningFpsSum / 60;
+
+          // If average FPS dips below 48 FPS on a device, automatically throttle down to Performance Tier
+          if (!this.isPerformanceTier && this.averageFps < 48) {
+            this.setPerformanceTier();
+          }
+        }
+      }
 
       // Storm activation
       if (!this._stormActivated && now - this.startTime > CFG.STORM_START_DELAY) {
@@ -1284,8 +1448,8 @@
       this._updateCrown(dt);
 
       // Tick power-ups & phase shields
-      for (const s of this.snakes) {
-        if (s.alive) s.tickPowerups(now);
+      for (let s = 0; s < this.snakes.length; s++) {
+        if (this.snakes[s].alive) this.snakes[s].tickPowerups(now);
       }
 
       // Phase shield telemetry hook for player
@@ -1306,19 +1470,23 @@
       this._applyInput();
 
       // AI steering
-      for (const s of this.snakes) {
-        if (!s.isPlayer && s.alive) {
-          this.ai.steer(s, this.items.foods, this.items.powerups, this.storm.center, this.storm.radius, this.snakes, now);
+      for (let s = 0; s < this.snakes.length; s++) {
+        const snake = this.snakes[s];
+        if (!snake.isPlayer && snake.alive) {
+          this.ai.steer(snake, this.items.foods, this.items.powerups, this.storm.center, this.storm.radius, this.snakes, now);
         }
       }
 
-      // Magnet pull
+      // Magnet pull (Zero-Allocation scratch calculation)
       if (this.player.alive && this.player.hasPowerup('MAGNET')) {
-        for (const f of this.items.foods) {
-          const toPlayer = this.player.headPos().clone().sub(f.mesh.position);
-          if (toPlayer.length() < CFG.MAGNET_RADIUS) {
-            toPlayer.normalize().multiplyScalar(dt * 8);
-            f.mesh.position.add(toPlayer);
+        const pHead = this.player.headPos();
+        for (let i = 0; i < this.items.foods.length; i++) {
+          const f = this.items.foods[i];
+          this._scratchVec.subVectors(pHead, f.mesh.position);
+          const dist = this._scratchVec.length();
+          if (dist < CFG.MAGNET_RADIUS && dist > 0.001) {
+            this._scratchVec.normalize().multiplyScalar(dt * 8);
+            f.mesh.position.add(this._scratchVec);
           }
         }
       }
@@ -1484,7 +1652,7 @@
             const scoreGain = s.hasPowerup('SCORE_2X') ? 20 : 10;
             s.score += scoreGain;
             s.grow(1);
-            this.particles.burst(f.mesh.position.clone(), f.mesh.material.color.getHex(), 15);
+            this.particles.burst(f.mesh.position, f.mesh.material.color.getHex(), 15);
 
             // Floating Pop Number
             let popText = `+${scoreGain}`;
@@ -1522,7 +1690,7 @@
           const pu = this.items.powerups[pi];
           if (head.distanceTo(pu.mesh.position) < CFG.GRID * 1.3) {
             s.activatePowerup(pu.type, now);
-            this.particles.burst(pu.mesh.position.clone(), this.items._puColors[pu.type], 25);
+            this.particles.burst(pu.mesh.position, this.items._puColors[pu.type], 25);
 
             if (s.isPlayer) {
               this.popups.spawn(pu.type.replace('_', ' '), pu.mesh.position, this.items._puColors[pu.type]);
@@ -1547,7 +1715,7 @@
     _eliminate(snake, now, killer) {
       if (!snake.alive) return;
       const wasPlayer = snake.isPlayer;
-      const snakeHead = snake.headPos().clone();
+      const snakeHead = snake.headPos();
       snake.eliminate(this.particles);
       this._aliveCount--;
       this.audio.elimination();
@@ -1626,9 +1794,9 @@
     /* ── Dynamic Camera Auto-Zoom, Sprint FOV Warp & Shake ──── */
     _updateCamera(dt) {
       if (!this.player) return;
-      const target = this.player.alive
+      const target = (this.player.alive && this.player.positions.length > 0)
         ? this.player.headPos()
-        : new this.THREE.Vector3(0, 0, 0);
+        : ZERO_VEC;
 
       this._camTarget.lerp(target, CFG.CAMERA_LERP);
 
@@ -1638,11 +1806,11 @@
 
       const baseCamY = 28 * zoomFactor;
       const baseCamZ = 32 * zoomFactor;
-      const camOffset = new this.THREE.Vector3(0, baseCamY, baseCamZ);
-      const desired   = this._camTarget.clone().add(camOffset);
+      this._camOffset.set(0, baseCamY, baseCamZ);
+      this._camDesired.copy(this._camTarget).add(this._camOffset);
 
       // Smooth camera position interpolation
-      this._camPos.lerp(desired, CFG.CAMERA_LERP);
+      this._camPos.lerp(this._camDesired, CFG.CAMERA_LERP);
       this.camera.position.copy(this._camPos);
 
       // 2. Dynamic FOV Sprint Warp during Turbo Boost
@@ -1669,8 +1837,12 @@
     _applyInput() {
       if (!this.player.alive || this._inputQueue.length === 0) return;
       const d = this._inputQueue.shift();
-      if (d.dot(this.player.dir) < 0) return;
-      this.player.nextDir.copy(d);
+      if (d.dot(this.player.dir) >= 0) {
+        this.player.nextDir.copy(d);
+      }
+      if (this._inputVecPool.length < 8) {
+        this._inputVecPool.push(d);
+      }
     }
 
     /* ── Rank helper ─────────────────────────────────────────── */
@@ -1728,7 +1900,7 @@
       // Respawn player in a safe zone near center
       const angle = Math.random() * Math.PI * 2;
       const startPos = new this.THREE.Vector3(Math.cos(angle) * 12, 0.6, Math.sin(angle) * 12);
-      const newSnake = new Snake(0, true, SNAKE_COLORS[0], startPos, this.scene, this.THREE);
+      const newSnake = new Snake(0, true, SNAKE_COLORS[0], startPos, this.scene, this.THREE, this);
       newSnake.score = Math.floor(prevScore * 0.5); // retain 50% score
       this.snakes[0] = newSnake;
       this.player = newSnake;

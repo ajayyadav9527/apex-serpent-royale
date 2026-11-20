@@ -3542,8 +3542,8 @@
           if (joystickActive) handleJoyTouch(e, joyOriginX, joyOriginY);
         }, { passive: false });
 
-        touchLeftZone.addEventListener('touchend', resetJoystick);
-        touchLeftZone.addEventListener('touchcancel', resetJoystick);
+        touchLeftZone.addEventListener('touchend', resetJoystick, { passive: true });
+        touchLeftZone.addEventListener('touchcancel', resetJoystick, { passive: true });
       }
 
       // Also listen on joystickZone itself
@@ -3559,8 +3559,8 @@
         if (joystickActive) handleJoyTouch(e, joyOriginX, joyOriginY);
       }, { passive: false });
 
-      joystickZone.addEventListener('touchend', resetJoystick);
-      joystickZone.addEventListener('touchcancel', resetJoystick);
+      joystickZone.addEventListener('touchend', resetJoystick, { passive: true });
+      joystickZone.addEventListener('touchcancel', resetJoystick, { passive: true });
 
       // 2. Tactile Cyber D-Pad buttons
       const dpadMap = {
@@ -3582,7 +3582,7 @@
             btn.classList.remove('active');
           };
           btn.addEventListener('touchstart', pressDpad, { passive: false });
-          btn.addEventListener('touchend', releaseDpad);
+          btn.addEventListener('touchend', releaseDpad, { passive: false });
           btn.addEventListener('mousedown', pressDpad);
           btn.addEventListener('mouseup', releaseDpad);
         }
@@ -3628,7 +3628,7 @@
         e.preventDefault();
         mobileBoostBtn.classList.remove('active');
         setBoost(false);
-      });
+      }, { passive: false });
 
       // 5. Full-Screen Swipe Gestures (Turn with quick finger flick anywhere)
       let touchStartX = 0;
@@ -3672,7 +3672,7 @@
             engine.setPlayerDirection(dx, dy);
           }
         }
-      });
+      }, { passive: true });
 
       // Mouse click/hold to boost
       window.addEventListener('mousedown', (e) => {
@@ -3893,7 +3893,7 @@
           engine.camera.updateProjectionMatrix();
           engine.renderer.setSize(window.innerWidth, window.innerHeight);
         }
-      });
+      }, { passive: true });
 
       
       /* ── Emoji Taunt Quick Bar ───────────────────────────── */
