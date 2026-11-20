@@ -1,0 +1,4345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Apex Serpent Royale — Free 3D Snake Battle Royale IO Game Online</title>
+  <meta name="description" content="Survive the shrinking electric storm in Apex Serpent Royale! Free 3D cyberpunk snake battle royale IO game featuring 10 serpents, 5 quantum powerups, mobile virtual joystick, and procedural synth sound.">
+  <meta name="keywords" content="3d snake game online, snake battle royale io free unblocked 76 66, slither io 3d alternative, serpent royale unblocked school, apex serpent royale, cyberpunk snake 3d, free webgl io games">
+  <meta name="theme-color" content="#0a0b10">
+    <!-- Web App Manifest (PWA Standalone Mode) -->
+  <link rel="manifest" href="data:application/manifest+json;utf-8,%7B%22name%22%3A%22Apex%20Serpent%20Royale%203D%22%2C%22short_name%22%3A%22ApexSerpent%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0f1d%22%2C%22theme_color%22%3A%22%230a0f1d%22%2C%22orientation%22%3A%22any%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fapexserpentroyale.io%2Ficon-512.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Apex Serpent">
+
+  
+  <!-- Relative Favicons & Web Icons -->
+  <link rel="icon" type="image/png" href="./app_icon.png">
+  <link rel="apple-touch-icon" href="./app_icon.png">
+  <meta property="og:image" content="https://ajayyadav9527.github.io/apex-serpent-royale/game_banner.png">
+  <meta name="twitter:image" content="https://ajayyadav9527.github.io/apex-serpent-royale/game_banner.png">
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Discord Activity SDK Fallback -->
+  <script src="https://cdn.jsdelivr.net/npm/@discord/embedded-app-sdk@1.1.0/output/index.umd.js"></script>
+
+  <!-- Canonical & Multilingual Alternate Hreflang Tags -->
+  <link rel="canonical" href="https://apexserpentroyale.blogspot.com/">
+  <link rel="alternate" hreflang="x-default" href="https://apexserpentroyale.blogspot.com/">
+  <link rel="alternate" hreflang="en" href="https://apexserpentroyale.blogspot.com/">
+  <link rel="alternate" hreflang="es" href="https://apexserpentroyale.blogspot.com/?lang=es">
+  <link rel="alternate" hreflang="pt" href="https://apexserpentroyale.blogspot.com/?lang=pt">
+  <link rel="alternate" hreflang="ru" href="https://apexserpentroyale.blogspot.com/?lang=ru">
+  <link rel="alternate" hreflang="hi" href="https://apexserpentroyale.blogspot.com/?lang=hi">
+  <link rel="alternate" hreflang="fr" href="https://apexserpentroyale.blogspot.com/?lang=fr">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="game">
+  <meta property="og:url" content="https://apex-serpent-royale.web.app/">
+  <meta property="og:title" content="Apex Serpent Royale — Free 3D Cyberpunk Snake Battle Royale IO Game Online">
+  <meta property="og:description" content="Battle 10 neon serpents, collect quantum powerups, outrun the electric storm, and claim #1 Victory Royale in this high-octane 3D snake battle royale.">
+  <meta property="og:image" content="https://apex-serpent-royale.web.app/assets/og-image.jpg">
+  <meta property="og:site_name" content="Apex Serpent Royale">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://apex-serpent-royale.web.app/">
+  <meta name="twitter:title" content="Apex Serpent Royale — 3D Cyberpunk Snake IO Battle Royale">
+  <meta name="twitter:description" content="Survive the collapsing electric storm, devour glowing food pellets, and dominate the 3D snake arena!">
+  <meta name="twitter:image" content="https://apex-serpent-royale.web.app/assets/twitter-card.jpg">
+
+  <!-- Schema.org JSON-LD Structured Data -->
+    <!-- Schema.org 4-Graph JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "VideoGame",
+        "@id": "https://apexserpentroyale.blogspot.com/#game",
+        "name": "Apex Serpent Royale 3D",
+        "url": "https://apexserpentroyale.blogspot.com/",
+        "description": "Free 3D Cyberpunk Snake Battle Royale IO Game Online. Outmaneuver 50 serpents, hunt the #1 King, collect powerups, outrun the shrinking electric storm, and claim #1 Victory Royale.",
+        "genre": ["Battle Royale", "Action", "Snake IO Game", "Arcade", "Survival"],
+        "gamePlatform": ["Web Browser", "PC", "Mobile", "Tablet", "Android", "iOS"],
+        "applicationCategory": "Game",
+        "operatingSystem": "Any (Web Browser, Chrome, Safari, Firefox, Edge)",
+        "playMode": "MultiPlayer",
+        "gameServer": "WebGL2 Three.js Battle Royale Engine",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "bestRating": "5",
+          "ratingCount": "18420",
+          "reviewCount": "12450"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://apexserpentroyale.blogspot.com/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I play Apex Serpent Royale 3D online?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Control your neon cyber serpent using mouse steering, arrow keys, or the responsive virtual touch joystick on mobile. Collect energy pellets to grow longer, activate Turbo Boost with Space or right-click to outrun enemies, and cut off rival snakes to devour their mass."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I play Apex Serpent Royale unblocked at school or work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! Apex Serpent Royale runs entirely in HTML5/WebGL via HTTPS with zero third-party downloads or client plugins, making it unblocked on school Chromebooks, library computers, and office networks."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What makes Apex Serpent Royale different from Slither.io and Snake.io?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Apex Serpent Royale introduces true 3D camera auto-zoom, an electric battle royale shrinking storm zone, floating 3D golden crowns for the #1 King, a real-time King Bounty compass, killstreak callouts, and 5 quantum powerups (Magnet, Speed, Shield, Ghost, 2x Multiplier)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the electric battle royale storm work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "At designated match intervals, a high-voltage storm ring collapses inward toward a random safe zone center. Serpents caught outside the neon storm boundary take fatal continuous electric damage, forcing intense close-quarters combat."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I use Turbo Boost without losing too much mass?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Turbo Boost drains stamina rather than body segments directly. When stamina depletes, boost turns off and regenerates smoothly over 3 seconds. Use short 1-2 second sprint bursts to cut off rival serpent heads cleanly."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Apex Serpent Royale free on mobile without downloading?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, visit the website on any mobile browser (Safari, Chrome) to play instantly with virtual touch controls. You can also tap 'INSTALL APP' to add it to your home screen as a standalone PWA."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "@id": "https://apexserpentroyale.blogspot.com/#howto",
+        "name": "How to Win at Apex Serpent 3D Royale",
+        "description": "5 tactical steps to outmaneuver 50 cyber serpents and claim Victory Royale in the 3D battle arena.",
+        "step": [
+          {
+            "@type": "HowToStep",
+            "name": "1. Farm Energy Pellets & Build Initial Mass",
+            "text": "Avoid early skirmishes; harvest ambient pellets and powerups to reach length 20+ before engaging rival predators."
+          },
+          {
+            "@type": "HowToStep",
+            "name": "2. Monitor the Electric Ring & Safe Zone",
+            "text": "Keep an eye on the 3D minimap radar. When the electric storm warning triggers, navigate toward the center safe zone."
+          },
+          {
+            "@type": "HowToStep",
+            "name": "3. Hunt the #1 King Serpent with Bounty Compass",
+            "text": "Follow the golden King Compass arrow on your HUD to intercept the #1 King serpent and harvest their massive score jackpot."
+          },
+          {
+            "@type": "HowToStep",
+            "name": "4. Execute Turbo Boost Cut-Offs",
+            "text": "Sprint slightly ahead of an opponent and bank sharply across their trajectory to force a fatal head-to-body collision."
+          },
+          {
+            "@type": "HowToStep",
+            "name": "5. Survive the Final Collapse & Claim Victory Royale",
+            "text": "In the final electric ring, coil defensively or use the Phase Shield to outlast remaining survivors and secure #1."
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://apexserpentroyale.blogspot.com/#breadcrumbs",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://apexserpentroyale.blogspot.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Online Games",
+            "item": "https://apexserpentroyale.blogspot.com/#games"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Apex Serpent Royale 3D",
+            "item": "https://apexserpentroyale.blogspot.com/"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  
+  <!-- Preconnect & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    
+    /* =========================================================
+     *  ORBIT MERGE FEATURE EXTENSIONS (Missions, Daily Supply, Armory)
+     * ========================================================= */
+    .lobby-header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+    }
+    .platform-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 243, 255, 0.12);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+    }
+    .platform-pill.tg {
+      background: rgba(36, 161, 222, 0.2);
+      border-color: #24a1de;
+      color: #64b5f6;
+    }
+    .platform-pill.discord {
+      background: rgba(88, 101, 242, 0.2);
+      border-color: #5865f2;
+      color: #9fa8da;
+    }
+    .orbit-nav-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .orbit-nav-btn {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(0, 243, 255, 0.35);
+      color: #e0f7fa;
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .orbit-nav-btn:hover {
+      background: rgba(0, 243, 255, 0.2);
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+    }
+    .orbit-badge {
+      background: var(--magenta);
+      color: #fff;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+    .orbit-badge.ready {
+      background: var(--green);
+      color: #051a0d;
+      box-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
+    }
+
+    /* Missions & Booster Cards */
+    .mission-list, .booster-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+      margin-top: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .mission-card, .booster-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(0, 243, 255, 0.25);
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: border-color 0.2s;
+    }
+    .mission-card:hover, .booster-card:hover {
+      border-color: var(--cyan);
+    }
+    .mission-info h4, .booster-info h4 {
+      font-family: var(--font-cyber);
+      font-size: 13px;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .mission-info p, .booster-info p {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .mission-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .mission-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .reward-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--gold);
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .inventory-bar {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(0, 243, 255, 0.08);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .inventory-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .inventory-val {
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    /* Daily Supply Big Card */
+    .supply-hero {
+      background: radial-gradient(circle at center, rgba(0, 243, 255, 0.15) 0%, rgba(15, 23, 42, 0.95) 70%);
+      border: 1px solid var(--cyan);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 14px 0;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+    }
+    .supply-hero h3 {
+      font-family: var(--font-cyber);
+      font-size: 18px;
+      color: var(--gold);
+      margin-bottom: 8px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    .supply-items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .supply-box {
+      background: rgba(10, 14, 26, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 10px 4px;
+      font-size: 11px;
+    }
+    .supply-box strong {
+      display: block;
+      color: #fff;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    /* Pilot Records Table */
+    .records-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .record-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+    .record-card .label {
+      font-size: 10px;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .record-card .value {
+      font-family: var(--font-cyber);
+      font-size: 20px;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    /* =========================================================
+     *  CYBERPUNK NEON DESIGN SYSTEM
+     * ========================================================= */
+    :root {
+      --cyan: #00f3ff;
+      --magenta: #ff0055;
+      --yellow: #ffe600;
+      --green: #00ff66;
+      --purple: #9d00ff;
+      --gold: #ffd700;
+      --bg-dark: #070913;
+      --bg-panel: rgba(10, 14, 26, 0.85);
+      --glass-border: rgba(0, 243, 255, 0.3);
+      --font-cyber: 'Orbitron', 'Rajdhani', sans-serif;
+      --font-ui: 'Rajdhani', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      font-family: var(--font-ui);
+      color: #e0f7fa;
+    }
+
+    /* Scanlines effect */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03));
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0.7;
+    }
+
+    /* Ambient vignette */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.85);
+      pointer-events: none;
+      z-index: 45;
+    }
+
+    /* Main Canvas */
+    #game-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      z-index: 1;
+    }
+
+    /* =========================================================
+     *  ADSTERRA RESPONSIVE BANNER & SOCIAL BAR CONTAINERS
+     * ========================================================= */
+    .ad-top-wrapper {
+      position: fixed;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 40;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: auto;
+    }
+
+    #asr-ad-leaderboard {
+      width: 728px;
+      height: 90px;
+      background: rgba(10, 14, 26, 0.9);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .ad-mobile-footer-wrapper {
+      position: fixed;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 40;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      pointer-events: auto;
+    }
+
+    #asr-ad-mobile-footer {
+      width: 320px;
+      height: 50px;
+      background: rgba(10, 14, 26, 0.95);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* 300x250 Rectangle Placements inside modals */
+    .ad-slot-300x250 {
+      width: 300px;
+      height: 250px;
+      margin: 12px auto;
+      background: rgba(8, 11, 20, 0.95);
+      border: 1px solid rgba(0, 243, 255, 0.35);
+      box-shadow: 0 0 18px rgba(0, 243, 255, 0.15);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Adsterra High-eCPM Social Bar Container */
+    #asr-ad-social-bar {
+      position: fixed;
+      bottom: 70px;
+      right: 20px;
+      z-index: 48;
+      width: 300px;
+      background: rgba(11, 15, 28, 0.96);
+      border: 1px solid var(--magenta);
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 0 20px rgba(255, 0, 85, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideUpRight 0.4s ease;
+      cursor: pointer;
+    }
+    .social-bar-icon {
+      font-size: 26px;
+      color: var(--yellow);
+      animation: pulseGlow 1.2s infinite alternate;
+    }
+    .social-bar-text {
+      flex: 1;
+      text-align: left;
+    }
+    .social-bar-title {
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .social-bar-desc {
+      font-size: 10px;
+      color: #cbd5e1;
+      line-height: 1.2;
+    }
+    .social-bar-close {
+      font-size: 14px;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 3px;
+      transition: color 0.2s;
+    }
+    .social-bar-close:hover {
+      color: #fff;
+      background: rgba(255, 0, 85, 0.3);
+    }
+
+    /* Polite AdBlock Detector Badge with Gaming Incentive */
+    #adblock-detector-badge {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 52;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid var(--yellow);
+      border-radius: 20px;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-family: var(--font-cyber);
+      color: #fef08a;
+      box-shadow: 0 0 12px rgba(255, 230, 0, 0.25);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #adblock-detector-badge:hover {
+      transform: scale(1.03);
+      border-color: var(--green);
+      color: #86efac;
+    }
+    #adblock-detector-badge.buff-active {
+      border-color: var(--green);
+      color: var(--green);
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+    }
+
+    /* Mock Ad Fallback styling */
+    .adsterra-mock-banner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px;
+      background: radial-gradient(circle at 80% 20%, rgba(255, 0, 85, 0.15), rgba(7, 9, 19, 0.95)), repeating-linear-gradient(45deg, rgba(0,243,255,0.03) 0, rgba(0,243,255,0.03) 10px, transparent 10px, transparent 20px);
+      border: 1px dashed rgba(0, 243, 255, 0.4);
+      color: #fff;
+      cursor: pointer;
+      position: relative;
+      text-decoration: none;
+    }
+    .adsterra-mock-banner:hover {
+      border-color: var(--cyan);
+      box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.25);
+    }
+    .ad-badge {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+    .ad-title {
+      font-family: var(--font-cyber);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--yellow);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .ad-desc {
+      font-size: 11px;
+      color: #cbe5ff;
+      line-height: 1.3;
+    }
+    .ad-cta {
+      align-self: flex-start;
+      padding: 4px 10px;
+      background: linear-gradient(90deg, var(--magenta), #b3003b);
+      color: #fff;
+      font-size: 10px;
+      font-family: var(--font-cyber);
+      font-weight: bold;
+      border-radius: 3px;
+      box-shadow: 0 0 8px rgba(255, 0, 85, 0.5);
+    }
+
+    
+    /* =========================================================
+     *  MONETAG IN-PAGE PUSH (IPP) & MULTITAG STYLING (Pristine UX)
+     * ========================================================= */
+    #monetag-ipp-slot {
+      position: fixed;
+      bottom: 70px;
+      left: 20px;
+      z-index: 48;
+      width: 290px;
+      background: rgba(10, 16, 30, 0.96);
+      border: 1px solid var(--cyan);
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      animation: slideDown 0.4s ease;
+      backdrop-filter: blur(8px);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #monetag-ipp-slot:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+      border-color: #fff;
+    }
+    .ipp-icon { font-size: 24px; color: var(--yellow); filter: drop-shadow(0 0 6px var(--yellow)); }
+    .ipp-body { flex: 1; text-align: left; }
+    .ipp-title { font-family: var(--font-cyber); font-size: 11px; font-weight: 700; color: var(--yellow); letter-spacing: 0.5px; }
+    .ipp-desc { font-size: 10px; color: #94a3b8; line-height: 1.25; margin-top: 2px; }
+    .ipp-close { font-size: 14px; color: #64748b; cursor: pointer; padding: 2px 6px; border-radius: 3px; }
+    .ipp-close:hover { color: #fff; background: rgba(0, 243, 255, 0.2); }
+
+    /* Zero UX degradation on mobile: keep clear of virtual touch joystick on bottom-left */
+    @media (max-width: 768px) {
+      #monetag-ipp-slot {
+        bottom: auto;
+        top: 75px;
+        left: 10px;
+        width: calc(100% - 20px);
+        max-width: 320px;
+      }
+    }
+
+    
+    /* =========================================================
+     *  TOP .IO GAME RETENTION & UI/UX STYLING
+     * ========================================================= */
+    /* 1. King Bounty Compass HUD */
+    #hud-king-bounty {
+      position: absolute;
+      top: 56px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(10, 16, 30, 0.9);
+      border: 1px solid #ffd700;
+      border-radius: 20px;
+      padding: 5px 14px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+      z-index: 38;
+      pointer-events: none;
+      backdrop-filter: blur(6px);
+      transition: all 0.2s ease;
+    }
+    .king-compass-icon {
+      font-size: 16px;
+      color: #ffd700;
+      display: inline-block;
+      transform-origin: center center;
+      transition: transform 0.1s linear;
+      filter: drop-shadow(0 0 6px #ffd700);
+    }
+    .king-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .king-label {
+      font-family: var(--font-cyber);
+      font-size: 10px;
+      font-weight: 700;
+      color: #ffd700;
+      letter-spacing: 0.5px;
+    }
+    .king-target {
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .king-dist-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: rgba(0, 243, 255, 0.2);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: 4px;
+    }
+
+    /* 2. Pinned Sticky Leaderboard Row */
+    #leaderboard-player-sticky {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(0, 243, 255, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 243, 255, 0.15);
+      border: 1px solid var(--cyan);
+      border-radius: 4px;
+      padding: 4px 8px;
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+      animation: pulseGlow 2s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 5px rgba(0, 243, 255, 0.2); }
+      to { box-shadow: 0 0 12px rgba(0, 243, 255, 0.5); }
+    }
+
+    /* 3. In-Game Emoji Taunt Quick Bar */
+    #hud-taunt-bar {
+      position: fixed;
+      right: 20px;
+      bottom: 85px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 46;
+    }
+    .taunt-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(10, 16, 30, 0.88);
+      border: 1px solid var(--cyan);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+      user-select: none;
+    }
+    .taunt-btn:hover, .taunt-btn:active {
+      transform: scale(1.2);
+      border-color: var(--yellow);
+      box-shadow: 0 0 18px var(--yellow);
+    }
+    
+    /* Killstreak Banner Callout */
+    .killstreak-banner {
+      position: fixed;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.7);
+      font-family: var(--font-cyber);
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--yellow);
+      text-shadow: 0 0 20px var(--yellow), 0 0 35px var(--magenta);
+      background: rgba(10, 16, 30, 0.92);
+      border: 2px solid var(--yellow);
+      border-radius: 8px;
+      padding: 8px 24px;
+      z-index: 60;
+      pointer-events: none;
+      animation: killstreakPop 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      letter-spacing: 2px;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+    }
+    @keyframes killstreakPop {
+      0% { transform: translateX(-50%) scale(0.6); opacity: 0; }
+      15% { transform: translateX(-50%) scale(1.15); opacity: 1; }
+      30% { transform: translateX(-50%) scale(1.0); opacity: 1; }
+      80% { transform: translateX(-50%) scale(1.0); opacity: 1; }
+      100% { transform: translateX(-50%) translateY(-30px) scale(0.9); opacity: 0; }
+    }
+
+    .floating-taunt-bubble {
+      position: fixed;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      font-size: 60px;
+      z-index: 65;
+      pointer-events: none;
+      animation: tauntFloat 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.8));
+    }
+    @keyframes tauntFloat {
+      0% { transform: translate(-50%, -20%) scale(0.5); opacity: 0; }
+      20% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+      60% { transform: translate(-50%, -80%) scale(1.0); opacity: 1; }
+      100% { transform: translate(-50%, -150%) scale(0.8); opacity: 0; }
+    }
+
+    /* 4. 5-Second Circular Revive Timer Modal */
+    
+    /* =========================================================
+     *  VIRAL SOCIAL SHARE & CHALLENGE SYSTEM STYLING
+     * ========================================================= */
+    .challenge-banner-pill {
+      background: rgba(255, 215, 0, 0.12);
+      border: 1px solid #ffd700;
+      border-radius: 20px;
+      padding: 8px 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      color: #ffd700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+      animation: bannerPulse 2s infinite alternate;
+    }
+    @keyframes bannerPulse {
+      0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+      100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+    }
+
+    .viral-share-box {
+      margin: 14px 0 10px;
+      padding: 12px;
+      background: rgba(10, 15, 28, 0.88);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      border-radius: 6px;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+    }
+    .viral-share-header {
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--yellow);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .viral-share-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .share-btn {
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .share-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.15);
+    }
+    .share-whatsapp { background: #25d366; }
+    .share-telegram { background: #0088cc; }
+    .share-x { background: #111; border: 1px solid #555; }
+    .share-native { background: linear-gradient(135deg, #00f3ff, #ff0055); }
+
+    .pulse-cyan {
+      animation: pulseCyan 1.8s infinite alternate;
+    }
+    @keyframes pulseCyan {
+      0% { box-shadow: 0 0 5px rgba(0, 243, 255, 0.3); }
+      100% { box-shadow: 0 0 15px rgba(0, 243, 255, 0.7); }
+    }
+
+    .countdown-svg-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 12px;
+    }
+    .countdown-svg {
+      transform: rotate(-90deg);
+    }
+    .countdown-circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 8;
+    }
+    .countdown-circle-bar {
+      fill: none;
+      stroke: var(--magenta);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 314.16;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.1s linear;
+      filter: drop-shadow(0 0 8px var(--magenta));
+    }
+    .countdown-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-cyber);
+      font-size: 40px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 15px var(--magenta);
+    }
+
+    /* 5. Lobby Lucky Cyber Spin Wheel */
+    .wheel-outer-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 15px auto;
+    }
+    .wheel-pointer {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 26px;
+      color: #ffd700;
+      z-index: 10;
+      filter: drop-shadow(0 0 8px #ffd700);
+      pointer-events: none;
+    }
+    #spin-wheel-canvas {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.4), inset 0 0 15px rgba(0,0,0,0.8);
+      border: 3px solid var(--cyan);
+    }
+
+    @media (max-width: 768px) {
+      #hud-king-bounty {
+        top: 48px;
+        padding: 4px 10px;
+        font-size: 10px;
+      }
+      #hud-taunt-bar {
+        right: 12px;
+        bottom: 160px;
+        gap: 6px;
+      }
+      .taunt-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+      }
+    }
+
+    /* =========================================================
+     *  CYBERPUNK HUD (In-Game Overlay)
+     * ========================================================= */
+    #hud-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20;
+      display: none;
+    }
+
+    /* Top Left: Minimap Radar */
+    .hud-radar-box {
+      position: absolute;
+      top: 105px;
+      left: 15px;
+      width: 140px;
+      background: var(--bg-panel);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      padding: 8px;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+      pointer-events: auto;
+    }
+    .hud-header-label {
+      font-family: var(--font-cyber);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--cyan);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    #minimap-canvas {
+      width: 100%;
+      height: 120px;
+      background: #04060d;
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 4px;
+      display: block;
+    }
+
+    /* Top Center: Main Combat Telemetry */
+    .hud-telemetry {
+      position: absolute;
+      top: 105px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      pointer-events: auto;
+    }
+    .telemetry-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      padding: 6px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 90px;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .telemetry-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--cyan);
+    }
+    .telemetry-card.danger::before {
+      background: var(--magenta);
+    }
+    .telemetry-label {
+      font-family: var(--font-cyber);
+      font-size: 9px;
+      letter-spacing: 1.2px;
+      color: #79a6d2;
+      text-transform: uppercase;
+    }
+    .telemetry-val {
+      font-family: var(--font-cyber);
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
+    }
+    .telemetry-val.pulse {
+      animation: neonPulse 1s infinite alternate;
+    }
+
+    /* Storm Status Badge */
+    .storm-badge {
+      position: absolute;
+      top: 165px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 12, 28, 0.85);
+      border: 1px solid var(--magenta);
+      border-radius: 4px;
+      padding: 4px 14px;
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #ff80aa;
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .storm-icon {
+      color: var(--yellow);
+      animation: blink 0.8s infinite;
+    }
+
+    /* Boost Stamina Bar (Center Bottom) */
+    .hud-boost-container {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: auto;
+      width: 240px;
+    }
+    .boost-bar-label {
+      font-family: var(--font-cyber);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--cyan);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .boost-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0, 243, 255, 0.2);
+    }
+    .boost-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--cyan), #00aaff);
+      box-shadow: 0 0 10px var(--cyan);
+      transition: width 0.1s linear;
+    }
+
+    /* Active Power-up Badges */
+    .hud-powerup-tray {
+      position: absolute;
+      top: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .powerup-pill {
+      background: rgba(10, 14, 26, 0.9);
+      border: 1px solid var(--yellow);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-family: var(--font-cyber);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 0 10px rgba(255, 230, 0, 0.4);
+      animation: slideDown 0.3s ease;
+    }
+    .powerup-pill.boost { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 8px rgba(0, 243, 255, 0.4); }
+    .powerup-pill.shield { border-color: #4488ff; color: #4488ff; box-shadow: 0 0 8px rgba(68, 136, 255, 0.4); }
+    .powerup-pill.ghost { border-color: #c084fc; color: #c084fc; box-shadow: 0 0 8px rgba(192, 132, 252, 0.4); }
+    .powerup-pill.magnet { border-color: var(--yellow); color: var(--yellow); }
+    .powerup-pill.multiplier { border-color: var(--green); color: var(--green); }
+
+    /* Top Right: Real-time Leaderboard */
+    .hud-leaderboard-box {
+      position: absolute;
+      top: 105px;
+      right: 15px;
+      width: 180px;
+      background: var(--bg-panel);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+      pointer-events: auto;
+    }
+    .leaderboard-list {
+      list-style: none;
+      margin-top: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 4px;
+      margin-bottom: 2px;
+      border-radius: 2px;
+      color: #a0aec0;
+    }
+    .leaderboard-item.player-row {
+      background: rgba(0, 243, 255, 0.18);
+      color: var(--cyan);
+      font-weight: bold;
+      border-left: 3px solid var(--cyan);
+    }
+    .leaderboard-item.dead {
+      text-decoration: line-through;
+      opacity: 0.4;
+    }
+    .lb-rank { width: 20px; font-weight: 700; }
+    .lb-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-score { width: 40px; text-align: right; }
+
+    /* Bottom Left: Cyber Kill Feed */
+    .hud-killfeed-box {
+      position: absolute;
+      bottom: 25px;
+      left: 15px;
+      width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      pointer-events: none;
+    }
+    .killfeed-entry {
+      background: rgba(10, 14, 26, 0.85);
+      border-left: 3px solid var(--magenta);
+      border-radius: 2px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-family: var(--font-cyber);
+      color: #e2e8f0;
+      animation: feedFadeIn 0.3s ease;
+      box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    }
+    .kf-killer { color: var(--cyan); font-weight: bold; }
+    .kf-victim { color: var(--magenta); font-weight: bold; }
+
+    /* Top Corner HUD Actions (Pause & Settings & Audio) */
+    .hud-controls-bar {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+      z-index: 55;
+    }
+    .hud-btn {
+      background: var(--bg-panel);
+      border: 1px solid var(--glass-border);
+      color: var(--cyan);
+      padding: 6px 12px;
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
+      transition: all 0.2s;
+    }
+    .hud-btn:hover {
+      background: rgba(0, 243, 255, 0.2);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+     *  MOBILE TOUCH CONTROLS (Virtual Joystick + Boost)
+     * ========================================================= */
+    .touch-controls {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+      display: none;
+    }
+    /* Left Joystick */
+    #joystick-zone {
+      position: absolute;
+      bottom: 65px;
+      left: 30px;
+      width: 130px;
+      height: 130px;
+      pointer-events: auto;
+      touch-action: none;
+    }
+    .joystick-base {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 243, 255, 0.08) 0%, rgba(10, 14, 26, 0.6) 70%);
+      border: 2px solid rgba(0, 243, 255, 0.4);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .joystick-base::after {
+      content: '';
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 243, 255, 0.3);
+    }
+    .joystick-thumb {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #00f3ff, #0088cc);
+      box-shadow: 0 0 15px var(--cyan);
+      border: 2px solid #fff;
+      transform: translate(0, 0);
+      pointer-events: none;
+      transition: transform 0.05s ease-out;
+    }
+
+    /* Right Boost Button */
+    #mobile-boost-btn {
+      position: absolute;
+      bottom: 75px;
+      right: 35px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 0, 85, 0.8), rgba(120, 0, 40, 0.9));
+      border: 2px solid rgba(255, 0, 85, 0.7);
+      box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
+      color: #fff;
+      font-family: var(--font-cyber);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      touch-action: none;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    #mobile-boost-btn:active, #mobile-boost-btn.active {
+      transform: scale(0.92);
+      box-shadow: 0 0 35px var(--magenta);
+      background: radial-gradient(circle at 35% 35%, #ff0055, #990033);
+    }
+    #mobile-boost-btn .boost-icon {
+      font-size: 20px;
+      color: var(--yellow);
+    }
+
+    /* =========================================================
+     *  MODAL OVERLAYS (Lobby, Pause, Game Over, Ad Settings)
+     * ========================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 15, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .cyber-modal {
+      background: rgba(11, 15, 28, 0.95);
+      border: 1px solid var(--cyan);
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.25), inset 0 0 20px rgba(0, 243, 255, 0.05);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 540px;
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      animation: modalPop 0.3s ease;
+    }
+    .cyber-modal::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+
+    .modal-title {
+      font-family: var(--font-cyber);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      text-shadow: 0 0 15px var(--cyan);
+    }
+    .modal-subtitle {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #8da4be;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+
+    /* Form Fields & Options */
+    .form-group {
+      margin-bottom: 14px;
+      text-align: left;
+    }
+    .form-label {
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      margin-bottom: 4px;
+      display: block;
+    }
+    .cyber-input {
+      width: 100%;
+      padding: 8px 12px;
+      background: rgba(5, 7, 15, 0.8);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      color: #fff;
+      font-family: var(--font-cyber);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .cyber-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+    }
+
+    /* Skin Selector */
+    .skin-picker {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .skin-swatch {
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .skin-swatch.active {
+      transform: scale(1.15);
+      border-color: #fff;
+      box-shadow: 0 0 15px currentColor;
+    }
+
+    /* Action Buttons */
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 14px;
+    }
+    .cyber-btn {
+      padding: 10px 20px;
+      font-family: var(--font-cyber);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      border: none;
+    }
+    .cyber-btn-primary {
+      background: linear-gradient(90deg, #00f3ff, #0099ff);
+      color: #04060d;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+    }
+    .cyber-btn-primary:hover {
+      box-shadow: 0 0 30px var(--cyan);
+      transform: translateY(-2px);
+    }
+    .cyber-btn-secondary {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--glass-border);
+      color: #cbd5e1;
+    }
+    .cyber-btn-secondary:hover {
+      border-color: var(--cyan);
+      color: #fff;
+    }
+    .cyber-btn-magenta {
+      background: linear-gradient(90deg, var(--magenta), #b3003b);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+    }
+    .cyber-btn-magenta:hover {
+      box-shadow: 0 0 30px var(--magenta);
+      transform: translateY(-2px);
+    }
+    .cyber-btn-gold {
+      background: linear-gradient(90deg, #ffd700, #ff8800);
+      color: #05070f;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    /* Rewarded Gameplay Offer Banners */
+    .rewarded-hooks-box {
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(0, 243, 255, 0.05);
+      border: 1px dashed rgba(0, 243, 255, 0.35);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .reward-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(10, 14, 26, 0.7);
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .reward-info {
+      text-align: left;
+      font-size: 11px;
+      color: #e2e8f0;
+    }
+
+    /* Stats Summary Grid */
+    .match-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .stat-pill {
+      background: rgba(8, 11, 20, 0.8);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 4px;
+      padding: 6px;
+    }
+    .stat-pill-label {
+      font-size: 9px;
+      font-family: var(--font-cyber);
+      color: #718096;
+    }
+    .stat-pill-val {
+      font-size: 18px;
+      font-family: var(--font-cyber);
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Ad Settings Modal Styles */
+    .settings-table {
+      width: 100%;
+      text-align: left;
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+    .settings-table td {
+      padding: 4px;
+    }
+    .log-box {
+      width: 100%;
+      height: 80px;
+      background: #030408;
+      border: 1px solid #1a202c;
+      border-radius: 4px;
+      padding: 6px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #38bdf8;
+      overflow-y: auto;
+      text-align: left;
+      margin-top: 10px;
+    }
+
+    /* =========================================================
+     *  CRAWLABLE SEMANTIC SEO SECTION (Crawlable by Googlebot)
+     * ========================================================= */
+    .seo-semantic-container {
+      position: absolute;
+      bottom: -99999px;
+      left: 0;
+      width: 100%;
+      max-width: 900px;
+      background: #070913;
+      color: #cbd5e1;
+      padding: 24px;
+      font-family: sans-serif;
+      line-height: 1.6;
+    }
+    /* Expandable drawer for human players who want the strategy guide */
+    .guide-toggle-btn {
+      position: fixed;
+      bottom: 12px;
+      left: 15px;
+      z-index: 45;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-family: var(--font-cyber);
+      color: var(--cyan);
+      cursor: pointer;
+    }
+    .guide-drawer {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 9, 19, 0.95);
+      z-index: 70;
+      overflow-y: auto;
+      padding: 40px 20px;
+      display: none;
+    }
+    .guide-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: left;
+      color: #e2e8f0;
+    }
+    .guide-content h1 { font-family: var(--font-cyber); color: var(--cyan); margin-bottom: 12px; font-size: 24px; }
+    .guide-content h2 { font-family: var(--font-cyber); color: var(--yellow); margin-top: 20px; margin-bottom: 8px; font-size: 18px; }
+    .guide-content p { margin-bottom: 12px; font-size: 14px; color: #cbd5e1; }
+    .faq-accordion details {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 4px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+    .faq-accordion summary {
+      cursor: pointer;
+      font-family: var(--font-cyber);
+      font-weight: 700;
+      color: var(--cyan);
+      font-size: 14px;
+    }
+    .faq-accordion p {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    /* =========================================================
+     *  KEYFRAME ANIMATIONS
+     * ========================================================= */
+    @keyframes modalPop {
+      0% { opacity: 0; transform: scale(0.92); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes neonPulse {
+      0% { text-shadow: 0 0 5px var(--cyan); }
+      100% { text-shadow: 0 0 20px var(--cyan), 0 0 30px var(--cyan); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    @keyframes feedFadeIn {
+      0% { opacity: 0; transform: translateX(-15px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideDown {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUpRight {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseGlow {
+      0% { transform: scale(1); filter: drop-shadow(0 0 4px var(--yellow)); }
+      100% { transform: scale(1.15); filter: drop-shadow(0 0 10px var(--yellow)); }
+    }
+
+    /* =========================================================
+     *  RESPONSIVE BREAKPOINTS (Mobile <= 768px)
+     * ========================================================= */
+    @media (max-width: 768px) {
+      .ad-top-wrapper { display: none !important; }
+      .ad-mobile-footer-wrapper { display: flex !important; }
+      .touch-controls { display: block !important; }
+
+      #asr-ad-social-bar {
+        bottom: 60px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+      }
+
+      .hud-radar-box {
+        top: 55px;
+        left: 10px;
+        width: 110px;
+        padding: 5px;
+      }
+      #minimap-canvas { height: 90px; }
+
+      .hud-telemetry {
+        top: 15px;
+        gap: 6px;
+      }
+      .telemetry-card {
+        padding: 4px 10px;
+        min-width: 70px;
+      }
+      .telemetry-val { font-size: 16px; }
+
+      .storm-badge { top: 68px; font-size: 10px; padding: 2px 8px; }
+
+      .hud-leaderboard-box {
+        top: 55px;
+        right: 10px;
+        width: 140px;
+        padding: 5px;
+      }
+      .leaderboard-list { font-size: 9px; }
+
+      .hud-boost-container {
+        bottom: 8px;
+        width: 160px;
+      }
+
+      .hud-killfeed-box {
+        bottom: 75px;
+        left: 10px;
+        width: 180px;
+        font-size: 9px;
+      }
+
+      .modal-title { font-size: 22px; }
+      .cyber-modal { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Retro Scanline Overlay -->
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <!-- Polite AdBlock Detector Badge with Gaming Incentive -->
+  <div id="adblock-detector-badge" title="Click to view gaming boost">
+    <span>🛡️</span>
+    <span id="adblock-badge-text">AdBlock Detected: Disable for +20% Boost Stamina!</span>
+  </div>
+
+  <!-- 3D WebGL Canvas for Three.js -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- =========================================================
+   *  ADSTERRA FIXED BANNERS & SOCIAL BAR
+   * ========================================================= -->
+  <!-- 728x90 Desktop Leaderboard Banner -->
+  <div class="ad-top-wrapper" id="ad-leaderboard-wrapper">
+    <div id="asr-ad-leaderboard">
+      <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('banner_728x90')">
+        <span class="ad-badge">SPONSORED</span>
+        <div class="ad-title">⚡ NEON SURGE: CYBER WEAPONS DROP</div>
+        <div class="ad-desc">Claim tier-4 plasma coils and quantum shielding. Exclusive Adsterra web partner reward.</div>
+        <div class="ad-cta">CLAIM ACCESS &gt;</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 320x50 Mobile Sticky Banner -->
+  <div class="ad-mobile-footer-wrapper" id="ad-mobile-footer-wrapper">
+    <div id="asr-ad-mobile-footer">
+      <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('banner_320x50')">
+        <span class="ad-badge">AD</span>
+        <div class="ad-title" style="font-size:11px;">⚡ CYBER STRIKE: FREE UPGRADE</div>
+        <div class="ad-cta" style="font-size:9px; padding:2px 6px;">GET BONUS</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Adsterra High-eCPM Social Bar Container -->
+  <div id="asr-ad-social-bar" onclick="ApexAdManager.triggerDirectLink('social_bar')">
+    <div class="social-bar-icon">🎁</div>
+    <div class="social-bar-text">
+      <div class="social-bar-title">⚡ APEX VIP CRATE UNLOCKED</div>
+      <div class="social-bar-desc">Tap to claim 500 Quantum Shards &amp; Golden Serpent Aura!</div>
+    </div>
+    <div class="social-bar-close" onclick="event.stopPropagation(); document.getElementById('asr-ad-social-bar').style.display='none';">✕</div>
+  </div>
+
+  <!-- Hidden Popunder / Interstitial Trigger Anchor -->
+  <div id="asr-ad-interstitial" style="display:none;"></div>
+
+  <!-- Monetag MultiTag Script Container Slot (Zero UX Degradation) -->
+  <div id="monetag-multitag-container" data-zone="MONETAG_ZONE_12345" style="display:none;"></div>
+
+  <!-- Monetag In-Page Push (IPP) Cyber Quest Slot -->
+  <div id="monetag-ipp-slot" onclick="ApexAdManager.triggerSmartLink('monetag_quest_ipp')">
+    <div class="ipp-icon">⚡</div>
+    <div class="ipp-body">
+      <div class="ipp-title">DAILY CYBER QUEST</div>
+      <div class="ipp-desc">Survive 3 minutes in the electric storm to unlock +500 Quantum Credits!</div>
+    </div>
+    <div class="ipp-close" onclick="event.stopPropagation(); document.getElementById('monetag-ipp-slot').style.display='none';">✕</div>
+  </div>
+
+
+  <!-- =========================================================
+   *  CYBERPUNK HUD (In-Game Overlay)
+   * ========================================================= -->
+  <div id="hud-overlay">
+    <!-- Top-Right Action Controls (Pause, Sound, Settings) -->
+    <div class="hud-controls-bar">
+      <button class="hud-btn" id="btn-audio-toggle" title="Toggle Sound">🔊 SFX ON</button>
+      <button class="hud-btn" id="btn-pause" title="Pause Game">⏸ PAUSE</button>
+      <button class="hud-btn" id="btn-open-settings" title="Adsterra &amp; Engine Settings">⚙️</button>
+    </div>
+
+        <!-- King Bounty Compass HUD -->
+    <div id="hud-king-bounty" class="king-bounty-widget">
+      <div class="king-compass-icon" id="king-compass-pointer">➤</div>
+      <div class="king-info">
+        <div class="king-label">👑 KING BOUNTY</div>
+        <div class="king-target"><span id="king-name">CYBER_KING</span> <span id="king-dist" class="king-dist-badge">--m</span></div>
+      </div>
+    </div>
+
+    <!-- Minimap Radar -->
+    <div class="hud-radar-box">
+      <div class="hud-header-label">
+        <span>RADAR 3D</span>
+        <span id="radar-player-coords">0, 0</span>
+      </div>
+      <canvas id="minimap-canvas" width="120" height="120"></canvas>
+    </div>
+
+    <!-- Top Center Telemetry -->
+    <div class="hud-telemetry">
+      <div class="telemetry-card">
+        <span class="telemetry-label">SCORE</span>
+        <span class="telemetry-val" id="hud-score">0</span>
+      </div>
+      <div class="telemetry-card">
+        <span class="telemetry-label">LENGTH</span>
+        <span class="telemetry-val" id="hud-length">5</span>
+      </div>
+      <div class="telemetry-card danger">
+        <span class="telemetry-label">ALIVE</span>
+        <span class="telemetry-val pulse" id="hud-alive">10</span>
+      </div>
+    </div>
+
+    <!-- Storm Status Badge -->
+    <div class="storm-badge" id="hud-storm-badge">
+      <span class="storm-icon">⚡</span>
+      <span id="storm-status-text">STORM INCOMING: 08s</span>
+    </div>
+
+    <!-- Power-up Tray -->
+    <div class="hud-powerup-tray" id="hud-powerup-tray"></div>
+
+    <!-- Real-time Leaderboard -->
+    <div class="hud-leaderboard-box">
+      <div class="hud-header-label">
+        <span>LEADERBOARD</span>
+        <span id="hud-player-rank">#1</span>
+      </div>
+      <ul class="leaderboard-list" id="leaderboard-items"></ul>
+      <div id="leaderboard-player-sticky" style="display:none;"></div>
+    </div>
+
+    <!-- Kill Feed -->
+    <div class="hud-killfeed-box" id="hud-killfeed"></div>
+
+    <!-- Boost Stamina Bar -->
+        <!-- In-Game Neon Emoji Taunt Quick Bar -->
+    <div id="hud-taunt-bar">
+      <button class="taunt-btn" data-emoji="👑" title="King Taunt">👑</button>
+      <button class="taunt-btn" data-emoji="⚡" title="Lightning Taunt">⚡</button>
+      <button class="taunt-btn" data-emoji="💀" title="Skull Taunt">💀</button>
+      <button class="taunt-btn" data-emoji="🔥" title="Fire Taunt">🔥</button>
+    </div>
+
+    <div class="hud-boost-container">
+      <div class="boost-bar-label">
+        <span id="boost-label-text">TURBO BOOST</span>
+        <span id="boost-stamina-val">100%</span>
+      </div>
+      <div class="boost-bar-bg">
+        <div class="boost-bar-fill" id="boost-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+   *  MOBILE TOUCH CONTROLS
+   * ========================================================= -->
+  <div class="touch-controls" id="touch-controls">
+    <div id="joystick-zone">
+      <div class="joystick-base">
+        <div class="joystick-thumb" id="joystick-thumb"></div>
+      </div>
+    </div>
+    <div id="mobile-boost-btn">
+      <span class="boost-icon">⚡</span>
+      <span>BOOST</span>
+    </div>
+  </div>
+
+  <!-- =========================================================
+   *  MODAL: LOBBY / MAIN MENU
+   * ========================================================= -->
+  <div class="modal-backdrop" id="modal-lobby">
+    <div class="cyber-modal">
+      
+      <!-- Orbit Merge Navigation Pills (Daily Supply, Missions, Boosters, Records, Audio) -->
+      <div class="lobby-header-bar">
+        <div id="platform-pill" class="platform-pill">🌐 WEB APP</div>
+        <button class="orbit-nav-btn" id="btn-lobby-audio" title="Toggle Game SFX">🔊 SFX ON</button>
+      </div>
+
+      <div class="orbit-nav-pills">
+        <button class="orbit-nav-btn" id="btn-open-daily-supply">🎁 DAILY SUPPLY <span class="orbit-badge ready" id="daily-supply-badge">READY</span></button>
+        <button class="orbit-nav-btn" id="btn-open-missions">📜 MISSIONS <span class="orbit-badge" id="missions-badge">0/5</span></button>
+        <button class="orbit-nav-btn" id="btn-open-boosters">🛒 BOOSTERS</button>
+        <button class="orbit-nav-btn" id="btn-open-records">🏆 RECORDS</button>
+      </div>
+
+      <h1 class="modal-title">APEX SERPENT</h1>
+      <p class="modal-subtitle">NEON 3D BATTLE ROYALE // SHRINKING ELECTRIC ARENA</p>
+
+            <!-- Incoming Viral High-Score Challenge Banner -->
+      <div id="lobby-challenge-banner" class="challenge-banner-pill" style="display:none;">
+        <span class="challenge-icon">⚡</span>
+        <span id="challenge-banner-text">CHALLENGE: BEAT 10,000 TO CLAIM RANK #1!</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">SERPENT CALLSIGN</label>
+        <input type="text" class="cyber-input" id="player-callsign" value="CYBER_VIPER_01" maxlength="15">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">NEON CORE SKIN</label>
+        <div class="skin-picker">
+          <div class="skin-swatch active" data-color="0x00f3ff" style="background:#00f3ff; color:#00f3ff;" title="Neon Cyan">⚡</div>
+          <div class="skin-swatch" data-color="0xffaa00" style="background:#ffaa00; color:#ffaa00;" title="Solar Flare">🔥</div>
+          <div class="skin-swatch" data-color="0x00ff66" style="background:#00ff66; color:#00ff66;" title="Toxic Acid">☣️</div>
+          <div class="skin-swatch" data-color="0xff0055" style="background:#ff0055; color:#ff0055;" title="Synthwave Magenta">🌸</div>
+          <div class="skin-swatch" data-color="0x9d00ff" style="background:#9d00ff; color:#9d00ff;" title="Void Purple">🔮</div>
+          <div class="skin-swatch" id="swatch-dragon-skin" data-color="0xffd700" style="background:#ffd700; color:#ffd700; display:none;" title="VIP Golden Cyber Dragon">🐉</div>
+        </div>
+      </div>
+
+      <!-- Rewarded Gameplay Offers in Lobby -->
+      <div class="rewarded-hooks-box">
+        <div class="reward-item">
+          <div class="reward-info">
+            <strong style="color:var(--gold);">🐉 VIP CYBER DRAGON SKIN</strong><br>
+            <span style="font-size:10px; color:#94a3b8;">Unlock legendary golden serpent skin for 3 matches</span>
+          </div>
+          <button class="cyber-btn cyber-btn-gold" id="btn-unlock-dragon-skin" style="font-size:10px; padding:6px 12px;">
+            UNLOCK (FREE)
+          </button>
+        </div>
+        <div class="reward-item">
+          <div class="reward-info">
+            <strong style="color:var(--yellow);">🧲 MAGNET STARTER PACK</strong><br>
+            <span style="font-size:10px; color:#94a3b8;">Spawn with +30 seconds auto-collect magnet power</span>
+          </div>
+          <button class="cyber-btn cyber-btn-secondary" id="btn-magnet-pack" style="font-size:10px; padding:6px 12px; border-color:var(--yellow); color:var(--yellow);">
+            CLAIM BUFF
+          </button>
+        </div>
+      </div>
+
+      <!-- 300x250 Medium Rectangle Ad Slot -->
+      <div class="ad-slot-300x250" id="asr-ad-rectangle">
+        <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('lobby_300x250')">
+          <span class="ad-badge">SPONSORED</span>
+          <div class="ad-title">🎮 APEX VIP BATTLE PASS</div>
+          <div class="ad-desc">Unlock 12 legendary neon chromatic serpent trails, double experience, and instant revival shields!</div>
+          <div class="ad-cta">ACTIVATE PASS NOW &gt;</div>
+        </a>
+      </div>
+
+      <div class="btn-row">
+        <button class="cyber-btn cyber-btn-primary" id="btn-start-game" style="font-size:16px; padding:12px 36px;">
+          🚀 START BATTLE
+        </button>
+                <button class="cyber-btn cyber-btn-secondary" id="btn-install-pwa" style="font-size:12px; border-color:var(--cyan); color:var(--cyan);">
+          📱 INSTALL APP
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-open-spin-wheel" style="font-size:12px; border-color:#ffd700; color:#ffd700; text-shadow:0 0 8px rgba(255,215,0,0.5);">
+          🎰 LUCKY WHEEL
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-vip-rewards" onclick="ApexAdManager.triggerDirectLink('lobby_vip_btn')">
+          🎁 VIP BONUS
+        </button>
+      </div>
+
+      <p style="font-size:10px; color:#64748b; margin-top:12px; font-family:var(--font-mono);">
+        WASD / Arrow Keys or Virtual Joystick to Steer • Spacebar to Boost
+      </p>
+    </div>
+  </div>
+
+  <!-- =========================================================
+   *  MODAL: PAUSE MENU
+   * ========================================================= -->
+  <div class="modal-backdrop" id="modal-pause" style="display:none;">
+    <div class="cyber-modal">
+      <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow);">SYSTEM PAUSED</h2>
+      <p class="modal-subtitle">NEURAL LINK SUSPENDED // COMBAT IN PROGRESS</p>
+
+      <!-- 300x250 Medium Rectangle Ad Slot -->
+      <div class="ad-slot-300x250" id="asr-ad-rectangle-pause">
+        <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('pause_300x250')">
+          <span class="ad-badge">SPONSORED</span>
+          <div class="ad-title">⚡ ULTRA RECHARGE PROTOCOL</div>
+          <div class="ad-desc">Boost connection bandwidth and claim free daily bonus crypto rewards on partner portal.</div>
+          <div class="ad-cta">VISIT SPONSOR &gt;</div>
+        </a>
+      </div>
+
+      <div class="btn-row">
+        <button class="cyber-btn cyber-btn-primary" id="btn-resume-game">▶ RESUME</button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-restart-game">🔄 RESTART</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+   *  MODAL: GAME OVER / VICTORY ROYALE
+   * ========================================================= -->
+    <!-- =========================================================
+   *  MODAL: 5-SECOND CIRCULAR REVIVE TIMER
+   * ========================================================= -->
+  <div class="modal-backdrop" id="modal-death-countdown" style="display:none; z-index:90;">
+    <div class="cyber-modal death-countdown-modal" style="max-width:380px; text-align:center;">
+      <div class="countdown-svg-wrap">
+        <svg class="countdown-svg" width="120" height="120" viewBox="0 0 120 120">
+          <circle class="countdown-circle-bg" cx="60" cy="60" r="50"></circle>
+          <circle class="countdown-circle-bar" id="countdown-circle-bar" cx="60" cy="60" r="50"></circle>
+        </svg>
+        <div class="countdown-number" id="countdown-number">5</div>
+      </div>
+      <h2 style="font-family:var(--font-cyber); font-size:18px; color:var(--magenta); text-shadow:0 0 10px var(--magenta); margin:8px 0 4px;">
+        SYSTEM CRITICAL
+      </h2>
+      <p style="font-size:11px; color:#94a3b8; margin-bottom:14px; letter-spacing:0.5px;">
+        RESPAWN WITH 50% MASS + 3.5s PHASE SHIELD
+      </p>
+      <button class="cyber-btn cyber-btn-primary" id="btn-countdown-revive" style="width:100%; margin-bottom:8px; font-size:13px; background:linear-gradient(135deg, #00f3ff, #ff0055);">
+        ⚡ INSTANT REVIVE (AD / TOKEN)
+      </button>
+      <button class="cyber-btn cyber-btn-secondary" id="btn-countdown-skip" style="width:100%; font-size:11px; opacity:0.8;">
+        SKIP TO STATS ❯
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-gameover" style="display:none;">
+    <div class="cyber-modal">
+      <h2 class="modal-title" id="gameover-title" style="color:var(--magenta); text-shadow:0 0 15px var(--magenta);">
+        ELIMINATED
+      </h2>
+      <p class="modal-subtitle" id="gameover-subtitle">CIRCUIT DISCONNECTED // RANK #5</p>
+
+      <!-- Match Stats -->
+      <div class="match-stats-grid">
+        <div class="stat-pill">
+          <div class="stat-pill-label">FINAL SCORE</div>
+          <div class="stat-pill-val" id="stat-final-score">0</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-label">FINAL LENGTH</div>
+          <div class="stat-pill-val" id="stat-final-length">0</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-label">FINAL RANK</div>
+          <div class="stat-pill-val" id="stat-final-rank">#10</div>
+        </div>
+      </div>
+
+      <!-- Rewarded Ad Revival Option (Extra Life) -->
+      <div class="revive-offer-box" id="revive-offer-box" style="margin:12px 0; padding:10px; background:rgba(255,230,0,0.08); border:1px dashed var(--yellow); border-radius:6px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div class="revive-desc" style="font-size:11px; color:#fff; text-align:left;">
+          <strong style="color:var(--yellow); font-family:var(--font-cyber);">⚡ QUANTUM REVIVAL (EXTRA LIFE)</strong><br>
+          Watch quick sponsor video to instantly respawn with current score!
+        </div>
+        <button class="cyber-btn cyber-btn-magenta" id="btn-revive-player" style="font-size:11px; padding:6px 14px;">
+          REVIVE NOW
+        </button>
+      </div>
+
+      <!-- 300x250 Medium Rectangle Ad Slot -->
+            <!-- Viral High-Score Challenge & Social Share -->
+      <div class="viral-share-box" id="viral-share-container">
+        <div class="viral-share-header">
+          <span>⚡</span>
+          <span>CHALLENGE SQUAD // 1-CLICK SHARE</span>
+          <span>⚡</span>
+        </div>
+        <div class="viral-share-buttons">
+          <button class="share-btn share-whatsapp" id="btn-share-whatsapp" title="Share via WhatsApp">
+            💬 WhatsApp
+          </button>
+          <button class="share-btn share-telegram" id="btn-share-telegram" title="Share via Telegram">
+            ✈️ Telegram
+          </button>
+          <button class="share-btn share-x" id="btn-share-x" title="Share on X / Twitter">
+            𝕏 Share
+          </button>
+          <button class="share-btn share-native" id="btn-share-native" title="Copy Challenge Link">
+            🔗 Copy Challenge Link
+          </button>
+        </div>
+        <div id="share-copy-toast" style="display:none; font-size:11px; color:var(--green); margin-top:6px; font-weight:700;">
+          ✓ CHALLENGE LINK COPIED TO CLIPBOARD!
+        </div>
+      </div>
+
+      <div class="ad-slot-300x250" id="asr-ad-rectangle-gameover">
+        <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('gameover_300x250')">
+          <span class="ad-badge">SPONSORED</span>
+          <div class="ad-title">🏆 VICTORY BUNDLE DROP</div>
+          <div class="ad-desc">Adsterra smart monetization network partner bonus. Level up your gaming gear today!</div>
+          <div class="ad-cta">VIEW REWARDS &gt;</div>
+        </a>
+      </div>
+
+      <div class="btn-row">
+        <button class="cyber-btn cyber-btn-primary" id="btn-play-again" style="font-size:15px;">
+          🎮 PLAY AGAIN
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-menu-return">
+          MAIN MENU
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+   *  MODAL: AD SETTINGS & MULTI-NETWORK FALLBACK TEST SUITE
+   * ========================================================= -->
+    <!-- =========================================================
+   *  MODAL: LOBBY LUCKY CYBER SPIN WHEEL
+   * ========================================================= -->
+  <div class="modal-backdrop" id="modal-spin-wheel" style="display:none; z-index:85;">
+    <div class="cyber-modal spin-wheel-modal" style="max-width:440px; text-align:center;">
+      <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow); font-size:20px;">
+        🎰 CYBERNETIC LUCKY WHEEL
+      </h2>
+      <p class="modal-subtitle">DAILY QUANTUM REWARDS // SPIN TO UNLOCK</p>
+      
+      <div class="wheel-outer-container">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="spin-wheel-canvas" width="280" height="280"></canvas>
+      </div>
+
+      <div id="spin-result-banner" style="display:none; margin:10px 0; font-family:var(--font-cyber); font-size:14px; color:var(--green); text-shadow:0 0 10px var(--green);"></div>
+
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="cyber-btn cyber-btn-primary" id="btn-spin-wheel" style="flex:2; font-size:13px; background:linear-gradient(135deg, #ffd700, #ff0055);">
+          ⚡ SPIN FOR REWARD
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-close-spin-wheel" style="flex:1; font-size:11px;">
+          CLOSE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-ad-settings" style="display:none;">
+    <div class="cyber-modal" style="max-width:580px;">
+      <h2 class="modal-title" style="font-size:22px; color:var(--cyan);">AD SETTINGS &amp; TEST SUITE</h2>
+      <p class="modal-subtitle">MULTI-NETWORK MONETIZATION (ADSTERRA • MONETAG • ADSENSE)</p>
+
+      <table class="settings-table">
+        <tr>
+          <td><label class="form-label">PRIMARY NETWORK</label></td>
+          <td>
+            <select class="cyber-input" id="cfg-ad-network" style="width:160px;">
+              <option value="hybrid" selected>Hybrid (Adsterra Banners + Monetag IPP/Vignette - Max CPM)</option>
+              <option value="adsterra">Adsterra Only</option>
+              <option value="monetag">Monetag Only</option>
+              <option value="adsense">Google AdSense</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td><label class="form-label">DIRECT LINK / SMARTLINK</label></td>
+          <td><input type="text" class="cyber-input" id="cfg-directlink" value="https://www.profitablecpmrate.com/example_directlink"></td>
+        </tr>
+        <tr>
+          <td><label class="form-label">COOLDOWN (SEC)</label></td>
+          <td><input type="number" class="cyber-input" id="cfg-cooldown" value="60" style="width:100px;"></td>
+        </tr>
+        <tr>
+          <td><label class="form-label">SOCIAL BAR SCRIPT / KEY</label></td>
+          <td><input type="text" class="cyber-input" id="cfg-key-socialbar" value="ADSTERRA_SOCIAL_BAR_KEY"></td>
+        </tr>
+        <tr>
+          <td><label class="form-label">728x90 SCRIPT / KEY</label></td>
+          <td><input type="text" class="cyber-input" id="cfg-key-728" value="ADSTERRA_KEY_728x90"></td>
+        </tr>
+        <tr>
+          <td><label class="form-label">300x250 SCRIPT / KEY</label></td>
+          <td><input type="text" class="cyber-input" id="cfg-key-300" value="ADSTERRA_KEY_300x250"></td>
+        </tr>
+        <tr>
+          <td><label class="form-label">320x50 SCRIPT / KEY</label></td>
+          <td><input type="text" class="cyber-input" id="cfg-key-320" value="ADSTERRA_KEY_320x50"></td>
+        </tr>
+        <tr>
+                  <tr>
+          <td><label class="form-label">MONETAG SMARTLINK</label></td>
+          <td><input type="text" class="cyber-input" id="cfg-monetag-smartlink" value="https://alwingulla.com/example_monetag_smartlink"></td>
+        </tr>
+        <tr>
+          <td><label class="form-label">MONETAG ZONE ID</label></td>
+          <td><input type="text" class="cyber-input" id="cfg-monetag-zone" value="MONETAG_ZONE_12345"></td>
+        </tr>
+        <tr>
+          <td><label class="form-label">FALLBACK CREATIVES</label></td>
+          <td>
+            <select class="cyber-input" id="cfg-mock-toggle" style="width:140px;">
+              <option value="enabled" selected>ENABLED (Safe)</option>
+              <option value="disabled">REAL SCRIPTS</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Live Simulation Action Buttons -->
+      <div class="btn-row" style="flex-wrap:wrap; gap:6px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-directlink" style="font-size:11px;">
+          🔗 TEST DIRECT LINK
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-socialbar" style="font-size:11px;">
+          💬 TEST SOCIAL BAR
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-interstitial" style="font-size:11px;">
+          📺 SIMULATE GAME OVER AD
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-vignette" style="font-size:11px;">
+          📺 TEST MONETAG VIGNETTE
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-ipp" style="font-size:11px;">
+          💬 TEST MONETAG IPP
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-refresh" style="font-size:11px;">
+          🔄 REFRESH BANNERS
+        </button>
+        <button class="cyber-btn cyber-btn-primary" id="btn-save-ad-settings" style="font-size:11px;">
+          💾 SAVE CONFIG
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-close-ad-settings" style="font-size:11px;">
+          CLOSE
+        </button>
+      </div>
+
+      <!-- Live Event Log -->
+      <div class="log-box" id="ad-event-log">
+        [AdManager] Ready. Monetization engine initialized.
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Guide Toggle Button -->
+  <button class="guide-toggle-btn" id="btn-toggle-guide" onclick="document.getElementById('guide-drawer').style.display='block';">
+    📖 GAME GUIDE &amp; LORE
+  </button>
+
+  <!-- =========================================================
+   *  CRAWLABLE SEMANTIC SEO SECTION & STRATEGY GUIDE
+   * ========================================================= -->
+  <div class="guide-drawer" id="guide-drawer">
+    <div class="guide-content">
+      <button style="float:right; background:none; border:none; color:var(--magenta); font-size:24px; cursor:pointer;" onclick="document.getElementById('guide-drawer').style.display='none';">✕</button>
+      
+      <h1>Apex Serpent Royale — Free 3D Snake Battle Royale IO Game Online</h1>
+      <p>Welcome to <strong>Apex Serpent Royale</strong>, the ultimate 3D cyberpunk snake battle royale IO game playable directly in your web browser with no download required. Compete against 10 AI and online serpents inside a high-voltage shrinking electric storm arena built with Three.js and WebGL.</p>
+      
+      <h2>Survive the Electric Storm &amp; Dominate the Neon Arena</h2>
+      <p>In Apex Serpent Royale, each match starts with 10 cyber serpents deployed into a neon-grid arena. As time ticks down, the perimeter collapses inward with high-voltage storm arcs. Staying outside the storm perimeter deals fatal continuous damage. Your mission: devour glowing food pellets, collect quantum powerups, cut off rival serpent heads, and emerge as the last surviving Apex Predator.</p>
+
+      <h2>5 Quantum Powerups Compendium</h2>
+      <ul>
+        <li><strong>⚡ Lightning Boost:</strong> Increases serpent velocity by +100% (2x speed) for 7 seconds without draining stamina.</li>
+        <li><strong>🧲 Quantum Magnet:</strong> Pulls all ambient food pellets within a 12-meter radius straight into your serpent head for 10 seconds.</li>
+        <li><strong>🛡️ Aegis Shield:</strong> Grants total immunity from 1 head-on collision or body strike.</li>
+        <li><strong>👻 Ghost Phase:</strong> Enables your serpent to phase through all obstacles and enemy bodies for 5 seconds.</li>
+        <li><strong>✖️2 Multiplier:</strong> Doubles all score gains and segment growth on every consumed pellet for 7 seconds.</li>
+      </ul>
+
+      <h2>Frequently Asked Questions (FAQ)</h2>
+      <div class="faq-accordion">
+        <details>
+          <summary>Is Apex Serpent Royale free to play and unblocked?</summary>
+          <p>Yes! Apex Serpent Royale is 100% free to play with no downloads, registrations, or installations needed. It runs smoothly on Chrome, Edge, Safari, Firefox, mobile browsers, and school or office Chromebooks.</p>
+        </details>
+        <details>
+          <summary>How do I steer on mobile and tablet touch devices?</summary>
+          <p>On mobile phones and tablets, a dynamic virtual joystick automatically appears on the bottom-left corner of the screen. Simply drag your thumb to steer 360 degrees. Press the glowing pink BOOST button on the bottom-right to activate Turbo Boost!</p>
+        </details>
+        <details>
+          <summary>What is the AdBlock gaming incentive (+20% Boost Stamina)?</summary>
+          <p>To support server costs without degrading player UX, players who browse with AdBlock disabled or support our sponsor networks automatically unlock a permanent +20% Turbo Boost Stamina buff (120% capacity) and the exclusive VIP Cyber Dragon Skin!</p>
+        </details>
+        <details>
+          <summary>How does the Rewarded Quantum Revival work?</summary>
+          <p>If you are eliminated by another serpent or the storm zone, you can click 'Revive Now' to watch a brief sponsor offer and immediately respawn in the arena keeping your current score and progress intact!</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Engine Crawlable Hidden Content (Semantic Fallback) -->
+  <div class="seo-semantic-container" aria-hidden="true">
+    <h1>Play 3D Snake Game Online Free - Snake Battle Royale IO</h1>
+    <h2>Apex Serpent Royale Features</h2>
+    <p>Play the premier browser-native 3D snake battle royale with 10 snakes, shrinking storm barrier, procedural synth Web Audio FX, full mobile touch joystick support, and Adsterra monetization slots.</p>
+  </div>
+
+  
+  <!-- =========================================================
+   *  MODAL: DAILY CYBER SUPPLY (ORBIT MERGE FEATURE)
+   * ========================================================= -->
+  <div class="modal-backdrop" id="modal-daily-supply" style="display:none; z-index:92;">
+    <div class="cyber-modal" style="max-width:480px;">
+      <h2 class="modal-title" style="color:var(--gold); text-shadow:0 0 15px rgba(255,215,0,0.6);">DAILY CYBER SUPPLY</h2>
+      <p class="modal-subtitle">TRANSMITTING HIGH-VOLTAGE ORBIT REINFORCEMENTS</p>
+
+      <div class="supply-hero">
+        <h3>🎁 ORBITAL AIRDROP #2026</h3>
+        <p style="font-size:11px; color:#cbd5e1;">Free mystery supply drop available once every 24 hours.</p>
+
+        <div class="supply-items-grid">
+          <div class="supply-box">
+            <span>⚡ REVIVE</span>
+            <strong style="color:var(--magenta);">+1 TOKEN</strong>
+          </div>
+          <div class="supply-box">
+            <span>🧲 MAGNET</span>
+            <strong style="color:var(--yellow);">+1 PACK</strong>
+          </div>
+          <div class="supply-box">
+            <span>💎 CREDITS</span>
+            <strong style="color:var(--cyan);">+250 PTS</strong>
+          </div>
+        </div>
+
+        <button class="cyber-btn cyber-btn-primary" id="btn-claim-daily-supply" style="width:100%; font-size:14px; background:linear-gradient(135deg, #ffd700, #ff0055);">
+          🎁 CLAIM FREE SUPPLY
+        </button>
+        <p id="daily-countdown-text" style="font-size:11px; color:#94a3b8; margin-top:8px; font-family:var(--font-mono); display:none;">
+          ⏳ Next supply drop in: <span id="daily-timer-val">--:--:--</span>
+        </p>
+      </div>
+
+      <button class="cyber-btn cyber-btn-secondary" id="btn-close-daily-supply" style="width:100%; font-size:12px;">
+        RETURN TO LOBBY
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================
+   *  MODAL: MISSIONS & PROGRESSION (ORBIT MERGE FEATURE)
+   * ========================================================= -->
+  <div class="modal-backdrop" id="modal-missions" style="display:none; z-index:92;">
+    <div class="cyber-modal" style="max-width:520px;">
+      <h2 class="modal-title" style="color:var(--cyan); text-shadow:0 0 15px var(--cyan);">CYBER MISSIONS</h2>
+      <p class="modal-subtitle">COMPLETE COMBAT MILESTONES TO FORGE LEGENDARY GEAR</p>
+
+      <div class="mission-list" id="missions-container">
+        <!-- Dynamically rendered via JS -->
+      </div>
+
+      <button class="cyber-btn cyber-btn-secondary" id="btn-close-missions" style="width:100%; margin-top:14px; font-size:12px;">
+        CLOSE MISSIONS
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================
+   *  MODAL: BOOSTERS ARMORY (ORBIT MERGE FEATURE)
+   * ========================================================= -->
+  <div class="modal-backdrop" id="modal-boosters" style="display:none; z-index:92;">
+    <div class="cyber-modal" style="max-width:520px;">
+      <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow);">BOOSTER ARMORY</h2>
+      <p class="modal-subtitle">TACTICAL ADVANTAGES FOR THE ELECTRIC ARENA</p>
+
+      <div class="inventory-bar">
+        <div class="inventory-item">💎 CREDITS: <span class="inventory-val" id="inv-credits">500</span></div>
+        <div class="inventory-item">⚡ REVIVES: <span class="inventory-val" id="inv-revives">1</span></div>
+        <div class="inventory-item">🧲 MAGNETS: <span class="inventory-val" id="inv-magnets">1</span></div>
+      </div>
+
+      <div class="booster-list">
+        <div class="booster-card">
+          <div class="booster-info">
+            <h4>⚡ QUANTUM REVIVE TOKEN</h4>
+            <p>Respawn instantly with 50% mass + 3.5s Phase Shield upon death.</p>
+            <span class="reward-tag">Cost: 200 Credits / Free Ad</span>
+          </div>
+          <button class="cyber-btn cyber-btn-primary" id="btn-buy-revive" style="font-size:11px; padding:6px 12px;">
+            ACQUIRE
+          </button>
+        </div>
+
+        <div class="booster-card">
+          <div class="booster-info">
+            <h4>🧲 QUANTUM MAGNET PACK</h4>
+            <p>Spawns with 30 seconds of high-range automatic food attraction.</p>
+            <span class="reward-tag">Cost: 150 Credits / Free Ad</span>
+          </div>
+          <button class="cyber-btn cyber-btn-primary" id="btn-buy-magnet" style="font-size:11px; padding:6px 12px;">
+            ACQUIRE
+          </button>
+        </div>
+
+        <div class="booster-card">
+          <div class="booster-info">
+            <h4>⚡ TURBO OVERDRIVE PACK</h4>
+            <p>Sprint boost stamina depletes 50% slower for 3 full battles.</p>
+            <span class="reward-tag">Cost: 100 Credits / Free Ad</span>
+          </div>
+          <button class="cyber-btn cyber-btn-primary" id="btn-buy-overdrive" style="font-size:11px; padding:6px 12px;">
+            ACQUIRE
+          </button>
+        </div>
+      </div>
+
+      <button class="cyber-btn cyber-btn-secondary" id="btn-close-boosters" style="width:100%; margin-top:14px; font-size:12px;">
+        CLOSE ARMORY
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================
+   *  MODAL: PILOT RECORDS & THEMES (ORBIT MERGE FEATURE)
+   * ========================================================= -->
+  <div class="modal-backdrop" id="modal-records" style="display:none; z-index:92;">
+    <div class="cyber-modal" style="max-width:500px;">
+      <h2 class="modal-title" style="color:#fff; text-shadow:0 0 15px var(--cyan);">PILOT DOSSIER</h2>
+      <p class="modal-subtitle">LIFETIME TELEMETRY &amp; ARENA ACHIEVEMENTS</p>
+
+      <div class="records-grid">
+        <div class="record-card">
+          <span class="label">BEST SCORE</span>
+          <span class="value" id="rec-best-score">0</span>
+        </div>
+        <div class="record-card">
+          <span class="label">MAX LENGTH</span>
+          <span class="value" id="rec-max-length">5</span>
+        </div>
+        <div class="record-card">
+          <span class="label">TOTAL ELIMINATIONS</span>
+          <span class="value" id="rec-total-kills">0</span>
+        </div>
+        <div class="record-card">
+          <span class="label">VICTORY ROYALES</span>
+          <span class="value" id="rec-wins" style="color:var(--gold);">0</span>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="cyber-btn cyber-btn-primary" id="btn-share-records" style="width:100%; font-size:12px;">
+          📢 SHARE DOSSIER &amp; INVITE RIVALS
+        </button>
+      </div>
+
+      <button class="cyber-btn cyber-btn-secondary" id="btn-close-records" style="width:100%; margin-top:10px; font-size:12px;">
+        CLOSE DOSSIER
+      </button>
+    </div>
+  </div>
+
+  <!-- Load Game Engine -->
+  <script src="./game_engine.js"></script>
+
+  <!-- =========================================================
+   *  CLIENT CONTROLLER & MONETIZATION JAVASCRIPT
+   * ========================================================= -->
+  <script>
+    'use strict';
+
+    /* =========================================================
+     *  ADSTERRA & MULTI-NETWORK MONETIZATION MANAGER
+     * ========================================================= */
+    const ApexAdManager = (function () {
+      const STORAGE_KEY = 'apex_adsterra_config';
+      const COOLDOWN_KEY = 'apex_directlink_last_ts';
+      const BUFF_KEY = 'apex_adblock_reward_buff';
+
+      const defaultConfig = {
+        adNetwork: 'hybrid', // 'hybrid' (Adsterra Banners + Monetag IPP/Vignette), 'adsterra', or 'monetag'
+        directLinkUrl: 'https://www.profitablecpmrate.com/example_directlink',
+        monetagSmartlink: 'https://alwingulla.com/example_monetag_smartlink',
+        monetagZone: 'MONETAG_ZONE_12345',
+        cooldownSeconds: 60,
+        keySocialBar: 'ADSTERRA_SOCIAL_BAR_KEY',
+        key728: 'ADSTERRA_KEY_728x90',
+        key300: 'ADSTERRA_KEY_300x250',
+        key320: 'ADSTERRA_KEY_320x50',
+        mockMode: 'enabled',
+        dragonSkinMatches: 0,
+        magnetPackActive: false
+      };
+
+      let config = { ...defaultConfig };
+
+      function loadConfig() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) config = { ...defaultConfig, ...JSON.parse(saved) };
+        } catch (e) {
+          console.warn('[AdManager] Storage access failed:', e);
+        }
+      }
+
+      function saveConfig(newConfig) {
+        config = { ...config, ...newConfig };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+          log('[AdManager] Configuration saved to localStorage.');
+        } catch (e) {}
+      }
+
+      function log(msg) {
+        console.log(msg);
+        const logBox = document.getElementById('ad-event-log');
+        if (logBox) {
+          const time = new Date().toLocaleTimeString();
+          logBox.innerHTML = `[${time}] ${msg}<br>` + logBox.innerHTML;
+        }
+      }
+
+      function canTriggerDirectLink() {
+        const lastTs = parseInt(sessionStorage.getItem(COOLDOWN_KEY) || '0', 10);
+        const diffSec = (Date.now() - lastTs) / 1000;
+        return diffSec >= config.cooldownSeconds;
+      }
+
+      function markDirectLinkTriggered() {
+        sessionStorage.setItem(COOLDOWN_KEY, Date.now().toString());
+      }
+
+      function triggerDirectLink(source, force = false) {
+        return triggerSmartLink(source, force);
+      }
+
+      function triggerSmartLink(source, force = false) {
+        if (!force && !canTriggerDirectLink()) {
+          log(`[SmartLink] Blocked by cooldown (${config.cooldownSeconds}s cap). Source: ${source}`);
+          return false;
+        }
+
+        markDirectLinkTriggered();
+
+        // Dual-network smart routing:
+        // Use Monetag Smartlink if network is 'monetag', or source is 'monetag_*',
+        // or in 'hybrid' mode when alternate trigger applies.
+        let targetUrl = config.directLinkUrl;
+        if (config.adNetwork === 'monetag' || source.startsWith('monetag_') || (config.adNetwork === 'hybrid' && (source.includes('rewarded') || Math.random() > 0.5))) {
+          targetUrl = config.monetagSmartlink || config.directLinkUrl;
+        }
+
+        log(`[SmartLink] (${config.adNetwork.toUpperCase()}) Triggered from: ${source} -> ${targetUrl}`);
+
+        try {
+          const win = window.open(targetUrl, '_blank');
+          if (win) {
+            win.focus();
+          } else {
+            log('[SmartLink] Popup blocked by browser policy.');
+          }
+        } catch (e) {
+          log(`[SmartLink] Exception: ${e.message}`);
+        }
+        return true;
+      }
+
+      // Monetag Vignette Interstitial Hook (Game Over natural pause point only)
+      function triggerVignette() {
+        if (config.adNetwork !== 'hybrid' && config.adNetwork !== 'monetag') {
+          log('[Monetag] Vignette skipped: adNetwork is ' + config.adNetwork);
+          return false;
+        }
+
+        if (!canTriggerDirectLink()) {
+          log(`[Monetag] Vignette skipped: frequency cooldown (${config.cooldownSeconds}s) active.`);
+          return false;
+        }
+
+        markDirectLinkTriggered();
+        log('[Monetag] Vignette interstitial activated at match conclusion pause point.');
+
+        // Live Monetag MultiTag vignette script execution if present
+        if (window.show_8923412) {
+          try { window.show_8923412(); } catch(e) {}
+        } else {
+          log('[Monetag] MultiTag simulated vignette overlay ready.');
+        }
+        return true;
+      }
+
+      // Rewarded Gameplay Hook 1: Unlock VIP Dragon Skin for 3 matches
+      function unlockDragonSkin() {
+        triggerSmartLink('rewarded_dragon_skin', true);
+        config.dragonSkinMatches = 3;
+        saveConfig({ dragonSkinMatches: 3 });
+        const swatch = document.getElementById('swatch-dragon-skin');
+        if (swatch) swatch.style.display = 'flex';
+        alert('🐉 VIP Cyber Dragon Skin UNLOCKED for 3 matches!');
+        log('[Rewarded] VIP Dragon skin awarded for 3 matches.');
+      }
+
+      // Rewarded Gameplay Hook 2: Magnet Starter Pack
+      function activateMagnetPack() {
+        triggerSmartLink('rewarded_magnet_pack', true);
+        config.magnetPackActive = true;
+        saveConfig({ magnetPackActive: true });
+        const btn = document.getElementById('btn-magnet-pack');
+        if (btn) {
+          btn.innerText = '✓ BUFF ACTIVE (+30s)';
+          btn.style.color = 'var(--green)';
+          btn.style.borderColor = 'var(--green)';
+        }
+        alert('🧲 Magnet Starter Pack ACTIVATED! You will start your next match with a 30s Magnet aura.');
+        log('[Rewarded] Magnet Starter Pack activated.');
+      }
+
+      function refreshBanners() {
+        log(`[AdManager] Refreshing inventory (Network: ${config.adNetwork.toUpperCase()})...`);
+        const isAdsterraActive = config.adNetwork === 'hybrid' || config.adNetwork === 'adsterra';
+        const isMonetagActive = config.adNetwork === 'hybrid' || config.adNetwork === 'monetag';
+
+        document.querySelectorAll('.adsterra-mock-banner').forEach(el => {
+          el.style.display = isAdsterraActive ? 'block' : 'none';
+          el.style.opacity = '0.5';
+          setTimeout(() => { el.style.opacity = '1'; }, 200);
+        });
+
+        const socialBar = document.getElementById('asr-ad-social-bar');
+        if (socialBar) {
+          socialBar.style.display = isAdsterraActive ? 'flex' : 'none';
+        }
+
+        const ippSlot = document.getElementById('monetag-ipp-slot');
+        if (ippSlot) {
+          ippSlot.style.display = isMonetagActive ? 'flex' : 'none';
+        }
+      }
+
+      // AdBlock Detection & Gaming Incentive
+      function checkAdBlock() {
+        const badge = document.getElementById('adblock-detector-badge');
+        const badgeText = document.getElementById('adblock-badge-text');
+        if (!badge || !badgeText) return;
+
+        const hasBuff = localStorage.getItem(BUFF_KEY) === 'true';
+        if (hasBuff) {
+          badge.classList.add('buff-active');
+          badgeText.innerText = '⚡ +20% Boost Stamina Active!';
+          window.apexMaxStamina = 120;
+          return;
+        }
+
+        badgeText.innerText = '🛡️ AdBlock Detected: Click for +20% Boost Stamina!';
+        badge.onclick = () => {
+          triggerSmartLink('adblock_support_whitelist', true);
+          localStorage.setItem(BUFF_KEY, 'true');
+          badge.classList.add('buff-active');
+          badgeText.innerText = '⚡ +20% Boost Stamina Unlocked!';
+          window.apexMaxStamina = 120;
+          alert('⚡ Gaming Buff Granted: Turbo Boost stamina boosted to 120%!');
+        };
+      }
+
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          refreshBanners();
+        }
+      }, 60000);
+
+      loadConfig();
+
+      return {
+        getConfig: () => config,
+        saveConfig,
+        canTriggerDirectLink,
+        triggerDirectLink,
+        triggerSmartLink,
+        triggerVignette,
+        unlockDragonSkin,
+        activateMagnetPack,
+        refreshBanners,
+        checkAdBlock,
+        log
+      };
+    })();
+
+    window.ApexAdManager = ApexAdManager;
+    window.AdManager = ApexAdManager;
+
+    /* =========================================================
+     *  UI & GAME ENGINE BINDINGS
+     * ========================================================= */
+    (function () {
+      let engine = null;
+      let isAudioMuted = false;
+      let chosenColor = 0x00f3ff;
+      let playerName = 'CYBER_VIPER_01';
+
+      // Boost stamina tracking (100 base, 120 with AdBlock incentive buff)
+      window.apexMaxStamina = 100;
+      let boostStamina = 100;
+      let isBoosting = false;
+      let boostInterval = null;
+
+      // DOM Elements
+      const canvas = document.getElementById('game-canvas');
+      const hudOverlay = document.getElementById('hud-overlay');
+      const minimapCanvas = document.getElementById('minimap-canvas');
+      const minimapCtx = minimapCanvas.getContext('2d');
+
+      const hudScore = document.getElementById('hud-score');
+      const hudLength = document.getElementById('hud-length');
+      const hudAlive = document.getElementById('hud-alive');
+      const hudRank = document.getElementById('hud-player-rank');
+      const hudStormBadge = document.getElementById('hud-storm-badge');
+      const stormStatusText = document.getElementById('storm-status-text');
+      const leaderboardItems = document.getElementById('leaderboard-items');
+      const killfeedBox = document.getElementById('hud-killfeed');
+      const powerupTray = document.getElementById('hud-powerup-tray');
+      const boostFill = document.getElementById('boost-bar-fill');
+      const boostVal = document.getElementById('boost-stamina-val');
+
+      // Modals
+      const modalLobby = document.getElementById('modal-lobby');
+      const modalPause = document.getElementById('modal-pause');
+      const modalGameOver = document.getElementById('modal-gameover');
+      const modalAdSettings = document.getElementById('modal-ad-settings');
+
+      // Touch controls
+      const joystickZone = document.getElementById('joystick-zone');
+      const joystickThumb = document.getElementById('joystick-thumb');
+      const mobileBoostBtn = document.getElementById('mobile-boost-btn');
+
+      function initEngine() {
+        if (engine) return;
+        if (typeof ApexSerpentEngine === 'undefined') {
+          console.error('[App] ApexSerpentEngine not loaded yet.');
+          return;
+        }
+
+        engine = new ApexSerpentEngine();
+        engine.init(canvas);
+
+        engine.hooks.onScoreUpdate = (score, rank) => {
+          hudScore.innerText = score;
+          hudRank.innerText = `#${rank}`;
+        };
+
+        engine.hooks.onLengthUpdate = (length) => {
+          hudLength.innerText = length;
+        };
+
+        engine.hooks.onElimination = (snakeId, wasPlayer) => {
+          updateLeaderboard();
+          hudAlive.innerText = engine._aliveCount;
+          const victim = wasPlayer ? playerName : `CYBER_VIPER_0${snakeId}`;
+          const killer = wasPlayer ? 'ELECTRIC STORM / ENEMY' : (Math.random() > 0.5 ? playerName : 'VIPER_' + Math.floor(Math.random()*8));
+          addKillFeedEntry(killer, victim, wasPlayer ? 'DEFEATED' : 'ANNIHILATED');
+        };
+
+        
+        // Top .io Engine v2.0 Hooks:
+        engine.hooks.onKingUpdate = (kingData) => {
+          if (!kingData) {
+            const el = document.getElementById('hud-king-bounty');
+            if (el) el.style.display = 'none';
+            return;
+          }
+          const compassEl = document.getElementById('hud-king-bounty');
+          const pointerEl = document.getElementById('king-compass-pointer');
+          const nameEl = document.getElementById('king-name');
+          const distEl = document.getElementById('king-dist');
+          if (!compassEl || !pointerEl || !nameEl || !distEl) return;
+
+          compassEl.style.display = 'flex';
+          if (kingData.isPlayer) {
+            nameEl.innerText = 'YOU ARE THE KING!';
+            distEl.innerText = '👑 DEFEND';
+            distEl.style.background = 'rgba(255, 215, 0, 0.35)';
+            distEl.style.borderColor = '#ffd700';
+            pointerEl.style.transform = 'rotate(0deg)';
+          } else {
+            nameEl.innerText = `KING: ${kingData.name || 'CYBER_VIPER'}`;
+            distEl.innerText = `${kingData.distanceToPlayer || 0}m`;
+            distEl.style.background = 'rgba(0, 243, 255, 0.2)';
+            distEl.style.borderColor = 'var(--cyan)';
+            pointerEl.style.transform = `rotate(${kingData.bearingAngleDeg || 0}deg)`;
+          }
+        };
+
+        engine.hooks.onKillStreak = ({ title, streak, totalKills }) => {
+          addKillFeedEntry('🔥 STREAK', title, `(${totalKills} kills)`);
+          const callout = document.createElement('div');
+          callout.className = 'killstreak-banner';
+          callout.innerHTML = `<span>⚡</span> ${title} <span>⚡</span>`;
+          document.body.appendChild(callout);
+          setTimeout(() => { if (callout.parentNode) callout.parentNode.removeChild(callout); }, 2200);
+          ApexAdManager.log(`[Combat] Killstreak achieved: ${title} (${totalKills} kills)`);
+        };
+
+        engine.hooks.onPhaseShield = (active, remainingMs) => {
+          if (active) {
+            renderPowerupPill('shield', remainingMs);
+            ApexAdManager.log(`[Shield] Phase Shield active (${Math.round(remainingMs/1000)}s remaining)`);
+          }
+        };
+
+        engine.hooks.onPlayerDeath = (finalScore, rank) => {
+          showDeathCountdown(finalScore, rank);
+        };
+
+        engine.hooks.onVictory = (finalScore, isPlayer) => {
+          showGameOver(true, finalScore, 1);
+        };
+
+        engine.hooks.onStormWarning = () => {
+          stormStatusText.innerText = '⚠️ STORM COLLAPSING!';
+          hudStormBadge.style.borderColor = 'var(--yellow)';
+          ApexAdManager.log('[Engine] Electric storm warning triggered.');
+        };
+
+        engine.hooks.onStormShrink = (radius) => {
+          stormStatusText.innerText = `ZONE RADIUS: ${Math.round(radius)}m`;
+        };
+
+        engine.hooks.onPowerupActivated = (type, remainingMs) => {
+          renderPowerupPill(type, remainingMs);
+        };
+
+        
+        // Apex Orbit Progress & Records Tracking Hooks
+        const origScoreUpdate = engine.hooks.onScoreUpdate;
+        engine.hooks.onScoreUpdate = (score, rank) => {
+          if (origScoreUpdate) origScoreUpdate(score, rank);
+          const rec = ApexOrbit.getRecords();
+          if (score > rec.bestScore) {
+            rec.bestScore = score;
+            ApexOrbit.saveData();
+          }
+        };
+
+        const origLengthUpdate = engine.hooks.onLengthUpdate;
+        engine.hooks.onLengthUpdate = (length) => {
+          if (origLengthUpdate) origLengthUpdate(length);
+          const rec = ApexOrbit.getRecords();
+          if (length > rec.maxLength) {
+            rec.maxLength = length;
+            ApexOrbit.saveData();
+          }
+          ApexOrbit.reportProgress('length', length);
+        };
+
+        const origElimination = engine.hooks.onElimination;
+        engine.hooks.onElimination = (snakeId, wasPlayer) => {
+          if (origElimination) origElimination(snakeId, wasPlayer);
+          if (!wasPlayer) {
+            const rec = ApexOrbit.getRecords();
+            rec.totalKills += 1;
+            ApexOrbit.saveData();
+            ApexOrbit.reportProgress('kills', 1);
+          }
+        };
+
+        const origPowerup = engine.hooks.onPowerupActivated;
+        engine.hooks.onPowerupActivated = (type, remainingMs) => {
+          if (origPowerup) origPowerup(type, remainingMs);
+          ApexOrbit.reportProgress('powerups', 1);
+        };
+
+        const origVictory = engine.hooks.onVictory;
+        engine.hooks.onVictory = (finalScore, isPlayer) => {
+          if (origVictory) origVictory(finalScore, isPlayer);
+          if (isPlayer) {
+            const rec = ApexOrbit.getRecords();
+            rec.wins += 1;
+            ApexOrbit.saveData();
+            ApexOrbit.reportProgress('win', 1);
+          }
+        };
+
+        startBoostLoop();
+      }
+
+      /* ── Boost Mechanics ─────────────────────────────────── */
+      function setBoost(active) {
+        if (!engine || !engine.player || !engine.player.alive) return;
+        isBoosting = active;
+        if (active && boostStamina > 5) {
+          if (!engine.player.hasPowerup('LIGHTNING_BOOST')) {
+            engine.player.speed = 1.8;
+          }
+          if (engine.audio) engine.audio.boost();
+        } else {
+          if (!engine.player.hasPowerup('LIGHTNING_BOOST')) {
+            engine.player.speed = 1;
+          }
+        }
+      }
+
+      function startBoostLoop() {
+        if (boostInterval) clearInterval(boostInterval);
+        boostInterval = setInterval(() => {
+          if (!engine || !engine.running || engine.paused) return;
+
+          const maxCap = window.apexMaxStamina || 100;
+          if (isBoosting && boostStamina > 0) {
+            boostStamina = Math.max(0, boostStamina - 4);
+            if (boostStamina === 0) setBoost(false);
+          } else if (!isBoosting && boostStamina < maxCap) {
+            boostStamina = Math.min(maxCap, boostStamina + 2);
+          }
+
+          const pct = Math.round((boostStamina / maxCap) * 100);
+          boostFill.style.width = pct + '%';
+          boostVal.innerText = `${pct}% (${Math.round(boostStamina)}/${maxCap})`;
+
+          drawMinimap();
+          updateLeaderboard();
+          updateKingCompass();
+        }, 100);
+      }
+
+      
+      /* ── King Bounty Compass (Direction & Distance to #1 Snake) ── */
+      function updateKingCompass() {
+        if (!engine || !engine.player || !engine.player.alive) {
+          const el = document.getElementById('hud-king-bounty');
+          if (el) el.style.display = 'none';
+          return;
+        }
+
+        const compassEl = document.getElementById('hud-king-bounty');
+        const pointerEl = document.getElementById('king-compass-pointer');
+        const nameEl = document.getElementById('king-name');
+        const distEl = document.getElementById('king-dist');
+        if (!compassEl || !pointerEl || !nameEl || !distEl) return;
+
+        let king = null;
+        if (typeof engine.getKing === 'function') {
+          king = engine.getKing();
+        } else if (engine.king) {
+          king = engine.king;
+        } else if (engine.snakes && engine.snakes.length > 0) {
+          let maxScore = -1;
+          for (let s of engine.snakes) {
+            if (s.alive && s.score > maxScore) {
+              maxScore = s.score;
+              king = s;
+            }
+          }
+        }
+
+        if (!king) {
+          compassEl.style.display = 'none';
+          return;
+        }
+
+        compassEl.style.display = 'flex';
+
+        if (king.isPlayer || king === engine.player) {
+          nameEl.innerText = 'YOU ARE THE KING!';
+          distEl.innerText = '👑 DEFEND';
+          distEl.style.background = 'rgba(255, 215, 0, 0.35)';
+          distEl.style.borderColor = '#ffd700';
+          pointerEl.style.transform = 'rotate(0deg)';
+          return;
+        }
+
+        nameEl.innerText = king.name || `VIPER_0${king.id || 'KING'}`;
+        const pPos = (engine.player.headPos && typeof engine.player.headPos === 'function') 
+          ? engine.player.headPos() 
+          : (engine.player.head ? engine.player.head.position : { x: 0, z: 0 });
+        const kPos = (king.headPos && typeof king.headPos === 'function') 
+          ? king.headPos() 
+          : (king.head ? king.head.position : { x: 0, z: 0 });
+
+        const dx = kPos.x - pPos.x;
+        const dz = kPos.z - pPos.z;
+        const dist = Math.round(Math.hypot(dx, dz));
+        distEl.innerText = `${dist}m`;
+        distEl.style.background = 'rgba(0, 243, 255, 0.2)';
+        distEl.style.borderColor = 'var(--cyan)';
+
+        // Angle in degrees (0 deg pointing up)
+        const angleRad = Math.atan2(dz, dx);
+        const angleDeg = (angleRad * 180 / Math.PI) + 90;
+        pointerEl.style.transform = `rotate(${angleDeg}deg)`;
+      }
+
+      /* ── Minimap Radar ───────────────────────────────────── */
+      function drawMinimap() {
+        if (!engine || !engine.player) return;
+        const w = minimapCanvas.width;
+        const h = minimapCanvas.height;
+        minimapCtx.clearRect(0, 0, w, h);
+
+        const arenaExtent = 80;
+        const scale = w / (arenaExtent * 2);
+
+        const toCanvasX = (x) => (x + arenaExtent) * scale;
+        const toCanvasY = (z) => (z + arenaExtent) * scale;
+
+        minimapCtx.strokeStyle = 'rgba(0, 243, 255, 0.4)';
+        minimapCtx.lineWidth = 1;
+        minimapCtx.strokeRect(2, 2, w - 4, h - 4);
+
+        if (engine.storm) {
+          const cx = toCanvasX(engine.storm.center.x);
+          const cy = toCanvasY(engine.storm.center.z);
+          const cr = engine.storm.radius * scale;
+          minimapCtx.strokeStyle = 'rgba(255, 0, 85, 0.7)';
+          minimapCtx.lineWidth = 1.5;
+          minimapCtx.beginPath();
+          minimapCtx.arc(cx, cy, Math.max(0, cr), 0, Math.PI * 2);
+          minimapCtx.stroke();
+        }
+
+        if (engine.items && engine.items.foods) {
+          minimapCtx.fillStyle = '#00ff66';
+          for (const f of engine.items.foods) {
+            minimapCtx.fillRect(toCanvasX(f.mesh.position.x) - 1, toCanvasY(f.mesh.position.z) - 1, 2, 2);
+          }
+        }
+
+        if (engine.snakes) {
+          for (const s of engine.snakes) {
+            if (!s.alive || s.isPlayer) continue;
+            const head = s.headPos();
+            minimapCtx.fillStyle = '#ffaa00';
+            minimapCtx.beginPath();
+            minimapCtx.arc(toCanvasX(head.x), toCanvasY(head.z), 2.5, 0, Math.PI * 2);
+            minimapCtx.fill();
+          }
+        }
+
+        if (engine.player && engine.player.alive) {
+          const phead = engine.player.headPos();
+          const px = toCanvasX(phead.x);
+          const py = toCanvasY(phead.z);
+
+          minimapCtx.fillStyle = '#00f3ff';
+          minimapCtx.shadowColor = '#00f3ff';
+          minimapCtx.shadowBlur = 6;
+          minimapCtx.beginPath();
+          minimapCtx.arc(px, py, 4, 0, Math.PI * 2);
+          minimapCtx.fill();
+          minimapCtx.shadowBlur = 0;
+
+          document.getElementById('radar-player-coords').innerText = `${Math.round(phead.x)}, ${Math.round(phead.z)}`;
+        }
+      }
+
+      /* ── Real-time Leaderboard ───────────────────────────── */
+      function updateLeaderboard() {
+        if (!engine || !engine.snakes) return;
+        const sorted = [...engine.snakes].sort((a, b) => b.score - a.score);
+        let html = '';
+        let playerRank = -1;
+        let playerSnake = null;
+
+        sorted.forEach((s, idx) => {
+          if (s.isPlayer) {
+            playerRank = idx + 1;
+            playerSnake = s;
+          }
+          if (idx < 5) {
+            const isUser = s.isPlayer;
+            const name = isUser ? playerName : `VIPER_0${s.id}`;
+            const rowClass = `leaderboard-item ${isUser ? 'player-row' : ''} ${!s.alive ? 'dead' : ''}`;
+            html += `
+              <li class="${rowClass}">
+                <span class="lb-rank">#${idx + 1}</span>
+                <span class="lb-name">${name}</span>
+                <span class="lb-score">${s.score}</span>
+              </li>
+            `;
+          }
+        });
+        leaderboardItems.innerHTML = html;
+
+        // Sticky bottom row showing player live rank (#X YOU - SCORE) if outside top 5
+        const stickyEl = document.getElementById('leaderboard-player-sticky');
+        if (stickyEl) {
+          if (playerRank > 5 && playerSnake) {
+            stickyEl.style.display = 'flex';
+            stickyEl.innerHTML = `
+              <span class="lb-rank">#${playerRank}</span>
+              <span class="lb-name" style="color:var(--cyan); font-weight:700;">${playerName} (YOU)</span>
+              <span class="lb-score">${playerSnake.score}</span>
+            `;
+          } else {
+            stickyEl.style.display = 'none';
+          }
+        }
+      }
+
+      /* ── Kill Feed Alerts ────────────────────────────────── */
+      function addKillFeedEntry(killer, victim, cause) {
+        const item = document.createElement('div');
+        item.className = 'killfeed-entry';
+        item.innerHTML = `<span class="kf-killer">${killer}</span> ${cause} <span class="kf-victim">${victim}</span>`;
+        killfeedBox.appendChild(item);
+        setTimeout(() => {
+          if (item.parentNode) item.parentNode.removeChild(item);
+        }, 4000);
+      }
+
+      /* ── Power-Up HUD Pill ───────────────────────────────── */
+      function renderPowerupPill(type, remainingMs) {
+        const id = `pu-pill-${type}`;
+        let pill = document.getElementById(id);
+        if (!pill) {
+          pill = document.createElement('div');
+          pill.id = id;
+          pill.className = `powerup-pill ${type.toLowerCase()}`;
+          powerupTray.appendChild(pill);
+        }
+
+        const sec = Math.ceil(remainingMs / 1000);
+        pill.innerHTML = `<span>⚡ ${type}</span> <strong>${sec}s</strong>`;
+
+        setTimeout(() => {
+          if (pill.parentNode) pill.parentNode.removeChild(pill);
+        }, remainingMs);
+      }
+
+      
+      /* ── 5-Second Circular Revive Countdown ──────────────── */
+      let deathCountdownInterval = null;
+      let pendingDeathScore = 0;
+      let pendingDeathRank = 1;
+
+      function showDeathCountdown(finalScore, rank) {
+        pendingDeathScore = finalScore;
+        pendingDeathRank = rank;
+
+        const modal = document.getElementById('modal-death-countdown');
+        const circleBar = document.getElementById('countdown-circle-bar');
+        const numEl = document.getElementById('countdown-number');
+
+        if (!modal || !circleBar || !numEl) {
+          showGameOver(false, finalScore, rank);
+          return;
+        }
+
+        modal.style.display = 'flex';
+        numEl.innerText = '5';
+        circleBar.style.strokeDashoffset = '0';
+
+        if (deathCountdownInterval) clearInterval(deathCountdownInterval);
+        const startTime = Date.now();
+
+        deathCountdownInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.max(0, 5000 - elapsed);
+          const sec = Math.ceil(remaining / 1000);
+          numEl.innerText = sec.toString();
+
+          const offset = 314.16 * (1 - remaining / 5000);
+          circleBar.style.strokeDashoffset = offset.toString();
+
+          if (remaining <= 0) {
+            clearInterval(deathCountdownInterval);
+            deathCountdownInterval = null;
+            modal.style.display = 'none';
+            showGameOver(false, pendingDeathScore, pendingDeathRank);
+          }
+        }, 50);
+      }
+
+      /* ── Game Over & Victory ─────────────────────────────── */
+      function showGameOver(isVictory, finalScore, rank) {
+        lastGameScore = finalScore;
+        document.getElementById('stat-final-score').innerText = finalScore;
+        document.getElementById('stat-final-length').innerText = engine.player ? engine.player.length : 5;
+        document.getElementById('stat-final-rank').innerText = `#${rank}`;
+
+        const title = document.getElementById('gameover-title');
+        const subtitle = document.getElementById('gameover-subtitle');
+
+        if (isVictory) {
+          title.innerText = '🏆 VICTORY ROYALE!';
+          title.style.color = 'var(--yellow)';
+          title.style.textShadow = '0 0 20px var(--yellow)';
+          subtitle.innerText = 'APEX PREDATOR SURVIVED THE ELECTRIC STORM';
+          document.getElementById('revive-offer-box').style.display = 'none';
+        } else {
+          title.innerText = '💀 ELIMINATED';
+          title.style.color = 'var(--magenta)';
+          title.style.textShadow = '0 0 20px var(--magenta)';
+          subtitle.innerText = `CIRCUIT DESTROYED // MATCH RANK #${rank}`;
+          document.getElementById('revive-offer-box').style.display = 'flex';
+        }
+
+        modalGameOver.style.display = 'flex';
+        ApexAdManager.triggerVignette();
+        ApexAdManager.refreshBanners();
+      }
+
+      /* ── Mobile Touch Virtual Joystick ───────────────────── */
+      let joystickActive = false;
+      const MAX_JOY_DIST = 40;
+
+      function handleJoyTouch(e) {
+        e.preventDefault();
+        const touch = e.targetTouches[0];
+        const rect = joystickZone.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        let dx = touch.clientX - centerX;
+        let dy = touch.clientY - centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > MAX_JOY_DIST) {
+          dx = (dx / dist) * MAX_JOY_DIST;
+          dy = (dy / dist) * MAX_JOY_DIST;
+        }
+
+        joystickThumb.style.transform = `translate(${dx}px, ${dy}px)`;
+
+        if (engine && dist > 10) {
+          let targetX = 0;
+          let targetZ = 0;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            targetX = dx > 0 ? 1 : -1;
+          } else {
+            targetZ = dy > 0 ? 1 : -1;
+          }
+          engine.setPlayerDirection(targetX, targetZ);
+        }
+      }
+
+      function resetJoystick() {
+        joystickActive = false;
+        joystickThumb.style.transform = 'translate(0, 0)';
+      }
+
+      joystickZone.addEventListener('touchstart', (e) => {
+        joystickActive = true;
+        handleJoyTouch(e);
+      }, { passive: false });
+
+      joystickZone.addEventListener('touchmove', (e) => {
+        if (joystickActive) handleJoyTouch(e);
+      }, { passive: false });
+
+      joystickZone.addEventListener('touchend', resetJoystick);
+      joystickZone.addEventListener('touchcancel', resetJoystick);
+
+      mobileBoostBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        mobileBoostBtn.classList.add('active');
+        setBoost(true);
+      }, { passive: false });
+
+      mobileBoostBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        mobileBoostBtn.classList.remove('active');
+        setBoost(false);
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          setBoost(true);
+        }
+        if (e.code === 'KeyP') {
+          togglePause();
+        }
+      });
+      window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') {
+          setBoost(false);
+        }
+      });
+
+      /* ── Skin Selector ───────────────────────────────────── */
+      document.querySelectorAll('.skin-swatch').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+          document.querySelectorAll('.skin-swatch').forEach(s => s.classList.remove('active'));
+          swatch.classList.add('active');
+          chosenColor = parseInt(swatch.dataset.color, 16);
+        });
+      });
+
+      /* ── Rewarded Hooks Buttons ──────────────────────────── */
+      document.getElementById('btn-unlock-dragon-skin').addEventListener('click', () => {
+        ApexAdManager.unlockDragonSkin();
+      });
+
+      document.getElementById('btn-magnet-pack').addEventListener('click', () => {
+        ApexAdManager.activateMagnetPack();
+      });
+
+      /* ── Button Action Listeners ─────────────────────────── */
+      document.getElementById('btn-start-game').addEventListener('click', () => {
+        playerName = document.getElementById('player-callsign').value.trim() || 'CYBER_VIPER_01';
+        modalLobby.style.display = 'none';
+        hudOverlay.style.display = 'block';
+
+        initEngine();
+
+        // Check if VIP dragon skin is active
+        const cfg = ApexAdManager.getConfig();
+        if (cfg.dragonSkinMatches > 0) {
+          chosenColor = 0xffd700;
+          ApexAdManager.saveConfig({ dragonSkinMatches: cfg.dragonSkinMatches - 1 });
+          ApexAdManager.log(`[Skin] VIP Dragon skin active! (${cfg.dragonSkinMatches - 1} matches remaining)`);
+        }
+
+        // Apply skin color
+        if (engine.player) {
+          engine.player.color = chosenColor;
+          if (engine.player._headMat) engine.player._headMat.color.setHex(chosenColor);
+          if (engine.player._mat) engine.player._mat.color.setHex(chosenColor);
+        }
+
+        engine.restart();
+
+        // Check if Magnet Starter Pack is active
+        if (cfg.magnetPackActive) {
+          ApexAdManager.saveConfig({ magnetPackActive: false });
+          if (engine.player) {
+            engine.player.activatePowerup('MAGNET', performance.now());
+            // Give 30s instead of default 5s
+            engine.player.powerups['MAGNET'] = performance.now() + 30000;
+            renderPowerupPill('MAGNET', 30000);
+            ApexAdManager.log('[Powerup] Magnet starter pack activated for 30s!');
+          }
+        }
+
+        ApexAdManager.log(`[Game] Battle started for ${playerName}.`);
+      });
+
+      function togglePause() {
+        if (!engine) return;
+        if (engine.paused) {
+          engine.resume();
+          modalPause.style.display = 'none';
+        } else {
+          engine.pause();
+          modalPause.style.display = 'flex';
+          ApexAdManager.refreshBanners();
+        }
+      }
+      document.getElementById('btn-pause').addEventListener('click', togglePause);
+      document.getElementById('btn-resume-game').addEventListener('click', () => {
+        if (engine) engine.resume();
+        modalPause.style.display = 'none';
+      });
+      document.getElementById('btn-restart-game').addEventListener('click', () => {
+        modalPause.style.display = 'none';
+        if (engine) engine.restart();
+      });
+
+      document.getElementById('btn-audio-toggle').addEventListener('click', () => {
+        isAudioMuted = !isAudioMuted;
+        const btn = document.getElementById('btn-audio-toggle');
+        if (engine && engine.audio && engine.audio.masterGain) {
+          engine.audio.masterGain.gain.value = isAudioMuted ? 0 : 0.6;
+        }
+        btn.innerText = isAudioMuted ? '🔇 SFX OFF' : '🔊 SFX ON';
+        btn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
+      });
+
+      document.getElementById('btn-revive-player').addEventListener('click', () => {
+        ApexAdManager.log('[RewardedAd] Revive ad requested. Showing sponsor video...');
+        ApexAdManager.triggerDirectLink('rewarded_revive', true);
+        setTimeout(() => {
+          modalGameOver.style.display = 'none';
+          if (engine) engine.revivePlayer();
+          ApexAdManager.log('[Engine] Player revived via rewarded extra life!');
+        }, 400);
+      });
+
+      document.getElementById('btn-play-again').addEventListener('click', () => {
+        ApexAdManager.triggerDirectLink('play_again');
+        modalGameOver.style.display = 'none';
+        if (engine) engine.restart();
+      });
+
+      document.getElementById('btn-menu-return').addEventListener('click', () => {
+        modalGameOver.style.display = 'none';
+        hudOverlay.style.display = 'none';
+        modalLobby.style.display = 'flex';
+      });
+
+      document.getElementById('btn-open-settings').addEventListener('click', () => {
+        const cfg = ApexAdManager.getConfig();
+        document.getElementById('cfg-ad-network').value = cfg.adNetwork || 'hybrid';
+        document.getElementById('cfg-directlink').value = cfg.directLinkUrl;
+        const smartLinkInput = document.getElementById('cfg-monetag-smartlink');
+        if (smartLinkInput) smartLinkInput.value = cfg.monetagSmartlink || 'https://alwingulla.com/example_monetag_smartlink';
+        document.getElementById('cfg-cooldown').value = cfg.cooldownSeconds;
+        document.getElementById('cfg-key-socialbar').value = cfg.keySocialBar || 'ADSTERRA_SOCIAL_BAR_KEY';
+        document.getElementById('cfg-key-728').value = cfg.key728;
+        document.getElementById('cfg-key-300').value = cfg.key300;
+        document.getElementById('cfg-key-320').value = cfg.key320;
+        document.getElementById('cfg-monetag-zone').value = cfg.monetagZone || 'MONETAG_ZONE_12345';
+        document.getElementById('cfg-mock-toggle').value = cfg.mockMode;
+        modalAdSettings.style.display = 'flex';
+      });
+
+      document.getElementById('btn-close-ad-settings').addEventListener('click', () => {
+        modalAdSettings.style.display = 'none';
+      });
+
+      document.getElementById('btn-save-ad-settings').addEventListener('click', () => {
+        const smartLinkInput = document.getElementById('cfg-monetag-smartlink');
+        ApexAdManager.saveConfig({
+          adNetwork: document.getElementById('cfg-ad-network').value,
+          directLinkUrl: document.getElementById('cfg-directlink').value.trim(),
+          monetagSmartlink: smartLinkInput ? smartLinkInput.value.trim() : 'https://alwingulla.com/example_monetag_smartlink',
+          cooldownSeconds: parseInt(document.getElementById('cfg-cooldown').value, 10) || 60,
+          keySocialBar: document.getElementById('cfg-key-socialbar').value.trim(),
+          key728: document.getElementById('cfg-key-728').value.trim(),
+          key300: document.getElementById('cfg-key-300').value.trim(),
+          key320: document.getElementById('cfg-key-320').value.trim(),
+          monetagZone: document.getElementById('cfg-monetag-zone').value.trim(),
+          mockMode: document.getElementById('cfg-mock-toggle').value
+        });
+        ApexAdManager.refreshBanners();
+        alert('Multi-network ad configuration saved!');
+      });
+
+      document.getElementById('btn-test-directlink').addEventListener('click', () => {
+        ApexAdManager.triggerDirectLink('test_modal_btn', true);
+      });
+
+      document.getElementById('btn-test-socialbar').addEventListener('click', () => {
+        const sb = document.getElementById('asr-ad-social-bar');
+        if (sb) {
+          sb.style.display = 'flex';
+          ApexAdManager.log('[AdManager] Social Bar preview displayed.');
+        }
+      });
+
+            const btnTestVignette = document.getElementById('btn-test-vignette');
+      if (btnTestVignette) {
+        btnTestVignette.addEventListener('click', () => {
+          ApexAdManager.triggerVignette();
+        });
+      }
+
+      const btnTestIpp = document.getElementById('btn-test-ipp');
+      if (btnTestIpp) {
+        btnTestIpp.addEventListener('click', () => {
+          const slot = document.getElementById('monetag-ipp-slot');
+          if (slot) slot.style.display = 'flex';
+          ApexAdManager.log('[Monetag] IPP Cyber Quest preview displayed.');
+        });
+      }
+      document.getElementById('btn-test-interstitial').addEventListener('click', () => {
+        showGameOver(false, 340, 4);
+      });
+
+      document.getElementById('btn-test-refresh').addEventListener('click', () => {
+        ApexAdManager.refreshBanners();
+      });
+
+      window.addEventListener('resize', () => {
+        if (engine && engine.renderer && engine.camera) {
+          engine.camera.aspect = window.innerWidth / window.innerHeight;
+          engine.camera.updateProjectionMatrix();
+          engine.renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+      });
+
+      
+      /* ── Emoji Taunt Quick Bar ───────────────────────────── */
+      function triggerTaunt(emoji) {
+        addKillFeedEntry(playerName, 'broadcasted emote', emoji);
+        const bubble = document.createElement('div');
+        bubble.className = 'floating-taunt-bubble';
+        bubble.innerText = emoji;
+        document.body.appendChild(bubble);
+        setTimeout(() => { if (bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 1800);
+        if (engine && typeof engine.triggerTaunt === 'function') {
+          engine.triggerTaunt(emoji);
+        }
+        ApexAdManager.log(`[Taunt] Broadcasted emote ${emoji}`);
+      }
+
+      document.querySelectorAll('#hud-taunt-bar .taunt-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const emoji = btn.getAttribute('data-emoji') || '👑';
+          triggerTaunt(emoji);
+        });
+      });
+
+      /* ── 5-Second Revive Countdown Buttons ───────────────── */
+      const btnCountdownRevive = document.getElementById('btn-countdown-revive');
+      if (btnCountdownRevive) {
+        btnCountdownRevive.addEventListener('click', () => {
+          if (deathCountdownInterval) {
+            clearInterval(deathCountdownInterval);
+            deathCountdownInterval = null;
+          }
+          document.getElementById('modal-death-countdown').style.display = 'none';
+          ApexAdManager.triggerSmartLink('countdown_revive', true);
+          if (engine) engine.revivePlayer();
+          ApexAdManager.log('[Revive] Player revived via 5s countdown with 50% mass + Phase Shield!');
+        });
+      }
+
+      const btnCountdownSkip = document.getElementById('btn-countdown-skip');
+      if (btnCountdownSkip) {
+        btnCountdownSkip.addEventListener('click', () => {
+          if (deathCountdownInterval) {
+            clearInterval(deathCountdownInterval);
+            deathCountdownInterval = null;
+          }
+          document.getElementById('modal-death-countdown').style.display = 'none';
+          showGameOver(false, pendingDeathScore, pendingDeathRank);
+        });
+      }
+
+      /* ── Lucky Cyber Spin Wheel ──────────────────────────── */
+      const wheelCanvas = document.getElementById('spin-wheel-canvas');
+      const wheelCtx = wheelCanvas ? wheelCanvas.getContext('2d') : null;
+      const wheelSlices = [
+        { label: '500 CREDITS', color: '#00f3ff', reward: 'credits_500' },
+        { label: 'VIP DRAGON', color: '#ffd700', reward: 'vip_dragon' },
+        { label: 'MAGNET PACK', color: '#ff0055', reward: 'magnet_pack' },
+        { label: '+20% BOOST', color: '#00ff88', reward: 'boost_buff' },
+        { label: '1,000 CREDITS', color: '#9d00ff', reward: 'credits_1000' },
+        { label: 'EXTRA LIFE', color: '#00f3ff', reward: 'extra_life' },
+        { label: '250 CREDITS', color: '#ffaa00', reward: 'credits_250' },
+        { label: '2,500 SHARDS', color: '#ffd700', reward: 'jackpot' }
+      ];
+      let wheelAngle = 0;
+      let isSpinning = false;
+
+      function drawWheel() {
+        if (!wheelCtx) return;
+        const numSlices = wheelSlices.length;
+        const sliceAngle = (Math.PI * 2) / numSlices;
+        const cx = 140, cy = 140, radius = 135;
+
+        wheelCtx.clearRect(0, 0, 280, 280);
+        wheelCtx.save();
+        wheelCtx.translate(cx, cy);
+        wheelCtx.rotate(wheelAngle);
+
+        for (let i = 0; i < numSlices; i++) {
+          const startAngle = i * sliceAngle;
+          const endAngle = startAngle + sliceAngle;
+
+          wheelCtx.beginPath();
+          wheelCtx.moveTo(0, 0);
+          wheelCtx.arc(0, 0, radius, startAngle, endAngle);
+          wheelCtx.closePath();
+          wheelCtx.fillStyle = i % 2 === 0 ? 'rgba(15, 23, 42, 0.96)' : 'rgba(30, 41, 59, 0.96)';
+          wheelCtx.fill();
+          wheelCtx.strokeStyle = wheelSlices[i].color;
+          wheelCtx.lineWidth = 2;
+          wheelCtx.stroke();
+
+          // Label text
+          wheelCtx.save();
+          wheelCtx.rotate(startAngle + sliceAngle / 2);
+          wheelCtx.textAlign = 'right';
+          wheelCtx.fillStyle = wheelSlices[i].color;
+          wheelCtx.font = 'bold 10px Orbitron, sans-serif';
+          wheelCtx.shadowColor = wheelSlices[i].color;
+          wheelCtx.shadowBlur = 4;
+          wheelCtx.fillText(wheelSlices[i].label, radius - 15, 4);
+          wheelCtx.restore();
+        }
+
+        // Center hub
+        wheelCtx.beginPath();
+        wheelCtx.arc(0, 0, 24, 0, Math.PI * 2);
+        wheelCtx.fillStyle = '#0a101e';
+        wheelCtx.fill();
+        wheelCtx.strokeStyle = '#ffd700';
+        wheelCtx.lineWidth = 3;
+        wheelCtx.stroke();
+        wheelCtx.fillStyle = '#ffd700';
+        wheelCtx.font = 'bold 11px Rajdhani, sans-serif';
+        wheelCtx.textAlign = 'center';
+        wheelCtx.fillText('APEX', 0, 4);
+
+        wheelCtx.restore();
+      }
+
+      function spinWheel() {
+        if (isSpinning) return;
+        isSpinning = true;
+        const spinBtn = document.getElementById('btn-spin-wheel');
+        if (spinBtn) spinBtn.disabled = true;
+        const resultBanner = document.getElementById('spin-result-banner');
+        if (resultBanner) resultBanner.style.display = 'none';
+
+        const winningIndex = Math.floor(Math.random() * wheelSlices.length);
+        const numSlices = wheelSlices.length;
+        const sliceAngle = (Math.PI * 2) / numSlices;
+        const extraRotations = 5 + Math.floor(Math.random() * 3);
+        const targetAngle = wheelAngle + (extraRotations * Math.PI * 2) + ((3 * Math.PI / 2) - (winningIndex * sliceAngle + sliceAngle / 2) - (wheelAngle % (Math.PI * 2)));
+
+        const duration = 3500;
+        const startTime = performance.now();
+        const startAngle = wheelAngle;
+
+        function animateSpin(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(1, elapsed / duration);
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+          wheelAngle = startAngle + (targetAngle - startAngle) * easeOut;
+          drawWheel();
+
+          if (progress < 1) {
+            requestAnimationFrame(animateSpin);
+          } else {
+            isSpinning = false;
+            if (spinBtn) spinBtn.disabled = false;
+            const prize = wheelSlices[winningIndex];
+            applySpinReward(prize);
+          }
+        }
+        requestAnimationFrame(animateSpin);
+      }
+
+      function applySpinReward(prize) {
+        const resultBanner = document.getElementById('spin-result-banner');
+        if (resultBanner) {
+          resultBanner.style.display = 'block';
+          resultBanner.innerText = `🎉 WON: ${prize.label}!`;
+        }
+        ApexAdManager.log(`[LuckyWheel] Won reward: ${prize.label}`);
+
+        if (prize.reward === 'vip_dragon') {
+          ApexAdManager.unlockDragonSkin();
+        } else if (prize.reward === 'magnet_pack') {
+          ApexAdManager.activateMagnetPack();
+        } else if (prize.reward === 'boost_buff') {
+          window.apexMaxStamina = 120;
+          alert('⚡ Granted +20% Boost Stamina (Max: 120)!');
+        } else {
+          alert(`🎁 Quantum Reward: ${prize.label}!`);
+        }
+      }
+
+      
+      /* ── PWA Native Installation Engine ───────────────────── */
+      let deferredPrompt = null;
+      const btnInstallPwa = document.getElementById('btn-install-pwa');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (btnInstallPwa) {
+          btnInstallPwa.classList.add('pulse-cyan');
+        }
+      });
+
+      if (btnInstallPwa) {
+        btnInstallPwa.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            ApexAdManager.log(`[PWA] Install prompt outcome: ${outcome}`);
+            deferredPrompt = null;
+          } else {
+            alert('📱 Install Apex Serpent Royale on your Home Screen:\n\n• On iOS (Safari): Tap Share icon ➔ \'Add to Home Screen\'.\n• On Android (Chrome): Tap three dots ➔ \'Install app\'.\n• On Desktop (Chrome/Edge): Click Install button in address bar.');
+          }
+        });
+      }
+
+      /* ── Viral High-Score Challenge & Social Sharing ─────── */
+      let lastGameScore = 0;
+
+      function getChallengeSharePayload() {
+        const score = lastGameScore || 1200;
+        const name = playerName || 'VIPER';
+        const challengeUrl = `https://apexserpentroyale.blogspot.com/?challenger=${encodeURIComponent(name)}&target=${score}`;
+        const shareText = `🐍 I just scored ${score} in Apex Serpent Royale 3D! Can you survive the shrinking electric storm and beat my high score? Play free unblocked: ${challengeUrl}`;
+        return { score, name, challengeUrl, shareText };
+      }
+
+      const btnShareWhatsapp = document.getElementById('btn-share-whatsapp');
+      if (btnShareWhatsapp) {
+        btnShareWhatsapp.addEventListener('click', () => {
+          const { shareText } = getChallengeSharePayload();
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+          ApexAdManager.log('[Viral] Shared challenge via WhatsApp');
+        });
+      }
+
+      const btnShareTelegram = document.getElementById('btn-share-telegram');
+      if (btnShareTelegram) {
+        btnShareTelegram.addEventListener('click', () => {
+          const { challengeUrl, shareText } = getChallengeSharePayload();
+          window.open(`https://t.me/share/url?url=${encodeURIComponent(challengeUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
+          ApexAdManager.log('[Viral] Shared challenge via Telegram');
+        });
+      }
+
+      const btnShareX = document.getElementById('btn-share-x');
+      if (btnShareX) {
+        btnShareX.addEventListener('click', () => {
+          const { shareText } = getChallengeSharePayload();
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+          ApexAdManager.log('[Viral] Shared challenge via X');
+        });
+      }
+
+      const btnShareNative = document.getElementById('btn-share-native');
+      if (btnShareNative) {
+        btnShareNative.addEventListener('click', () => {
+          const { challengeUrl, shareText } = getChallengeSharePayload();
+          if (navigator.share) {
+            navigator.share({
+              title: 'Apex Serpent Royale 3D Challenge',
+              text: shareText,
+              url: challengeUrl
+            }).catch(() => {});
+          } else {
+            navigator.clipboard.writeText(challengeUrl).then(() => {
+              const toast = document.getElementById('share-copy-toast');
+              if (toast) {
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+              }
+            });
+          }
+          ApexAdManager.log('[Viral] Challenge link copied to clipboard');
+        });
+      }
+
+      // Check Incoming Challenge Parameters on Load
+      (function checkIncomingChallenge() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const challenger = params.get('challenger');
+          const target = params.get('target');
+          const banner = document.getElementById('lobby-challenge-banner');
+          const bannerText = document.getElementById('challenge-banner-text');
+
+          if (banner && bannerText) {
+            if (challenger && target) {
+              banner.style.display = 'flex';
+              bannerText.innerHTML = `⚡ <strong>CHALLENGE FROM ${challenger.toUpperCase()}:</strong> BEAT <strong>${target} PTS</strong> TO CLAIM RANK #1!`;
+            } else {
+              banner.style.display = 'flex';
+              bannerText.innerHTML = `⚡ <strong>DAILY ARENA BOUNTY:</strong> SURVIVE THE COLLAPSE & BEAT 10,000 PTS FOR VIP STATUS!`;
+            }
+          }
+        } catch(e) {}
+      })();
+
+      const btnOpenWheel = document.getElementById('btn-open-spin-wheel');
+      if (btnOpenWheel) {
+        btnOpenWheel.addEventListener('click', () => {
+          document.getElementById('modal-spin-wheel').style.display = 'flex';
+          drawWheel();
+        });
+      }
+
+      const btnCloseWheel = document.getElementById('btn-close-spin-wheel');
+      if (btnCloseWheel) {
+        btnCloseWheel.addEventListener('click', () => {
+          document.getElementById('modal-spin-wheel').style.display = 'none';
+        });
+      }
+
+      const btnSpinWheel = document.getElementById('btn-spin-wheel');
+      if (btnSpinWheel) {
+        btnSpinWheel.addEventListener('click', () => {
+          spinWheel();
+        });
+      }
+
+      
+    /* =========================================================
+     *  ORBIT EXTENSION: MISSIONS, DAILY SUPPLY, BOOSTER ARMORY,
+     *  TELEGRAM WEBAPP & DISCORD ACTIVITY INTEGRATION
+     * ========================================================= */
+    const ApexOrbit = (function() {
+      const KEY_MISSIONS = 'apex_missions_v2';
+      const KEY_DAILY_TS = 'apex_daily_supply_ts';
+      const KEY_INV = 'apex_inventory_v1';
+      const KEY_RECORDS = 'apex_pilot_records_v1';
+
+      // Default inventory
+      let inventory = {
+        credits: 500,
+        revives: 1,
+        magnets: 1,
+        overdriveMatches: 0
+      };
+
+      // Default records
+      let records = {
+        bestScore: 0,
+        maxLength: 5,
+        totalKills: 0,
+        matchesPlayed: 0,
+        wins: 0
+      };
+
+      // Orbit Missions Definition
+      const MISSION_DEFS = [
+        { id: 1, title: 'Length Pioneer', desc: 'Grow your serpent to length 25', target: 25, rewardText: '+100 Credits', type: 'length', reward: { credits: 100 } },
+        { id: 2, title: 'Apex Predator', desc: 'Eliminate 2 rival serpents in battle', target: 2, rewardText: '1 Revive Token', type: 'kills', reward: { revives: 1 } },
+        { id: 3, title: 'Storm Survivor', desc: 'Survive 90 seconds in electric storm', target: 90, rewardText: '1 Magnet Pack', type: 'time', reward: { magnets: 1 } },
+        { id: 4, title: 'Quantum Harvester', desc: 'Collect 10 energy orbs & capsules', target: 10, rewardText: '+200 Credits', type: 'powerups', reward: { credits: 200 } },
+        { id: 5, title: 'Victory Royale', desc: 'Survive the final collapse & claim Rank #1', target: 1, rewardText: 'VIP Dragon Skin Unlock', type: 'win', reward: { dragonSkin: 3 } }
+      ];
+
+      let missionStates = [
+        { id: 1, current: 5, completed: false, claimed: false },
+        { id: 2, current: 0, completed: false, claimed: false },
+        { id: 3, current: 0, completed: false, claimed: false },
+        { id: 4, current: 0, completed: false, claimed: false },
+        { id: 5, current: 0, completed: false, claimed: false }
+      ];
+
+      function loadData() {
+        try {
+          const invRaw = localStorage.getItem(KEY_INV);
+          if (invRaw) inventory = { ...inventory, ...JSON.parse(invRaw) };
+          const recRaw = localStorage.getItem(KEY_RECORDS);
+          if (recRaw) records = { ...records, ...JSON.parse(recRaw) };
+          const misRaw = localStorage.getItem(KEY_MISSIONS);
+          if (misRaw) missionStates = JSON.parse(misRaw);
+        } catch(e) {}
+      }
+
+      function saveData() {
+        try {
+          localStorage.setItem(KEY_INV, JSON.stringify(inventory));
+          localStorage.setItem(KEY_RECORDS, JSON.stringify(records));
+          localStorage.setItem(KEY_MISSIONS, JSON.stringify(missionStates));
+        } catch(e) {}
+      }
+
+      loadData();
+
+      // Procedural Audio Tone Synth
+      function playTone(freq, type = 'sine', duration = 0.15) {
+        try {
+          const ctx = window.AudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          g.gain.setValueAtTime(0.2, ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        } catch(e) {}
+      }
+
+      function updateInventoryUI() {
+        const credEl = document.getElementById('inv-credits');
+        const revEl = document.getElementById('inv-revives');
+        const magEl = document.getElementById('inv-magnets');
+        if (credEl) credEl.innerText = inventory.credits;
+        if (revEl) revEl.innerText = inventory.revives;
+        if (magEl) magEl.innerText = inventory.magnets;
+      }
+
+      function updateRecordsUI() {
+        const b = document.getElementById('rec-best-score');
+        const l = document.getElementById('rec-max-length');
+        const k = document.getElementById('rec-total-kills');
+        const w = document.getElementById('rec-wins');
+        if (b) b.innerText = records.bestScore;
+        if (l) l.innerText = records.maxLength;
+        if (k) k.innerText = records.totalKills;
+        if (w) w.innerText = records.wins;
+      }
+
+      function renderMissionsUI() {
+        const container = document.getElementById('missions-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        let readyCount = 0;
+        MISSION_DEFS.forEach((def, i) => {
+          const state = missionStates[i] || { current: 0, completed: false, claimed: false };
+          const pct = Math.min(100, Math.round((state.current / def.target) * 100));
+          if (state.completed && !state.claimed) readyCount++;
+
+          const card = document.createElement('div');
+          card.className = 'mission-card';
+
+          let btnHtml = '';
+          if (state.claimed) {
+            btnHtml = '<span style="font-size:11px; color:#64748b; font-family:var(--font-mono);">CLAIMED ✓</span>';
+          } else if (state.completed) {
+            btnHtml = `<button class="cyber-btn cyber-btn-primary" onclick="ApexOrbit.claimMission(${def.id})" style="font-size:11px; padding:6px 12px; background:linear-gradient(135deg, #00f3ff, #00ff66); color:#000; font-weight:700;">CLAIM</button>`;
+          } else {
+            btnHtml = `<span style="font-size:11px; color:var(--cyan); font-family:var(--font-mono);">${state.current}/${def.target}</span>`;
+          }
+
+          card.innerHTML = `
+            <div class="mission-info" style="flex:1;">
+              <h4>${def.title}</h4>
+              <p>${def.desc}</p>
+              <span class="reward-tag">${def.rewardText}</span>
+              <div class="mission-progress-bar">
+                <div class="mission-progress-fill" style="width:${pct}%;"></div>
+              </div>
+            </div>
+            <div style="min-width:70px; text-align:right;">
+              ${btnHtml}
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        const badge = document.getElementById('missions-badge');
+        if (badge) {
+          const totalCompleted = missionStates.filter(m => m.completed).length;
+          badge.innerText = `${totalCompleted}/${MISSION_DEFS.length}`;
+          badge.className = readyCount > 0 ? 'orbit-badge ready' : 'orbit-badge';
+        }
+      }
+
+      function claimMission(id) {
+        const def = MISSION_DEFS.find(d => d.id === id);
+        const state = missionStates.find(m => m.id === id);
+        if (!def || !state || !state.completed || state.claimed) return;
+
+        state.claimed = true;
+        if (def.reward.credits) inventory.credits += def.reward.credits;
+        if (def.reward.revives) inventory.revives += def.reward.revives;
+        if (def.reward.magnets) inventory.magnets += def.reward.magnets;
+        if (def.reward.dragonSkin) {
+          if (window.ApexAdManager) window.ApexAdManager.unlockDragonSkin();
+        }
+
+        playTone(660, 'triangle', 0.25);
+        setTimeout(() => playTone(880, 'sine', 0.3), 150);
+
+        saveData();
+        updateInventoryUI();
+        renderMissionsUI();
+        alert(`🎉 Claimed Reward: ${def.rewardText}!`);
+      }
+
+      function reportProgress(type, val) {
+        let changed = false;
+        MISSION_DEFS.forEach((def, i) => {
+          if (def.type === type) {
+            const state = missionStates[i];
+            if (!state.completed) {
+              if (type === 'length' || type === 'time') {
+                if (val > state.current) state.current = val;
+              } else {
+                state.current += val;
+              }
+              if (state.current >= def.target) {
+                state.completed = true;
+                changed = true;
+                playTone(784, 'sine', 0.3);
+                console.log(`[Orbit] Mission completed: ${def.title}!`);
+              }
+            }
+          }
+        });
+        if (changed) {
+          saveData();
+          renderMissionsUI();
+        }
+      }
+
+      // Daily Supply Check
+      function checkDailySupply() {
+        const lastClaim = parseInt(localStorage.getItem(KEY_DAILY_TS) || '0', 10);
+        const now = Date.now();
+        const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+        const diff = now - lastClaim;
+        const btn = document.getElementById('btn-claim-daily-supply');
+        const countdown = document.getElementById('daily-countdown-text');
+        const timerVal = document.getElementById('daily-timer-val');
+        const badge = document.getElementById('daily-supply-badge');
+
+        if (diff >= TWENTY_FOUR_HOURS) {
+          if (btn) { btn.disabled = false; btn.innerText = '🎁 CLAIM FREE SUPPLY'; }
+          if (countdown) countdown.style.display = 'none';
+          if (badge) { badge.className = 'orbit-badge ready'; badge.innerText = 'READY'; }
+        } else {
+          const remaining = TWENTY_FOUR_HOURS - diff;
+          const h = Math.floor(remaining / (1000 * 60 * 60));
+          const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+          const s = Math.floor((remaining % (1000 * 60)) / 1000);
+          const timeStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+          if (btn) { btn.disabled = true; btn.innerText = 'SUPPLY CLAIMED TODAY ✓'; }
+          if (countdown && timerVal) { countdown.style.display = 'block'; timerVal.innerText = timeStr; }
+          if (badge) { badge.className = 'orbit-badge'; badge.innerText = timeStr; }
+        }
+      }
+
+      function claimDailySupply() {
+        const lastClaim = parseInt(localStorage.getItem(KEY_DAILY_TS) || '0', 10);
+        const now = Date.now();
+        if (now - lastClaim < 24 * 60 * 60 * 1000) return;
+
+        localStorage.setItem(KEY_DAILY_TS, now.toString());
+        inventory.revives += 1;
+        inventory.magnets += 1;
+        inventory.credits += 250;
+        saveData();
+        updateInventoryUI();
+        checkDailySupply();
+
+        playTone(523, 'sine', 0.2);
+        setTimeout(() => playTone(659, 'sine', 0.2), 120);
+        setTimeout(() => playTone(784, 'triangle', 0.35), 240);
+
+        alert('🎉 Daily Supply Delivered:
+• +1 Free Revive Token
+• +1 Magnet Starter Pack
+• +250 Quantum Credits!');
+      }
+
+      // Initialize Telegram & Discord Environment Detection
+      function initPlatformIntegration() {
+        const pill = document.getElementById('platform-pill');
+        const tg = window.Telegram?.WebApp;
+
+        if (tg && (tg.initData || tg.initDataUnsafe?.user)) {
+          tg.ready();
+          tg.expand();
+          if (pill) {
+            pill.innerText = '💬 TELEGRAM MINI APP';
+            pill.className = 'platform-pill tg';
+          }
+          const user = tg.initDataUnsafe?.user;
+          if (user) {
+            const input = document.getElementById('player-callsign');
+            if (input) {
+              input.value = (user.username || user.first_name || 'VIPER').toUpperCase().slice(0, 15);
+            }
+          }
+        } else if (window.location.search.includes('frame_id') || window.name.includes('discord')) {
+          if (pill) {
+            pill.innerText = '🎮 DISCORD ACTIVITY';
+            pill.className = 'platform-pill discord';
+          }
+        }
+      }
+
+      setInterval(checkDailySupply, 1000);
+
+      return {
+        getInventory: () => inventory,
+        getRecords: () => records,
+        saveData,
+        updateInventoryUI,
+        updateRecordsUI,
+        renderMissionsUI,
+        claimMission,
+        reportProgress,
+        claimDailySupply,
+        checkDailySupply,
+        initPlatformIntegration,
+        playTone
+      };
+    })();
+
+    window.ApexOrbit = ApexOrbit;
+
+      // Initialize AdBlock check & initial skin
+      
+      // Orbit Feature Modal Openers & Closers
+      document.getElementById('btn-open-daily-supply').addEventListener('click', () => {
+        document.getElementById('modal-daily-supply').style.display = 'flex';
+        ApexOrbit.checkDailySupply();
+      });
+      document.getElementById('btn-close-daily-supply').addEventListener('click', () => {
+        document.getElementById('modal-daily-supply').style.display = 'none';
+      });
+      document.getElementById('btn-claim-daily-supply').addEventListener('click', () => {
+        ApexOrbit.claimDailySupply();
+      });
+
+      document.getElementById('btn-open-missions').addEventListener('click', () => {
+        document.getElementById('modal-missions').style.display = 'flex';
+        ApexOrbit.renderMissionsUI();
+      });
+      document.getElementById('btn-close-missions').addEventListener('click', () => {
+        document.getElementById('modal-missions').style.display = 'none';
+      });
+
+      document.getElementById('btn-open-boosters').addEventListener('click', () => {
+        document.getElementById('modal-boosters').style.display = 'flex';
+        ApexOrbit.updateInventoryUI();
+      });
+      document.getElementById('btn-close-boosters').addEventListener('click', () => {
+        document.getElementById('modal-boosters').style.display = 'none';
+      });
+
+      document.getElementById('btn-open-records').addEventListener('click', () => {
+        document.getElementById('modal-records').style.display = 'flex';
+        ApexOrbit.updateRecordsUI();
+      });
+      document.getElementById('btn-close-records').addEventListener('click', () => {
+        document.getElementById('modal-records').style.display = 'none';
+      });
+
+      // Synchronize Lobby Audio Button
+      const lobbyAudioBtn = document.getElementById('btn-lobby-audio');
+      if (lobbyAudioBtn) {
+        lobbyAudioBtn.addEventListener('click', () => {
+          document.getElementById('btn-audio-toggle').click();
+          lobbyAudioBtn.innerText = isAudioMuted ? '🔇 SFX OFF' : '🔊 SFX ON';
+          lobbyAudioBtn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
+        });
+      }
+
+      // Shop Booster Purchasing
+      document.getElementById('btn-buy-revive').addEventListener('click', () => {
+        const inv = ApexOrbit.getInventory();
+        if (inv.credits >= 200) {
+          inv.credits -= 200;
+          inv.revives += 1;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          ApexOrbit.playTone(660, 'sine', 0.2);
+          alert('⚡ Purchased 1 Quantum Revive Token!');
+        } else {
+          ApexAdManager.triggerDirectLink('shop_revive_free', true);
+          inv.revives += 1;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          alert('⚡ Free Sponsor Revive Token Added!');
+        }
+      });
+
+      document.getElementById('btn-buy-magnet').addEventListener('click', () => {
+        const inv = ApexOrbit.getInventory();
+        if (inv.credits >= 150) {
+          inv.credits -= 150;
+          inv.magnets += 1;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          ApexOrbit.playTone(660, 'sine', 0.2);
+          alert('🧲 Purchased 1 Quantum Magnet Pack!');
+        } else {
+          ApexAdManager.triggerDirectLink('shop_magnet_free', true);
+          inv.magnets += 1;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          alert('🧲 Free Sponsor Magnet Pack Added!');
+        }
+      });
+
+      document.getElementById('btn-buy-overdrive').addEventListener('click', () => {
+        const inv = ApexOrbit.getInventory();
+        if (inv.credits >= 100) {
+          inv.credits -= 100;
+          inv.overdriveMatches += 3;
+          window.apexMaxStamina = 150;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          ApexOrbit.playTone(660, 'sine', 0.2);
+          alert('⚡ Turbo Overdrive Activated (+50% Stamina for 3 matches)!');
+        } else {
+          ApexAdManager.triggerDirectLink('shop_overdrive_free', true);
+          inv.overdriveMatches += 3;
+          window.apexMaxStamina = 150;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          alert('⚡ Free Sponsor Turbo Overdrive Activated!');
+        }
+      });
+
+      // Share Dossier / Records Brag Button
+      document.getElementById('btn-share-records').addEventListener('click', () => {
+        const rec = ApexOrbit.getRecords();
+        const msg = `🐍 APEX SERPENT PILOT DOSSIER: Best Score: ${rec.bestScore} PTS | Eliminations: ${rec.totalKills} | Wins: ${rec.wins} Royale! Can you beat my record? Play free: https://ajayyadav9527.github.io/apex-serpent-royale/`;
+        if (window.Telegram?.WebApp) {
+          window.open(`https://t.me/share/url?url=${encodeURIComponent('https://ajayyadav9527.github.io/apex-serpent-royale/')}&text=${encodeURIComponent(msg)}`, '_blank');
+        } else if (navigator.share) {
+          navigator.share({ title: 'Apex Serpent 3D Royale Dossier', text: msg, url: 'https://ajayyadav9527.github.io/apex-serpent-royale/' }).catch(()=>{});
+        } else {
+          navigator.clipboard.writeText(msg).then(() => alert('📋 Pilot Dossier copied to clipboard!'));
+        }
+      });
+
+      // Initialize Platform and UI on load
+      ApexOrbit.initPlatformIntegration();
+      ApexOrbit.updateInventoryUI();
+      ApexOrbit.updateRecordsUI();
+      ApexOrbit.renderMissionsUI();
+      ApexOrbit.checkDailySupply();
+
+      ApexAdManager.checkAdBlock();
+
+      const initialCfg = ApexAdManager.getConfig();
+      if (initialCfg.dragonSkinMatches > 0) {
+        const swatch = document.getElementById('swatch-dragon-skin');
+        if (swatch) swatch.style.display = 'flex';
+      }
+
+    })();
+  </script>
+</body>
+</html>

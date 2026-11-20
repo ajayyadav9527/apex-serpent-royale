@@ -1,0 +1,448 @@
+{
+  "suite": "Apex Serpent Royale E2E Verification",
+  "timestamp": "2026-11-20T13:49:37Z",
+  "server_url": "http://localhost:8089",
+  "total": 73,
+  "passed": 73,
+  "failed": 0,
+  "checks": [
+    {
+      "category": "Blogger XML",
+      "name": "Theme File Existence",
+      "status": "PASS",
+      "details": "Path: c:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\blogger_theme.xml"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Well-Formed XML Syntax",
+      "status": "PASS",
+      "details": "Root tag: <{http://www.w3.org/1999/xhtml}html>"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Blogger Namespaces Declared",
+      "status": "PASS",
+      "details": "xmlns:b, xmlns:data, xmlns:expr verified"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "<b:skin> CDATA Styling Tag",
+      "status": "PASS",
+      "details": "Valid <b:skin> present"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "<b:section> Layout Section",
+      "status": "PASS",
+      "details": "Valid <b:section> present"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "<b:widget> Blog Widget",
+      "status": "PASS",
+      "details": "Valid <b:widget> present"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Adsterra Monetization Integrated",
+      "status": "PASS",
+      "details": "Adsterra slots embedded in theme"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Apex Engine & Canvas Embedded",
+      "status": "PASS",
+      "details": "Canvas and Engine embedded in theme"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Mobile Touch Controls Embedded",
+      "status": "PASS",
+      "details": "Mobile HUD / controls embedded"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Monetag MultiTag & In-Page Push Embedded",
+      "status": "PASS",
+      "details": "Monetag slots present in Blogger template"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Game Engine 100% Inlined inside CDATA",
+      "status": "PASS",
+      "details": "62KB engine fully inlined inside CDATA"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Top .io Retention UI Features Embedded",
+      "status": "PASS",
+      "details": "Compass, countdown, spin wheel, taunts & sticky LB in theme"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "PWA Web App Manifest & Install Button",
+      "status": "PASS",
+      "details": "PWA manifest & install button present in theme"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Viral Social Share & Challenge System",
+      "status": "PASS",
+      "details": "Viral share container & buttons present in theme"
+    },
+    {
+      "category": "Blogger XML",
+      "name": "Multi-Graph Schema.org Structured Data",
+      "status": "PASS",
+      "details": "JSON-LD schema graph embedded in theme"
+    },
+    {
+      "category": "Runtime Load",
+      "name": "HTTP 200 OK Response",
+      "status": "PASS",
+      "details": "Status: 200"
+    },
+    {
+      "category": "Runtime Load",
+      "name": "Zero Syntax & Runtime JS Errors",
+      "status": "PASS",
+      "details": "Errors: Clean execution"
+    },
+    {
+      "category": "Three.js & Canvas",
+      "name": "Canvas Element in DOM",
+      "status": "PASS",
+      "details": "Canvas Dimensions: 1920x1080"
+    },
+    {
+      "category": "Three.js & Canvas",
+      "name": "WebGL Context Active",
+      "status": "PASS",
+      "details": "WebGL / WebGL2 context initialized"
+    },
+    {
+      "category": "Three.js & Canvas",
+      "name": "Three.js Library Loaded",
+      "status": "PASS",
+      "details": "Three.js Revision: 128"
+    },
+    {
+      "category": "Three.js & Canvas",
+      "name": "Apex Serpent Engine Initialized",
+      "status": "PASS",
+      "details": "ApexSerpentEngine active and running"
+    },
+    {
+      "category": "Three.js & Canvas",
+      "name": "Game Loop Active",
+      "status": "PASS",
+      "details": "Engine game loop running"
+    },
+    {
+      "category": "Visual Output",
+      "name": "Desktop Screenshot Captured",
+      "status": "PASS",
+      "details": "c:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\desktop_1920x1080.png"
+    },
+    {
+      "category": "Adsterra Units",
+      "name": "728x90 Leaderboard Banner Slot (#asr-ad-leaderboard)",
+      "status": "PASS",
+      "details": "Desktop top banner container exists"
+    },
+    {
+      "category": "Adsterra Units",
+      "name": "300x250 Medium Rectangle Slot (#asr-ad-rectangle)",
+      "status": "PASS",
+      "details": "Menu/pause/gameover 300x250 containers exist"
+    },
+    {
+      "category": "Adsterra Units",
+      "name": "320x50 Mobile Footer Slot (#asr-ad-mobile-footer)",
+      "status": "PASS",
+      "details": "Mobile bottom banner container exists"
+    },
+    {
+      "category": "Adsterra Units",
+      "name": "Interstitial Container (#asr-ad-interstitial)",
+      "status": "PASS",
+      "details": "Interstitial / popunder container exists"
+    },
+    {
+      "category": "Revenue Upgrade",
+      "name": "High-eCPM Social Bar Container (#asr-ad-social-bar)",
+      "status": "PASS",
+      "details": "Floating social bar widget active"
+    },
+    {
+      "category": "Revenue Upgrade",
+      "name": "Polite Adblock Detector Badge (#adblock-detector-badge)",
+      "status": "PASS",
+      "details": "Gaming incentive buff badge active"
+    },
+    {
+      "category": "Revenue Upgrade",
+      "name": "Rewarded Dragon Skin Hook (#btn-unlock-dragon-skin)",
+      "status": "PASS",
+      "details": "VIP Dragon skin hook present"
+    },
+    {
+      "category": "Revenue Upgrade",
+      "name": "Rewarded Magnet Starter Pack Hook (#btn-magnet-pack)",
+      "status": "PASS",
+      "details": "30s Magnet aura starter pack present"
+    },
+    {
+      "category": "Revenue Upgrade",
+      "name": "Rewarded Quantum Revival Hook (#btn-revive-player)",
+      "status": "PASS",
+      "details": "Extra life revive hook present"
+    },
+    {
+      "category": "Revenue Upgrade",
+      "name": "Multi-Network Fallback Selection (#cfg-ad-network)",
+      "status": "PASS",
+      "details": "Adsterra / Monetag / AdSense selector present"
+    },
+    {
+      "category": "SEO & Discovery",
+      "name": "Schema.org JSON-LD Structured Data",
+      "status": "PASS",
+      "details": "Valid VideoGame & WebApplication schema"
+    },
+    {
+      "category": "SEO & Discovery",
+      "name": "Open Graph Social Meta Tags",
+      "status": "PASS",
+      "details": "og:title, og:description, og:image present"
+    },
+    {
+      "category": "SEO & Discovery",
+      "name": "Twitter Card Meta Tags",
+      "status": "PASS",
+      "details": "summary_large_image card tags present"
+    },
+    {
+      "category": "SEO & Discovery",
+      "name": "Crawlable Semantic SEO & FAQ Guide",
+      "status": "PASS",
+      "details": "Semantic H1/H2, keywords, and FAQ accordion present"
+    },
+    {
+      "category": "Adsterra Units",
+      "name": "Live Ad Settings & Diagnostics Modal (#modal-ad-settings)",
+      "status": "PASS",
+      "details": "Adsterra configuration modal present"
+    },
+    {
+      "category": "Adsterra Units",
+      "name": "ApexAdManager Controller Exposed",
+      "status": "PASS",
+      "details": "ApexAdManager API active on window"
+    },
+    {
+      "category": "Monetag Units",
+      "name": "MultiTag Container Slot (#monetag-multitag-container)",
+      "status": "PASS",
+      "details": "MultiTag container present in DOM"
+    },
+    {
+      "category": "Monetag Units",
+      "name": "In-Page Push Cyber Quest Slot (#monetag-ipp-slot)",
+      "status": "PASS",
+      "details": "Floating cyber quest notification slot active"
+    },
+    {
+      "category": "Monetag Units",
+      "name": "Monetag SmartLink Configuration (#cfg-monetag-smartlink)",
+      "status": "PASS",
+      "details": "SmartLink URL input present in Settings"
+    },
+    {
+      "category": "Monetag Units",
+      "name": "Monetag MultiTag Zone ID (#cfg-monetag-zone)",
+      "status": "PASS",
+      "details": "Zone ID input present in Settings"
+    },
+    {
+      "category": "Monetag Units",
+      "name": "Monetag Vignette Interstitial Hook on Game Over",
+      "status": "PASS",
+      "details": "ApexAdManager.triggerVignette exposed and wired"
+    },
+    {
+      "category": "Monetag Units",
+      "name": "Dual-Network SmartLink Controller",
+      "status": "PASS",
+      "details": "ApexAdManager.triggerSmartLink active with cooldown"
+    },
+    {
+      "category": "Monetag Units",
+      "name": "Hybrid Multi-Network Architecture ('hybrid')",
+      "status": "PASS",
+      "details": "Adsterra Banners + Monetag IPP/Vignette hybrid mode selectable"
+    },
+    {
+      "category": "Monetag Units",
+      "name": "Live Test Controls (#btn-test-vignette & #btn-test-ipp)",
+      "status": "PASS",
+      "details": "Diagnostic simulation buttons present"
+    },
+    {
+      "category": "Retention & Engagement",
+      "name": "5-Second Circular Revive Countdown (#modal-death-countdown)",
+      "status": "PASS",
+      "details": "Circular SVG countdown timer present"
+    },
+    {
+      "category": "Retention & Engagement",
+      "name": "King Bounty Compass HUD (#hud-king-bounty)",
+      "status": "PASS",
+      "details": "Edge compass arrow & telemetry present"
+    },
+    {
+      "category": "Retention & Engagement",
+      "name": "Lobby Lucky Cyber Spin Wheel (#modal-spin-wheel)",
+      "status": "PASS",
+      "details": "Daily spin wheel modal & canvas present"
+    },
+    {
+      "category": "Retention & Engagement",
+      "name": "In-Game Neon Emoji Taunt Quick Bar (#hud-taunt-bar)",
+      "status": "PASS",
+      "details": "4-button floating emote bar present"
+    },
+    {
+      "category": "Retention & Engagement",
+      "name": "Pinned Sticky Leaderboard Player Row (#leaderboard-player-sticky)",
+      "status": "PASS",
+      "details": "Sticky live player rank row present"
+    },
+    {
+      "category": "PWA Engine",
+      "name": "Web App Manifest Data URI (Standalone Mode)",
+      "status": "PASS",
+      "details": "Embedded manifest with theme color and orientation lock"
+    },
+    {
+      "category": "PWA Engine",
+      "name": "Lobby Native Install App Button (#btn-install-pwa)",
+      "status": "PASS",
+      "details": "Lobby installation trigger present"
+    },
+    {
+      "category": "Viral Growth",
+      "name": "Incoming Challenge Banner (#lobby-challenge-banner)",
+      "status": "PASS",
+      "details": "Viral referral challenge banner active in Lobby"
+    },
+    {
+      "category": "Viral Growth",
+      "name": "1-Click Viral Social Share Suite (#viral-share-container)",
+      "status": "PASS",
+      "details": "WhatsApp, Telegram, X & Copy challenge buttons present"
+    },
+    {
+      "category": "Advanced SEO",
+      "name": "Schema.org VideoGame Entity (4.9/5 Rating)",
+      "status": "PASS",
+      "details": "VideoGame entity with 18,420 ratings"
+    },
+    {
+      "category": "Advanced SEO",
+      "name": "Schema.org FAQPage Entity (6 Rich SERP Q&As)",
+      "status": "PASS",
+      "details": "FAQPage entity with rich question/answer pairs"
+    },
+    {
+      "category": "Advanced SEO",
+      "name": "Schema.org HowTo Entity (5 Tactical Steps)",
+      "status": "PASS",
+      "details": "HowTo entity detailing tactical steps to victory"
+    },
+    {
+      "category": "Advanced SEO",
+      "name": "Schema.org BreadcrumbList Entity",
+      "status": "PASS",
+      "details": "Valid breadcrumb hierarchy"
+    },
+    {
+      "category": "Advanced SEO",
+      "name": "Multilingual Hreflang Tags (en, es, pt, ru, hi, fr)",
+      "status": "PASS",
+      "details": "Found 7 hreflang alternate tags"
+    },
+    {
+      "category": "Advanced SEO",
+      "name": "Canonical URL Declaration",
+      "status": "PASS",
+      "details": "Canonical points to primary domain"
+    },
+    {
+      "category": "Adsterra Direct Link",
+      "name": "Direct Link Function Execution",
+      "status": "PASS",
+      "details": "DirectLink trigger executed: {'tested': True, 'canFireInitial': True, 'triggerResult': True, 'repeatBlocked': True, 'cooldownSeconds': 60}"
+    },
+    {
+      "category": "Adsterra Direct Link",
+      "name": "Spam Prevention / Frequency Cooldown",
+      "status": "PASS",
+      "details": "Cooldown active after trigger (60s cooldown)"
+    },
+    {
+      "category": "Monetag SmartLink",
+      "name": "Monetag Vignette & SmartLink Execution",
+      "status": "PASS",
+      "details": "Vignette & Smartlink evaluated: {'tested': True, 'vignetteExecuted': False, 'smartlinkExecuted': True, 'network': 'hybrid', 'smartlinkUrl': 'https://alwingulla.com/example_monetag_smartlink'}"
+    },
+    {
+      "category": "Mobile Viewport",
+      "name": "Virtual Touch Joystick Zone (#joystick-zone)",
+      "status": "PASS",
+      "details": "Touch joystick element present"
+    },
+    {
+      "category": "Mobile Viewport",
+      "name": "Mobile Boost Action Button (#mobile-boost-btn)",
+      "status": "PASS",
+      "details": "Dedicated mobile boost control present"
+    },
+    {
+      "category": "Mobile Viewport",
+      "name": "320x50 Mobile Ad Banner Active",
+      "status": "PASS",
+      "details": "320x50 footer banner visible on mobile"
+    },
+    {
+      "category": "Mobile Viewport",
+      "name": "728x90 Desktop Leaderboard Hidden",
+      "status": "PASS",
+      "details": "Desktop banner cleanly hidden on mobile"
+    },
+    {
+      "category": "Visual Output",
+      "name": "Mobile Screenshot Captured",
+      "status": "PASS",
+      "details": "c:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\mobile_390x844.png"
+    },
+    {
+      "category": "Tablet Viewport",
+      "name": "Canvas Scales to Tablet Width",
+      "status": "PASS",
+      "details": "Responsive canvas adapts to 768px width"
+    },
+    {
+      "category": "Tablet Viewport",
+      "name": "Cyberpunk HUD Responsive & Active",
+      "status": "PASS",
+      "details": "HUD adapts without clipping"
+    },
+    {
+      "category": "Visual Output",
+      "name": "Tablet Screenshot Captured",
+      "status": "PASS",
+      "details": "c:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\tablet_768x1024.png"
+    }
+  ]
+}
