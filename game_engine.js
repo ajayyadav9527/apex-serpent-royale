@@ -1171,7 +1171,9 @@
 
       // Resize handler
       this._onResize = () => {
-        const w = canvas.clientWidth, h = canvas.clientHeight;
+        const w = canvas.clientWidth || (global.innerWidth || 800);
+        const h = canvas.clientHeight || (global.innerHeight || 600);
+        if (w <= 0 || h <= 0) return;
         this.renderer.setSize(w, h);
         this.camera.aspect = w / h;
         this.camera.updateProjectionMatrix();
@@ -1804,8 +1806,15 @@
       const playerLen = this.player.alive ? this.player.length : 5;
       const zoomFactor = 1.0 + Math.log10(Math.max(1, playerLen / 5)) * 0.82;
 
-      const baseCamY = 28 * zoomFactor;
-      const baseCamZ = 32 * zoomFactor;
+      // Dynamic Camera Aspect Ratio Adaptation:
+      // On portrait / narrow screens (aspect < 1.0, e.g. phones with aspect 0.45-0.56 or iPads 0.75),
+      // Three.js's vertical FOV narrows the horizontal view into a tight slit.
+      // Scale camera altitude and distance so the horizontal arena playfield remains proportional and unclipped:
+      const aspect = this.camera.aspect || 1.0;
+      const aspectScale = aspect < 1.0 ? Math.max(1.0, 1.0 / Math.pow(aspect, 0.75)) : 1.0;
+
+      const baseCamY = 28 * zoomFactor * aspectScale;
+      const baseCamZ = 32 * zoomFactor * aspectScale;
       this._camOffset.set(0, baseCamY, baseCamZ);
       this._camDesired.copy(this._camTarget).add(this._camOffset);
 
