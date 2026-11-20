@@ -1363,7 +1363,7 @@
     }
 
     /* =========================================================
-     *  MOBILE TOUCH CONTROLS (Virtual Joystick + Boost)
+     *  MOBILE & CROSS-DEVICE CONTROLS (Floating Joystick, D-Pad, Boost)
      * ========================================================= */
     .touch-controls {
       position: fixed;
@@ -1372,24 +1372,50 @@
       z-index: 30;
       display: none;
     }
+    /* Auto-display on any touch-capable screen, mobile, or tablet viewport */
+    @media (max-width: 1024px), (hover: none), (pointer: coarse) {
+      .touch-controls { display: block !important; }
+    }
+    .touch-controls.force-show {
+      display: block !important;
+    }
+    .touch-controls.force-hide {
+      display: none !important;
+    }
+
+    /* Left Floating Touch Steering Zone (Entire Left 55vw) */
+    .touch-left-zone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 55vw;
+      height: 100vh;
+      pointer-events: auto;
+      touch-action: none;
+      z-index: 29;
+    }
+
     /* Left Joystick */
     #joystick-zone {
       position: absolute;
-      bottom: 65px;
-      left: 30px;
+      bottom: 75px;
+      left: 35px;
       width: 130px;
       height: 130px;
       pointer-events: auto;
       touch-action: none;
+      z-index: 31;
+      opacity: 0.88;
+      transition: opacity 0.2s;
     }
     .joystick-base {
       position: absolute;
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 243, 255, 0.08) 0%, rgba(10, 14, 26, 0.6) 70%);
-      border: 2px solid rgba(0, 243, 255, 0.4);
-      box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+      background: radial-gradient(circle, rgba(0, 243, 255, 0.15) 0%, rgba(10, 14, 26, 0.8) 70%);
+      border: 2px solid rgba(0, 243, 255, 0.6);
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1400,19 +1426,72 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      border: 1px dashed rgba(0, 243, 255, 0.3);
+      border: 1px dashed rgba(0, 243, 255, 0.45);
     }
     .joystick-thumb {
       position: absolute;
-      width: 52px;
-      height: 52px;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #00f3ff, #0088cc);
-      box-shadow: 0 0 15px var(--cyan);
+      box-shadow: 0 0 20px var(--cyan);
       border: 2px solid #fff;
       transform: translate(0, 0);
       pointer-events: none;
-      transition: transform 0.05s ease-out;
+      transition: transform 0.04s ease-out;
+    }
+
+    /* Alternative Cyber D-Pad */
+    .cyber-dpad {
+      position: absolute;
+      bottom: 65px;
+      left: 25px;
+      width: 150px;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      touch-action: none;
+      z-index: 32;
+    }
+    .dpad-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .dpad-btn {
+      width: 46px;
+      height: 46px;
+      background: rgba(10, 20, 40, 0.85);
+      border: 2px solid rgba(0, 243, 255, 0.6);
+      border-radius: 8px;
+      color: var(--cyan);
+      font-size: 20px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.25);
+      transition: background 0.1s, transform 0.08s, box-shadow 0.1s;
+      touch-action: none;
+      user-select: none;
+    }
+    .dpad-btn:active, .dpad-btn.active {
+      background: rgba(0, 243, 255, 0.5);
+      transform: scale(0.92);
+      box-shadow: 0 0 25px var(--cyan);
+      color: #fff;
+    }
+    .dpad-center {
+      width: 32px;
+      height: 32px;
+      font-size: 11px;
+      opacity: 0.5;
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
     /* Right Boost Button */
@@ -1420,12 +1499,12 @@
       position: absolute;
       bottom: 75px;
       right: 35px;
-      width: 80px;
-      height: 80px;
+      width: 86px;
+      height: 86px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, rgba(255, 0, 85, 0.8), rgba(120, 0, 40, 0.9));
-      border: 2px solid rgba(255, 0, 85, 0.7);
-      box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
+      background: radial-gradient(circle at 35% 35%, rgba(255, 0, 85, 0.88), rgba(120, 0, 40, 0.95));
+      border: 3px solid rgba(255, 0, 85, 0.8);
+      box-shadow: 0 0 30px rgba(255, 0, 85, 0.6);
       color: #fff;
       font-family: var(--font-cyber);
       font-size: 13px;
@@ -1439,6 +1518,7 @@
       touch-action: none;
       cursor: pointer;
       user-select: none;
+      z-index: 31;
       transition: transform 0.1s, box-shadow 0.1s;
     }
     #mobile-boost-btn:active, #mobile-boost-btn.active {
@@ -1447,8 +1527,33 @@
       background: radial-gradient(circle at 35% 35%, #ff0055, #990033);
     }
     #mobile-boost-btn .boost-icon {
-      font-size: 20px;
+      font-size: 24px;
       color: var(--yellow);
+    }
+
+    /* Controls Guide Pill in Lobby & HUD */
+    .controls-guide-pill {
+      background: rgba(0, 243, 255, 0.08);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 10px 0 14px 0;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: #e2e8f0;
+      text-align: left;
+      line-height: 1.6;
+    }
+    .controls-guide-pill .ctrl-badge {
+      display: inline-block;
+      background: rgba(0, 243, 255, 0.2);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-weight: bold;
+      font-size: 10px;
+      margin-right: 6px;
     }
 
     /* =========================================================
@@ -1927,9 +2032,10 @@
    *  CYBERPUNK HUD (In-Game Overlay)
    * ========================================================= -->
   <div id="hud-overlay">
-    <!-- Top-Right Action Controls (Pause, Sound, Settings) -->
+    <!-- Top-Right Action Controls (Pause, Sound, Controls Mode, Settings) -->
     <div class="hud-controls-bar">
       <button class="hud-btn" id="btn-audio-toggle" title="Toggle Sound">🔊 SFX ON</button>
+      <button class="hud-btn" id="btn-controls-mode" title="Toggle Controls Mode (Joystick / D-Pad / Off)">🕹️ CONTROLS</button>
       <button class="hud-btn" id="btn-pause" title="Pause Game">⏸ PAUSE</button>
       <button class="hud-btn" id="btn-open-settings" title="Adsterra &amp; Engine Settings">⚙️</button>
     </div>
@@ -2011,17 +2117,34 @@
   </div>
 
   <!-- =========================================================
-   *  MOBILE TOUCH CONTROLS
+   *  MOBILE & CROSS-DEVICE TOUCH CONTROLS
    * ========================================================= -->
   <div class="touch-controls" id="touch-controls">
+    <!-- Left Dynamic Touch Steering Zone (Entire Left 55vw) -->
+    <div id="touch-left-zone" class="touch-left-zone" title="Drag anywhere here to steer"></div>
+
+    <!-- Virtual Joystick -->
     <div id="joystick-zone">
-      <div class="joystick-base">
+      <div class="joystick-base" id="joystick-base">
         <div class="joystick-thumb" id="joystick-thumb"></div>
       </div>
     </div>
-    <div id="mobile-boost-btn">
+
+    <!-- Tactile Cyber D-Pad (Alternative Control Mode) -->
+    <div id="cyber-dpad" class="cyber-dpad" style="display:none;">
+      <button class="dpad-btn dpad-up" id="dpad-up" aria-label="Steer Up">▲</button>
+      <div class="dpad-row">
+        <button class="dpad-btn dpad-left" id="dpad-left" aria-label="Steer Left">◄</button>
+        <button class="dpad-btn dpad-center" id="dpad-center" aria-label="D-Pad Center">●</button>
+        <button class="dpad-btn dpad-right" id="dpad-right" aria-label="Steer Right">►</button>
+      </div>
+      <button class="dpad-btn dpad-down" id="dpad-down" aria-label="Steer Down">▼</button>
+    </div>
+
+    <!-- Large Touch Turbo Boost Button -->
+    <div id="mobile-boost-btn" aria-label="Hold to Turbo Boost">
       <span class="boost-icon">⚡</span>
-      <span>BOOST</span>
+      <span style="font-size:11px; margin-top:2px;">BOOST</span>
     </div>
   </div>
 
@@ -2070,6 +2193,31 @@
         </div>
       </div>
 
+      <!-- PRIMARY START BATTLE (PROMINENT AT TOP FOR ALL MOBILE & DESKTOP SCREENS) -->
+      <div style="margin: 14px 0 10px 0;">
+        <button class="cyber-btn cyber-btn-primary" id="btn-start-game" style="font-size:18px; padding:14px 28px; width:100%; box-shadow:0 0 25px rgba(0,243,255,0.45); letter-spacing:2px;">
+          🚀 START BATTLE
+        </button>
+      </div>
+
+      <!-- UNIVERSAL CONTROLS GUIDE -->
+      <div class="controls-guide-pill">
+        <div><span class="ctrl-badge">📱 MOBILE</span> <b>Drag Floating Joystick</b> • <b>Swipe anywhere to steer</b> • <b>Hold ⚡ BOOST</b></div>
+        <div style="margin-top:5px;"><span class="ctrl-badge">💻 PC / LAPTOP</span> <b>WASD / Arrow Keys</b> • <b>Mouse Pointer Tracking</b> • <b>Space to Boost</b></div>
+      </div>
+
+      <div class="btn-row" style="margin-bottom:12px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-install-pwa" style="font-size:11px; border-color:var(--cyan); color:var(--cyan);">
+          📱 INSTALL APP
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-open-spin-wheel" style="font-size:11px; border-color:#ffd700; color:#ffd700; text-shadow:0 0 8px rgba(255,215,0,0.5);">
+          🎰 LUCKY WHEEL
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-vip-rewards" onclick="ApexAdManager.triggerDirectLink('lobby_vip_btn')" style="font-size:11px;">
+          🎁 VIP BONUS
+        </button>
+      </div>
+
       <!-- Rewarded Gameplay Offers in Lobby -->
       <div class="rewarded-hooks-box">
         <div class="reward-item">
@@ -2102,23 +2250,9 @@
         </a>
       </div>
 
-      <div class="btn-row">
-        <button class="cyber-btn cyber-btn-primary" id="btn-start-game" style="font-size:16px; padding:12px 36px;">
-          🚀 START BATTLE
-        </button>
-                <button class="cyber-btn cyber-btn-secondary" id="btn-install-pwa" style="font-size:12px; border-color:var(--cyan); color:var(--cyan);">
-          📱 INSTALL APP
-        </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-open-spin-wheel" style="font-size:12px; border-color:#ffd700; color:#ffd700; text-shadow:0 0 8px rgba(255,215,0,0.5);">
-          🎰 LUCKY WHEEL
-        </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-vip-rewards" onclick="ApexAdManager.triggerDirectLink('lobby_vip_btn')">
-          🎁 VIP BONUS
-        </button>
-      </div>
-
-      <p style="font-size:10px; color:#64748b; margin-top:12px; font-family:var(--font-mono);">
-        WASD / Arrow Keys or Virtual Joystick to Steer • Spacebar to Boost
+      <!-- Controls footer hint -->
+      <p style="font-size:10px; color:#64748b; margin-top:10px; font-family:var(--font-mono); text-align:center;">
+        🎮 Multi-Device Ready: Mobile Touch Joystick &amp; Swipe • PC Keyboard WASD &amp; Mouse Trackpad
       </p>
     </div>
   </div>
@@ -2863,10 +2997,14 @@
       const modalGameOver = document.getElementById('modal-gameover');
       const modalAdSettings = document.getElementById('modal-ad-settings');
 
-      // Touch controls
+      // Touch and cross-device controls
+      const touchControls = document.getElementById('touch-controls');
+      const touchLeftZone = document.getElementById('touch-left-zone');
       const joystickZone = document.getElementById('joystick-zone');
       const joystickThumb = document.getElementById('joystick-thumb');
+      const cyberDpad = document.getElementById('cyber-dpad');
       const mobileBoostBtn = document.getElementById('mobile-boost-btn');
+      const btnControlsMode = document.getElementById('btn-controls-mode');
 
       function initEngine() {
         if (engine) return;
@@ -3334,57 +3472,152 @@
         ApexAdManager.refreshBanners();
       }
 
-      /* ── Mobile Touch Virtual Joystick ───────────────────── */
+      /* ── Universal Multi-Device Control System (Mobile + Laptop + Desktop) ── */
       let joystickActive = false;
-      const MAX_JOY_DIST = 40;
+      const MAX_JOY_DIST = 45;
+      let joyOriginX = 0;
+      let joyOriginY = 0;
+      let currentControlMode = 'joystick'; // 'joystick', 'dpad', 'off'
 
-      function handleJoyTouch(e) {
+      // Auto-detect touch device & show touch controls
+      const isTouchCapable = ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 1024);
+      if (isTouchCapable && touchControls) {
+        touchControls.classList.add('force-show');
+      }
+
+      // Floating Dynamic Joystick handling
+      function handleJoyTouch(e, customOriginX, customOriginY) {
         e.preventDefault();
         const touch = e.targetTouches[0];
         const rect = joystickZone.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+        const centerX = customOriginX !== undefined ? customOriginX : (rect.left + rect.width / 2);
+        const centerY = customOriginY !== undefined ? customOriginY : (rect.top + rect.height / 2);
 
         let dx = touch.clientX - centerX;
         let dy = touch.clientY - centerY;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
+        let clampedX = dx;
+        let clampedY = dy;
         if (dist > MAX_JOY_DIST) {
-          dx = (dx / dist) * MAX_JOY_DIST;
-          dy = (dy / dist) * MAX_JOY_DIST;
+          clampedX = (dx / dist) * MAX_JOY_DIST;
+          clampedY = (dy / dist) * MAX_JOY_DIST;
         }
 
-        joystickThumb.style.transform = `translate(${dx}px, ${dy}px)`;
+        joystickThumb.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
 
-        if (engine && dist > 10) {
-          let targetX = 0;
-          let targetZ = 0;
-          if (Math.abs(dx) > Math.abs(dy)) {
-            targetX = dx > 0 ? 1 : -1;
-          } else {
-            targetZ = dy > 0 ? 1 : -1;
-          }
-          engine.setPlayerDirection(targetX, targetZ);
+        if (engine && dist > 8) {
+          engine.setPlayerDirection(dx, dy);
         }
       }
 
       function resetJoystick() {
         joystickActive = false;
         joystickThumb.style.transform = 'translate(0, 0)';
+        // Reset joystick back to standard bottom-left position
+        joystickZone.style.left = '35px';
+        joystickZone.style.bottom = '75px';
+        joystickZone.style.top = 'auto';
+        joystickZone.style.opacity = '0.88';
       }
 
+      // 1. Touch anywhere on the left 55% of screen to spawn / steer floating joystick
+      if (touchLeftZone) {
+        touchLeftZone.addEventListener('touchstart', (e) => {
+          if (currentControlMode !== 'joystick') return;
+          const touch = e.targetTouches[0];
+          joystickActive = true;
+          joyOriginX = Math.max(70, Math.min(window.innerWidth * 0.5, touch.clientX));
+          joyOriginY = Math.max(70, Math.min(window.innerHeight - 70, touch.clientY));
+
+          joystickZone.style.left = (joyOriginX - 65) + 'px';
+          joystickZone.style.top = (joyOriginY - 65) + 'px';
+          joystickZone.style.bottom = 'auto';
+          joystickZone.style.opacity = '1';
+
+          handleJoyTouch(e, joyOriginX, joyOriginY);
+        }, { passive: false });
+
+        touchLeftZone.addEventListener('touchmove', (e) => {
+          if (joystickActive) handleJoyTouch(e, joyOriginX, joyOriginY);
+        }, { passive: false });
+
+        touchLeftZone.addEventListener('touchend', resetJoystick);
+        touchLeftZone.addEventListener('touchcancel', resetJoystick);
+      }
+
+      // Also listen on joystickZone itself
       joystickZone.addEventListener('touchstart', (e) => {
         joystickActive = true;
-        handleJoyTouch(e);
+        const rect = joystickZone.getBoundingClientRect();
+        joyOriginX = rect.left + rect.width / 2;
+        joyOriginY = rect.top + rect.height / 2;
+        handleJoyTouch(e, joyOriginX, joyOriginY);
       }, { passive: false });
 
       joystickZone.addEventListener('touchmove', (e) => {
-        if (joystickActive) handleJoyTouch(e);
+        if (joystickActive) handleJoyTouch(e, joyOriginX, joyOriginY);
       }, { passive: false });
 
       joystickZone.addEventListener('touchend', resetJoystick);
       joystickZone.addEventListener('touchcancel', resetJoystick);
 
+      // 2. Tactile Cyber D-Pad buttons
+      const dpadMap = {
+        'dpad-up':    [0, -1],
+        'dpad-down':  [0, 1],
+        'dpad-left':  [-1, 0],
+        'dpad-right': [1, 0]
+      };
+      Object.keys(dpadMap).forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          const pressDpad = (e) => {
+            e.preventDefault();
+            btn.classList.add('active');
+            if (engine) engine.setPlayerDirection(dpadMap[btnId][0], dpadMap[btnId][1]);
+          };
+          const releaseDpad = (e) => {
+            e.preventDefault();
+            btn.classList.remove('active');
+          };
+          btn.addEventListener('touchstart', pressDpad, { passive: false });
+          btn.addEventListener('touchend', releaseDpad);
+          btn.addEventListener('mousedown', pressDpad);
+          btn.addEventListener('mouseup', releaseDpad);
+        }
+      });
+
+      // 3. Control Mode Toggle Button in HUD (Joystick -> D-Pad -> Hidden -> Joystick)
+      if (btnControlsMode) {
+        btnControlsMode.addEventListener('click', () => {
+          if (currentControlMode === 'joystick') {
+            currentControlMode = 'dpad';
+            btnControlsMode.innerText = '🎮 D-PAD';
+            joystickZone.style.display = 'none';
+            if (touchLeftZone) touchLeftZone.style.display = 'none';
+            if (cyberDpad) cyberDpad.style.display = 'flex';
+            touchControls.classList.add('force-show');
+            touchControls.classList.remove('force-hide');
+          } else if (currentControlMode === 'dpad') {
+            currentControlMode = 'off';
+            btnControlsMode.innerText = '📱 TOUCH OFF';
+            if (cyberDpad) cyberDpad.style.display = 'none';
+            touchControls.classList.remove('force-show');
+            touchControls.classList.add('force-hide');
+          } else {
+            currentControlMode = 'joystick';
+            btnControlsMode.innerText = '🕹️ JOYSTICK';
+            joystickZone.style.display = 'block';
+            if (touchLeftZone) touchLeftZone.style.display = 'block';
+            if (cyberDpad) cyberDpad.style.display = 'none';
+            touchControls.classList.add('force-show');
+            touchControls.classList.remove('force-hide');
+          }
+        });
+      }
+
+      // 4. Large Mobile Turbo Boost Button
       mobileBoostBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         mobileBoostBtn.classList.add('active');
@@ -3397,6 +3630,64 @@
         setBoost(false);
       });
 
+      // 5. Full-Screen Swipe Gestures (Turn with quick finger flick anywhere)
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartTime = 0;
+
+      window.addEventListener('touchstart', (e) => {
+        if (e.target.closest('#mobile-boost-btn, #joystick-zone, .dpad-btn, .hud-btn, button, input, .modal-backdrop')) return;
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTime = Date.now();
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        if (!engine || !engine.running || engine.paused) return;
+        if (e.target.closest('#mobile-boost-btn, #joystick-zone, .dpad-btn, .hud-btn, button, input, .modal-backdrop')) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+        const dt = Date.now() - touchStartTime;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 25 && dt < 450) {
+          if (Math.abs(dx) > Math.abs(dy)) {
+            engine.setPlayerDirection(dx > 0 ? 1 : -1, 0);
+          } else {
+            engine.setPlayerDirection(0, dy > 0 ? 1 : -1);
+          }
+        }
+      }, { passive: true });
+
+      // 6. Laptop / PC Mouse & Trackpad Steering (Hover cursor to steer)
+      window.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'mouse' && engine && engine.running && !engine.paused) {
+          const cx = window.innerWidth / 2;
+          const cy = window.innerHeight / 2;
+          const dx = e.clientX - cx;
+          const dy = e.clientY - cy;
+          if (Math.sqrt(dx * dx + dy * dy) > 35) {
+            engine.setPlayerDirection(dx, dy);
+          }
+        }
+      });
+
+      // Mouse click/hold to boost
+      window.addEventListener('mousedown', (e) => {
+        if (e.target.closest('button, input, select, .modal-backdrop, .hud-btn, .orbit-nav-btn')) return;
+        if (engine && engine.running && !engine.paused) {
+          setBoost(true);
+        }
+      });
+      window.addEventListener('mouseup', () => {
+        if (engine && engine.running) {
+          setBoost(false);
+        }
+      });
+
+      // 7. Desktop Keyboard Controls (WASD / Arrows to steer, Space to boost)
       window.addEventListener('keydown', (e) => {
         if (e.code === 'Space') {
           e.preventDefault();
