@@ -10,14 +10,6 @@
   <!-- Monetag Domain Verification -->
   <meta name="monetag" content="4c82b2bde24b3d6a6930e54f5bb74228">
 
-  <!-- Production Ad Networks (Adsterra & Monetag) -->
-  <!-- Adsterra Social Bar Native Script -->
-  <script data-cfasync="false" src="https://bauval.org/14/8ff82ce2b79188cb7ecb54d761206915"></script>
-  <!-- Monetag In-Page Push (IPP) Script -->
-  <script>(function(d,z,s){s.src='https://'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('groleegni.net',12310286,document.createElement('script'))</script>
-  <!-- Monetag Vignette Banner Script -->
-  <script src="https://alwingulla.com/88/tag.min.js" data-zone="12310273" async data-cfasync="false"></script>
-
     <!-- Web App Manifest (PWA Standalone Mode) -->
   <link rel="manifest" href="data:application/manifest+json;utf-8,%7B%22name%22%3A%22Apex%20Serpent%20Royale%203D%22%2C%22short_name%22%3A%22ApexSerpent%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0f1d%22%2C%22theme_color%22%3A%22%230a0f1d%22%2C%22orientation%22%3A%22any%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fapexserpentroyale.io%2Ficon-512.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
   <meta name="mobile-web-app-capable" content="yes">
@@ -514,31 +506,129 @@
     }
 
     /* =========================================================
-     *  ADSTERRA RESPONSIVE BANNER & SOCIAL BAR CONTAINERS
+     *  SLEEK FIXED ROTATING HEADER AD BANNER (#fixed-header-ad-bar)
      * ========================================================= */
-    .ad-top-wrapper {
+    #fixed-header-ad-bar {
       position: fixed;
-      top: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 40;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 36px;
+      z-index: 99;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      background: rgba(10, 15, 29, 0.95);
+      border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 0 12px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    #fixed-header-ad-bar:hover {
+      background: rgba(14, 21, 40, 0.98);
+      border-bottom-color: rgba(0, 243, 255, 0.6);
+      box-shadow: 0 2px 14px rgba(0, 243, 255, 0.25);
+    }
+    .header-ad-slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .header-ad-slide.active {
+      opacity: 1;
       pointer-events: auto;
+    }
+    .header-ad-tag {
+      font-family: var(--font-cyber);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .header-ad-tag.sponsor {
+      color: #ffd700;
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.55);
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    }
+    .header-ad-tag.featured {
+      color: var(--cyan);
+      background: rgba(0, 243, 255, 0.15);
+      border: 1px solid rgba(0, 243, 255, 0.55);
+      text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+    }
+    .header-ad-tag.hot {
+      color: var(--magenta);
+      background: rgba(255, 0, 85, 0.15);
+      border: 1px solid rgba(255, 0, 85, 0.55);
+      text-shadow: 0 0 8px rgba(255, 0, 85, 0.5);
+    }
+    .header-ad-tag.reward {
+      color: var(--green);
+      background: rgba(0, 255, 102, 0.15);
+      border: 1px solid rgba(0, 255, 102, 0.55);
+      text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+    }
+    .header-ad-text {
+      font-family: var(--font-cyber);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #e2e8f0;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+    #fixed-header-ad-bar:hover .header-ad-text {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    }
+
+    @media (max-width: 640px) {
+      #fixed-header-ad-bar {
+        height: 34px;
+        padding: 0 8px;
+      }
+      .header-ad-slide {
+        gap: 6px;
+        padding: 0 8px;
+      }
+      .header-ad-tag {
+        font-size: 9.5px;
+        padding: 1px 5px;
+      }
+      .header-ad-text {
+        font-size: 10px;
+        letter-spacing: 0.2px;
+      }
+    }
+
+    /* Unobtrusive Fixed Banners - Old Top Banner hidden in favor of sleek header bar */
+    .ad-top-wrapper {
+      display: none !important;
     }
 
     #asr-ad-leaderboard {
-      width: 728px;
-      height: 90px;
-      background: rgba(10, 14, 26, 0.9);
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      transition: opacity 0.3s ease;
+      display: none !important;
     }
 
     .ad-mobile-footer-wrapper {
@@ -580,64 +670,11 @@
       overflow: hidden;
     }
 
-    /* Adsterra High-eCPM Social Bar Container */
-    #asr-ad-social-bar {
-      position: fixed;
-      bottom: 70px;
-      right: 20px;
-      z-index: 48;
-      width: 300px;
-      background: rgba(11, 15, 28, 0.96);
-      border: 1px solid var(--magenta);
-      border-radius: 8px;
-      padding: 10px 12px;
-      box-shadow: 0 0 20px rgba(255, 0, 85, 0.35);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: slideUpRight 0.4s ease;
-      cursor: pointer;
-    }
-    .social-bar-icon {
-      font-size: 26px;
-      color: var(--yellow);
-      animation: pulseGlow 1.2s infinite alternate;
-    }
-    .social-bar-text {
-      flex: 1;
-      text-align: left;
-    }
-    .social-bar-title {
-      font-family: var(--font-cyber);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--cyan);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .social-bar-desc {
-      font-size: 10px;
-      color: #cbd5e1;
-      line-height: 1.2;
-    }
-    .social-bar-close {
-      font-size: 14px;
-      color: #94a3b8;
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 3px;
-      transition: color 0.2s;
-    }
-    .social-bar-close:hover {
-      color: #fff;
-      background: rgba(255, 0, 85, 0.3);
-    }
-
-    /* Polite AdBlock Detector Badge with Gaming Incentive */
+    /* Polite AdBlock Detector Badge with Gaming Incentive - Offset cleanly below 36px header */
     #adblock-detector-badge {
       position: fixed;
-      top: 15px;
-      left: 15px;
+      top: calc(44px + env(safe-area-inset-top, 0px));
+      left: calc(15px + env(safe-area-inset-left, 0px));
       z-index: 52;
       background: rgba(15, 23, 42, 0.88);
       border: 1px solid var(--yellow);
@@ -721,47 +758,16 @@
 
     
     /* =========================================================
-     *  MONETAG IN-PAGE PUSH (IPP) & MULTITAG STYLING (Pristine UX)
+     *  MONETAG IN-PAGE PUSH (IPP) & MULTITAG STYLING (Disabled to prevent popups)
      * ========================================================= */
     #monetag-ipp-slot {
-      position: fixed;
-      bottom: 70px;
-      left: 20px;
-      z-index: 48;
-      width: 290px;
-      background: rgba(10, 16, 30, 0.96);
-      border: 1px solid var(--cyan);
-      border-radius: 8px;
-      padding: 10px 12px;
-      box-shadow: 0 0 20px rgba(0, 243, 255, 0.35);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      animation: slideDown 0.4s ease;
-      backdrop-filter: blur(8px);
-      transition: transform 0.2s, box-shadow 0.2s;
+      display: none !important;
     }
-    #monetag-ipp-slot:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
-      border-color: #fff;
-    }
-    .ipp-icon { font-size: 24px; color: var(--yellow); filter: drop-shadow(0 0 6px var(--yellow)); }
-    .ipp-body { flex: 1; text-align: left; }
-    .ipp-title { font-family: var(--font-cyber); font-size: 11px; font-weight: 700; color: var(--yellow); letter-spacing: 0.5px; }
-    .ipp-desc { font-size: 10px; color: #94a3b8; line-height: 1.25; margin-top: 2px; }
-    .ipp-close { font-size: 14px; color: #64748b; cursor: pointer; padding: 2px 6px; border-radius: 3px; }
-    .ipp-close:hover { color: #fff; background: rgba(0, 243, 255, 0.2); }
 
     /* Zero UX degradation on mobile: keep clear of virtual touch joystick on bottom-left */
     @media (max-width: 768px) {
       #monetag-ipp-slot {
-        bottom: auto;
-        top: 75px;
-        left: 10px;
-        width: calc(100% - 20px);
-        max-width: 320px;
+        display: none !important;
       }
     }
 
@@ -769,10 +775,10 @@
     /* =========================================================
      *  TOP .IO GAME RETENTION & UI/UX STYLING
      * ========================================================= */
-    /* 1. King Bounty Compass HUD */
+    /* 1. King Bounty Compass HUD - Offset below Combat Telemetry */
     #hud-king-bounty {
       position: absolute;
-      top: calc(56px + env(safe-area-inset-top, 0px));
+      top: calc(94px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -1069,7 +1075,7 @@
 
     @media (max-width: 768px) {
       #hud-king-bounty {
-        top: calc(48px + env(safe-area-inset-top, 0px));
+        top: calc(84px + env(safe-area-inset-top, 0px));
         padding: 4px 10px;
         font-size: 10px;
       }
@@ -1096,10 +1102,10 @@
       display: none;
     }
 
-    /* Top Left: Minimap Radar */
+    /* Top Left: Minimap Radar - Positioned cleanly below 36px header ad */
     .hud-radar-box {
       position: absolute;
-      top: calc(105px + env(safe-area-inset-top, 0px));
+      top: calc(44px + env(safe-area-inset-top, 0px));
       left: calc(15px + env(safe-area-inset-left, 0px));
       width: 140px;
       background: var(--bg-panel);
@@ -1128,10 +1134,10 @@
       display: block;
     }
 
-    /* Top Center: Main Combat Telemetry */
+    /* Top Center: Main Combat Telemetry - Positioned cleanly below 36px header ad */
     .hud-telemetry {
       position: absolute;
-      top: calc(105px + env(safe-area-inset-top, 0px));
+      top: calc(44px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -1274,10 +1280,10 @@
     .powerup-pill.magnet { border-color: var(--yellow); color: var(--yellow); }
     .powerup-pill.multiplier { border-color: var(--green); color: var(--green); }
 
-    /* Top Right: Real-time Leaderboard */
+    /* Top Right: Real-time Leaderboard - Positioned cleanly below Controls Bar */
     .hud-leaderboard-box {
       position: absolute;
-      top: calc(105px + env(safe-area-inset-top, 0px));
+      top: calc(88px + env(safe-area-inset-top, 0px));
       right: calc(15px + env(safe-area-inset-right, 0px));
       width: 180px;
       background: var(--bg-panel);
@@ -1341,10 +1347,10 @@
     .kf-killer { color: var(--cyan); font-weight: bold; }
     .kf-victim { color: var(--magenta); font-weight: bold; }
 
-    /* Top Corner HUD Actions (Pause & Settings & Audio) */
+    /* Top Corner HUD Actions (Pause & Settings & Audio) - Offset below 36px header ad */
     .hud-controls-bar {
       position: absolute;
-      top: calc(15px + env(safe-area-inset-top, 0px));
+      top: calc(44px + env(safe-area-inset-top, 0px));
       right: calc(15px + env(safe-area-inset-right, 0px));
       display: flex;
       gap: 8px;
@@ -1571,10 +1577,14 @@
 
     /* =========================================================
      *  MODAL OVERLAYS (Lobby, Pause, Game Over, Ad Settings)
+     *  Offset top by 36px so modals sit cleanly below fixed header
      * ========================================================= */
     .modal-backdrop {
       position: fixed;
-      inset: 0;
+      top: 36px;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(5, 7, 15, 0.85);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
@@ -1592,7 +1602,7 @@
       border-radius: 8px;
       width: 100%;
       max-width: 540px;
-      max-height: 90dvh;
+      max-height: calc(90dvh - 20px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
@@ -1908,10 +1918,6 @@
       0% { opacity: 0; transform: translateY(-10px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    @keyframes slideUpRight {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
     @keyframes pulseGlow {
       0% { transform: scale(1); filter: drop-shadow(0 0 4px var(--yellow)); }
       100% { transform: scale(1.15); filter: drop-shadow(0 0 10px var(--yellow)); }
@@ -1925,15 +1931,8 @@
       .ad-mobile-footer-wrapper { display: flex !important; }
       .touch-controls { display: block !important; }
 
-      #asr-ad-social-bar {
-        bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-        right: calc(10px + env(safe-area-inset-right, 0px));
-        left: calc(10px + env(safe-area-inset-left, 0px));
-        width: auto;
-      }
-
       .hud-radar-box {
-        top: calc(55px + env(safe-area-inset-top, 0px));
+        top: calc(84px + env(safe-area-inset-top, 0px));
         left: calc(10px + env(safe-area-inset-left, 0px));
         width: 110px;
         padding: 5px;
@@ -1941,7 +1940,7 @@
       #minimap-canvas { height: 90px; }
 
       .hud-telemetry {
-        top: calc(15px + env(safe-area-inset-top, 0px));
+        top: calc(42px + env(safe-area-inset-top, 0px));
         gap: 6px;
       }
       .telemetry-card {
@@ -1950,14 +1949,24 @@
       }
       .telemetry-val { font-size: 16px; }
 
+      .hud-controls-bar {
+        top: calc(42px + env(safe-area-inset-top, 0px));
+        right: calc(10px + env(safe-area-inset-right, 0px));
+        gap: 4px;
+      }
+      .hud-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+      }
+
       .storm-badge {
-        top: calc(68px + env(safe-area-inset-top, 0px));
+        top: calc(84px + env(safe-area-inset-top, 0px));
         font-size: 10px;
         padding: 2px 8px;
       }
 
       .hud-leaderboard-box {
-        top: calc(55px + env(safe-area-inset-top, 0px));
+        top: calc(84px + env(safe-area-inset-top, 0px));
         right: calc(10px + env(safe-area-inset-right, 0px));
         width: 140px;
         padding: 5px;
@@ -2099,14 +2108,15 @@
         display: none !important;
       }
 
-      /* Modals (Lobby, GameOver, Pause, Daily Supply, Missions): max-height 90dvh with smooth scrolling */
+      /* Modals (Lobby, GameOver, Pause, Daily Supply, Missions): offset below 36px fixed header */
       .modal-backdrop {
+        top: 36px !important;
         padding: 6px !important;
         align-items: flex-start !important;
       }
       #modal-lobby .cyber-modal,
       .cyber-modal {
-        max-height: 90dvh !important;
+        max-height: calc(100dvh - 48px) !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
@@ -2145,6 +2155,26 @@
 </head>
 <body>
 
+  <!-- Sleek Fixed Rotating Header Ad Banner (#fixed-header-ad-bar) -->
+  <div id="fixed-header-ad-bar" onclick="ApexAdManager.triggerDirectLink('header_ad_rotation')" title="Click sponsor offer">
+    <div class="header-ad-slide active" data-index="0">
+      <span class="header-ad-tag sponsor">[SPONSOR]</span>
+      <span class="header-ad-text">🚀 Claim 500 Quantum Credits &amp; VIP Boosters! » Tap to Claim</span>
+    </div>
+    <div class="header-ad-slide" data-index="1">
+      <span class="header-ad-tag featured">[FEATURED]</span>
+      <span class="header-ad-text">⚡ Turbo Plasma Skin &amp; 120% Boost Stamina » Unlock Now</span>
+    </div>
+    <div class="header-ad-slide" data-index="2">
+      <span class="header-ad-tag hot">[HOT]</span>
+      <span class="header-ad-text">🎮 Top Trending Web3 &amp; Telegram Mini Games » Play &amp; Win</span>
+    </div>
+    <div class="header-ad-slide" data-index="3">
+      <span class="header-ad-tag reward">[REWARD]</span>
+      <span class="header-ad-text">🎁 Daily Arena Airdrop &amp; Rare Cyber Aura » Claim Shards</span>
+    </div>
+  </div>
+
   <!-- Retro Scanline Overlay -->
   <div class="scanlines"></div>
   <div class="vignette"></div>
@@ -2159,10 +2189,10 @@
   <canvas id="game-canvas"></canvas>
 
   <!-- =========================================================
-   *  ADSTERRA FIXED BANNERS & SOCIAL BAR
+   *  ADSTERRA FIXED BANNERS & SPONSOR SLOTS
    * ========================================================= -->
-  <!-- 728x90 Desktop Leaderboard Banner -->
-  <div class="ad-top-wrapper" id="ad-leaderboard-wrapper">
+  <!-- 728x90 Desktop Leaderboard Banner (Hidden - Replaced by sleek fixed header ad bar) -->
+  <div class="ad-top-wrapper" id="ad-leaderboard-wrapper" style="display:none;">
     <div id="asr-ad-leaderboard">
       <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('banner_728x90')">
         <span class="ad-badge">SPONSORED</span>
@@ -2184,24 +2214,14 @@
     </div>
   </div>
 
-  <!-- Adsterra High-eCPM Social Bar Container -->
-  <div id="asr-ad-social-bar" onclick="ApexAdManager.triggerDirectLink('social_bar')">
-    <div class="social-bar-icon">🎁</div>
-    <div class="social-bar-text">
-      <div class="social-bar-title">⚡ APEX VIP CRATE UNLOCKED</div>
-      <div class="social-bar-desc">Tap to claim 500 Quantum Shards &amp; Golden Serpent Aura!</div>
-    </div>
-    <div class="social-bar-close" onclick="event.stopPropagation(); document.getElementById('asr-ad-social-bar').style.display='none';">✕</div>
-  </div>
-
   <!-- Hidden Popunder / Interstitial Trigger Anchor -->
   <div id="asr-ad-interstitial" style="display:none;"></div>
 
   <!-- Monetag MultiTag Script Container Slot (Zero UX Degradation) -->
   <div id="monetag-multitag-container" data-zone="12310286" style="display:none;"></div>
 
-  <!-- Monetag In-Page Push (IPP) Cyber Quest Slot -->
-  <div id="monetag-ipp-slot" onclick="ApexAdManager.triggerSmartLink('monetag_quest_ipp')">
+  <!-- Monetag In-Page Push (IPP) Cyber Quest Slot (Hidden to eliminate popups) -->
+  <div id="monetag-ipp-slot" onclick="ApexAdManager.triggerSmartLink('monetag_quest_ipp')" style="display:none;">
     <div class="ipp-icon">⚡</div>
     <div class="ipp-body">
       <div class="ipp-title">DAILY CYBER QUEST</div>
@@ -2673,8 +2693,8 @@
         <button class="cyber-btn cyber-btn-secondary" id="btn-test-directlink" style="font-size:11px;">
           🔗 TEST DIRECT LINK
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-test-socialbar" style="font-size:11px;">
-          💬 TEST SOCIAL BAR
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-header-ad" style="font-size:11px;">
+          📢 TEST HEADER AD
         </button>
         <button class="cyber-btn cyber-btn-secondary" id="btn-test-interstitial" style="font-size:11px;">
           📺 SIMULATE GAME OVER AD
@@ -2985,41 +3005,13 @@
 
       let inAppInterstitialInitialized = false;
       function initTelegramInAppInterstitial() {
-        if (inAppInterstitialInitialized) return;
-        if (typeof window.show_12310837 === 'function') {
-          try {
-            window.show_12310837({
-              type: 'inApp',
-              inAppSettings: {
-                frequency: 2,
-                capping: 0.1,
-                interval: 30,
-                timeout: 5,
-                everyPage: false
-              }
-            });
-            inAppInterstitialInitialized = true;
-            log('[Monetag TMA] Initialized In-App Interstitial auto-timer (Zone: 12310837).');
-          } catch (e) {
-            log('[Monetag TMA] In-App Interstitial error: ' + (e.message || e));
-          }
-        }
+        // Disabled: keep Monetag Telegram Mini App SDK strictly for user-requested rewarded actions
+        log('[Monetag TMA] Automatic in-app interstitial timer disabled (rewarded-only mode).');
       }
 
       function checkAndInitTelegramAds() {
         if (isTelegramApp()) {
-          log('[Monetag TMA] Telegram environment active. Checking Monetag TMA SDK...');
-          if (typeof window.show_12310837 === 'function') {
-            initTelegramInAppInterstitial();
-          } else {
-            const checkTimer = setInterval(() => {
-              if (typeof window.show_12310837 === 'function') {
-                clearInterval(checkTimer);
-                initTelegramInAppInterstitial();
-              }
-            }, 1000);
-            setTimeout(() => clearInterval(checkTimer), 20000);
-          }
+          log('[Monetag TMA] Telegram Mini App environment active. Rewarded SDK standby (Zone: 12310837).');
         }
       }
 
@@ -3074,6 +3066,9 @@
       }
 
       function triggerDirectLink(source, force = false) {
+        if (source === 'header_ad_rotation') {
+          force = true; // Header ad click reliably opens verified sponsor smartlink
+        }
         return triggerSmartLink(source, force);
       }
 
@@ -3085,11 +3080,11 @@
 
         markDirectLinkTriggered();
 
-        // Dual-network smart routing:
-        // Use Monetag Smartlink if network is 'monetag', or source is 'monetag_*',
-        // or in 'hybrid' mode when alternate trigger applies.
-        let targetUrl = config.directLinkUrl;
-        if (config.adNetwork === 'monetag' || source.startsWith('monetag_') || (config.adNetwork === 'hybrid' && (source.includes('rewarded') || Math.random() > 0.5))) {
+        // Target URL resolution (Header ad always opens verified smartlink)
+        let targetUrl = config.directLinkUrl || 'https://www.profitablecpmrate.com/fptf61s1k?key=c6c4c05ef1c8dfb208da70557431b997';
+        if (source === 'header_ad_rotation') {
+          targetUrl = config.directLinkUrl || 'https://www.profitablecpmrate.com/fptf61s1k?key=c6c4c05ef1c8dfb208da70557431b997';
+        } else if (config.adNetwork === 'monetag' || source.startsWith('monetag_') || (config.adNetwork === 'hybrid' && (source.includes('rewarded') || Math.random() > 0.5))) {
           targetUrl = config.monetagSmartlink || config.directLinkUrl;
         }
 
@@ -3108,40 +3103,10 @@
         return true;
       }
 
-      // Monetag Vignette Interstitial Hook (Game Over natural pause point only)
+      // Monetag Vignette Interstitial Hook (Disabled to eliminate unprompted popups during gameplay/game-over)
       function triggerVignette() {
-        if (isTelegramApp() && typeof window.show_12310837 === 'function') {
-          try {
-            window.show_12310837('pop');
-            log('[Monetag TMA] Rewarded popup interstitial displayed on match conclusion.');
-            return true;
-          } catch(e) {
-            log('[Monetag TMA] Rewarded popup error: ' + (e.message || e));
-          }
-        }
-
-        if (config.adNetwork !== 'hybrid' && config.adNetwork !== 'monetag') {
-          log('[Monetag] Vignette skipped: adNetwork is ' + config.adNetwork);
-          return false;
-        }
-
-        if (!canTriggerDirectLink()) {
-          log(`[Monetag] Vignette skipped: frequency cooldown (${config.cooldownSeconds}s) active.`);
-          return false;
-        }
-
-        markDirectLinkTriggered();
-        log('[Monetag] Vignette interstitial activated at match conclusion pause point.');
-
-        // Live Monetag MultiTag vignette script execution if present
-        if (typeof window.show_12310273 === 'function') {
-          try { window.show_12310273(); } catch(e) {}
-        } else if (window.show_8923412) {
-          try { window.show_8923412(); } catch(e) {}
-        } else {
-          log('[Monetag] MultiTag simulated vignette overlay ready.');
-        }
-        return true;
+        log('[AdManager] Automatic vignette popups disabled (rewarded-only & header banner active).');
+        return false;
       }
 
       // Rewarded Gameplay Hook 1: Unlock VIP Dragon Skin for 3 matches
@@ -3181,23 +3146,12 @@
       function refreshBanners() {
         log(`[AdManager] Refreshing inventory (Network: ${config.adNetwork.toUpperCase()})...`);
         const isAdsterraActive = config.adNetwork === 'hybrid' || config.adNetwork === 'adsterra';
-        const isMonetagActive = config.adNetwork === 'hybrid' || config.adNetwork === 'monetag';
 
         document.querySelectorAll('.adsterra-mock-banner').forEach(el => {
           el.style.display = isAdsterraActive ? 'block' : 'none';
           el.style.opacity = '0.5';
           setTimeout(() => { el.style.opacity = '1'; }, 200);
         });
-
-        const socialBar = document.getElementById('asr-ad-social-bar');
-        if (socialBar) {
-          socialBar.style.display = isAdsterraActive ? 'flex' : 'none';
-        }
-
-        const ippSlot = document.getElementById('monetag-ipp-slot');
-        if (ippSlot) {
-          ippSlot.style.display = isMonetagActive ? 'flex' : 'none';
-        }
       }
 
       // AdBlock Detection & Gaming Incentive
@@ -4164,13 +4118,13 @@
         ApexAdManager.triggerDirectLink('test_modal_btn', true);
       });
 
-      document.getElementById('btn-test-socialbar').addEventListener('click', () => {
-        const sb = document.getElementById('asr-ad-social-bar');
-        if (sb) {
-          sb.style.display = 'flex';
-          ApexAdManager.log('[AdManager] Social Bar preview displayed.');
-        }
-      });
+      const btnTestHeader = document.getElementById('btn-test-header-ad') || document.getElementById('btn-test-socialbar');
+      if (btnTestHeader) {
+        btnTestHeader.addEventListener('click', () => {
+          ApexAdManager.triggerDirectLink('header_ad_rotation');
+          ApexAdManager.log('[AdManager] Header ad rotation tested -> smartlink triggered.');
+        });
+      }
 
             const btnTestVignette = document.getElementById('btn-test-vignette');
       if (btnTestVignette) {
@@ -4968,6 +4922,18 @@
         const swatch = document.getElementById('swatch-dragon-skin');
         if (swatch) swatch.style.display = 'flex';
       }
+
+      // Sleek Fixed Rotating Header Ad Banner (8s CSS opacity crossfade)
+      (function initHeaderAdRotation() {
+        const slides = document.querySelectorAll('#fixed-header-ad-bar .header-ad-slide');
+        if (!slides || slides.length === 0) return;
+        let activeIdx = 0;
+        setInterval(() => {
+          slides[activeIdx].classList.remove('active');
+          activeIdx = (activeIdx + 1) % slides.length;
+          slides[activeIdx].classList.add('active');
+        }, 8000);
+      })();
 
     })();
   </script>
