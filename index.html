@@ -34,6 +34,8 @@
   
   <!-- Telegram WebApp SDK -->
   <script src="./telegram-web-app.js"></script>
+  <!-- Monetag Telegram Mini App SDK (Bot: @ApexSerpent3DRoyaleBot | Zone: 12310837) -->
+  <script src="//libtl.com/sdk.js" data-zone="12310837" data-sdk="show_12310837"></script>
   <!-- Discord Activity SDK Fallback -->
   <script src="./discord-embedded-app-sdk.js"></script>
 
@@ -2933,6 +2935,7 @@
         directLinkUrl: 'https://www.profitablecpmrate.com/fptf61s1k?key=c6c4c05ef1c8dfb208da70557431b997',
         monetagSmartlink: 'https://uplcm.com/4/12310259',
         monetagZone: '12310286',
+        monetagTmaZone: '12310837',
         cooldownSeconds: 60,
         keySocialBar: '8ff82ce2b79188cb7ecb54d761206915',
         key728: 'ADSTERRA_KEY_728x90',
@@ -2944,6 +2947,81 @@
       };
 
       let config = { ...defaultConfig };
+
+      function isTelegramApp() {
+        const tg = window.Telegram?.WebApp;
+        return !!((tg && (tg.initData || tg.initDataUnsafe?.user)) || typeof window.show_12310837 === 'function' || window.location.search.includes('tgWebAppPlatform'));
+      }
+
+      async function triggerTelegramRewarded() {
+        if (typeof window.show_12310837 === 'function') {
+          return window.show_12310837();
+        }
+        return false;
+      }
+
+      async function triggerTelegramPopup() {
+        if (typeof window.show_12310837 === 'function') {
+          return window.show_12310837('pop');
+        }
+        return false;
+      }
+
+      async function showRewardedAd(source = 'rewarded_flow') {
+        log(`[AdManager] showRewardedAd requested (${source})`);
+        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
+          log('[Monetag TMA] Triggering Telegram Mini App Rewarded Ad (Zone: 12310837)...');
+          try {
+            const res = await triggerTelegramRewarded();
+            log('[Monetag TMA] Telegram Rewarded Ad completed successfully.');
+            return res;
+          } catch (e) {
+            log('[Monetag TMA] Telegram Rewarded Ad closed or error: ' + (e.message || e));
+            return false;
+          }
+        }
+        return triggerSmartLink(source, true);
+      }
+
+      let inAppInterstitialInitialized = false;
+      function initTelegramInAppInterstitial() {
+        if (inAppInterstitialInitialized) return;
+        if (typeof window.show_12310837 === 'function') {
+          try {
+            window.show_12310837({
+              type: 'inApp',
+              inAppSettings: {
+                frequency: 2,
+                capping: 0.1,
+                interval: 30,
+                timeout: 5,
+                everyPage: false
+              }
+            });
+            inAppInterstitialInitialized = true;
+            log('[Monetag TMA] Initialized In-App Interstitial auto-timer (Zone: 12310837).');
+          } catch (e) {
+            log('[Monetag TMA] In-App Interstitial error: ' + (e.message || e));
+          }
+        }
+      }
+
+      function checkAndInitTelegramAds() {
+        if (isTelegramApp()) {
+          log('[Monetag TMA] Telegram environment active. Checking Monetag TMA SDK...');
+          if (typeof window.show_12310837 === 'function') {
+            initTelegramInAppInterstitial();
+          } else {
+            const checkTimer = setInterval(() => {
+              if (typeof window.show_12310837 === 'function') {
+                clearInterval(checkTimer);
+                initTelegramInAppInterstitial();
+              }
+            }, 1000);
+            setTimeout(() => clearInterval(checkTimer), 20000);
+          }
+        }
+      }
 
       function loadConfig() {
         try {
@@ -3032,6 +3110,16 @@
 
       // Monetag Vignette Interstitial Hook (Game Over natural pause point only)
       function triggerVignette() {
+        if (isTelegramApp() && typeof window.show_12310837 === 'function') {
+          try {
+            window.show_12310837('pop');
+            log('[Monetag TMA] Rewarded popup interstitial displayed on match conclusion.');
+            return true;
+          } catch(e) {
+            log('[Monetag TMA] Rewarded popup error: ' + (e.message || e));
+          }
+        }
+
         if (config.adNetwork !== 'hybrid' && config.adNetwork !== 'monetag') {
           log('[Monetag] Vignette skipped: adNetwork is ' + config.adNetwork);
           return false;
@@ -3058,7 +3146,11 @@
 
       // Rewarded Gameplay Hook 1: Unlock VIP Dragon Skin for 3 matches
       function unlockDragonSkin() {
-        triggerSmartLink('rewarded_dragon_skin', true);
+        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
+          triggerTelegramRewarded();
+        } else {
+          triggerSmartLink('rewarded_dragon_skin', true);
+        }
         config.dragonSkinMatches = 3;
         saveConfig({ dragonSkinMatches: 3 });
         const swatch = document.getElementById('swatch-dragon-skin');
@@ -3069,7 +3161,11 @@
 
       // Rewarded Gameplay Hook 2: Magnet Starter Pack
       function activateMagnetPack() {
-        triggerSmartLink('rewarded_magnet_pack', true);
+        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
+          triggerTelegramRewarded();
+        } else {
+          triggerSmartLink('rewarded_magnet_pack', true);
+        }
         config.magnetPackActive = true;
         saveConfig({ magnetPackActive: true });
         const btn = document.getElementById('btn-magnet-pack');
@@ -3136,6 +3232,7 @@
       }, 60000);
 
       loadConfig();
+      checkAndInitTelegramAds();
 
       return {
         getConfig: () => config,
@@ -3144,6 +3241,12 @@
         triggerDirectLink,
         triggerSmartLink,
         triggerVignette,
+        isTelegramApp,
+        triggerTelegramRewarded,
+        triggerTelegramPopup,
+        showRewardedAd,
+        initTelegramInAppInterstitial,
+        checkAndInitTelegramAds,
         unlockDragonSkin,
         activateMagnetPack,
         refreshBanners,
@@ -3989,9 +4092,17 @@
         btn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
       });
 
-      document.getElementById('btn-revive-player').addEventListener('click', () => {
+      document.getElementById('btn-revive-player').addEventListener('click', async () => {
         ApexAdManager.log('[RewardedAd] Revive ad requested. Showing sponsor video...');
-        ApexAdManager.triggerDirectLink('rewarded_revive', true);
+        if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
+          try {
+            await ApexAdManager.showRewardedAd('rewarded_revive_tma');
+          } catch (e) {
+            ApexAdManager.log('[RewardedAd] TMA ad error: ' + (e.message || e));
+          }
+        } else {
+          ApexAdManager.triggerDirectLink('rewarded_revive', true);
+        }
         setTimeout(() => {
           modalGameOver.style.display = 'none';
           if (engine) engine.revivePlayer();
@@ -4118,13 +4229,21 @@
       /* ── 5-Second Revive Countdown Buttons ───────────────── */
       const btnCountdownRevive = document.getElementById('btn-countdown-revive');
       if (btnCountdownRevive) {
-        btnCountdownRevive.addEventListener('click', () => {
+        btnCountdownRevive.addEventListener('click', async () => {
           if (deathCountdownInterval) {
             clearInterval(deathCountdownInterval);
             deathCountdownInterval = null;
           }
           document.getElementById('modal-death-countdown').style.display = 'none';
-          ApexAdManager.triggerSmartLink('countdown_revive', true);
+          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
+            try {
+              await ApexAdManager.showRewardedAd('countdown_revive_tma');
+            } catch (e) {
+              ApexAdManager.log('[Revive] TMA ad error: ' + (e.message || e));
+            }
+          } else {
+            ApexAdManager.triggerSmartLink('countdown_revive', true);
+          }
           if (engine) engine.revivePlayer();
           ApexAdManager.log('[Revive] Player revived via 5s countdown with 50% mass + Phase Shield!');
         });
@@ -4380,6 +4499,10 @@
       if (btnOpenWheel) {
         btnOpenWheel.addEventListener('click', () => {
           document.getElementById('modal-spin-wheel').style.display = 'flex';
+          if (ApexAdManager.isTelegramApp()) {
+            const spinBtn = document.getElementById('btn-spin-wheel');
+            if (spinBtn) spinBtn.innerText = '📺 WATCH AD TO SPIN';
+          }
           drawWheel();
         });
       }
@@ -4393,7 +4516,22 @@
 
       const btnSpinWheel = document.getElementById('btn-spin-wheel');
       if (btnSpinWheel) {
-        btnSpinWheel.addEventListener('click', () => {
+        btnSpinWheel.addEventListener('click', async () => {
+          if (isSpinning) return;
+          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
+            btnSpinWheel.disabled = true;
+            const originalText = btnSpinWheel.innerText;
+            btnSpinWheel.innerText = '⏳ WATCHING SPONSOR AD...';
+            try {
+              ApexAdManager.log('[LuckyWheel] Showing Monetag TMA rewarded ad to spin wheel...');
+              await ApexAdManager.triggerTelegramRewarded();
+            } catch (err) {
+              ApexAdManager.log('[LuckyWheel] Monetag TMA ad exception: ' + (err.message || err));
+            } finally {
+              btnSpinWheel.disabled = false;
+              btnSpinWheel.innerText = originalText;
+            }
+          }
           spinWheel();
         });
       }
@@ -4663,6 +4801,9 @@
               input.value = (user.username || user.first_name || 'VIPER').toUpperCase().slice(0, 15);
             }
           }
+          if (window.ApexAdManager) {
+            window.ApexAdManager.checkAndInitTelegramAds();
+          }
         } else if (window.location.search.includes('frame_id') || window.name.includes('discord')) {
           if (pill) {
             pill.innerText = '🎮 DISCORD ACTIVITY';
@@ -4740,7 +4881,7 @@
       }
 
       // Shop Booster Purchasing
-      document.getElementById('btn-buy-revive').addEventListener('click', () => {
+      document.getElementById('btn-buy-revive').addEventListener('click', async () => {
         const inv = ApexOrbit.getInventory();
         if (inv.credits >= 200) {
           inv.credits -= 200;
@@ -4750,7 +4891,11 @@
           ApexOrbit.playTone(660, 'sine', 0.2);
           alert('⚡ Purchased 1 Quantum Revive Token!');
         } else {
-          ApexAdManager.triggerDirectLink('shop_revive_free', true);
+          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
+            await ApexAdManager.showRewardedAd('shop_revive_free');
+          } else {
+            ApexAdManager.triggerDirectLink('shop_revive_free', true);
+          }
           inv.revives += 1;
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
