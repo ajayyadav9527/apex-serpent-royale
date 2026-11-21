@@ -230,52 +230,71 @@
   <style>
 
     /* =========================================================
-     *  CYBERPUNK STITCH UI/UX DESIGN SYSTEM (v3.0.0)
+     *  CYBERPUNK STITCH UI/UX DESIGN SYSTEM (v3.1.0)
      *  Unified, Ultra-Responsive, Zero-Collision Architecture
      * ========================================================= */
     :root {
-      /* Neon Core Palette */
-      --cyan: #00f3ff;
-      --cyan-glow: rgba(0, 243, 255, 0.55);
-      --cyan-dim: rgba(0, 243, 255, 0.12);
-      --cyan-border: rgba(0, 243, 255, 0.28);
+      /* Stitch Core Neon Palette */
+      --stitch-cyan: #00f3ff;
+      --stitch-cyan-glow: rgba(0, 243, 255, 0.55);
+      --stitch-cyan-dim: rgba(0, 243, 255, 0.12);
+      --stitch-cyan-border: rgba(0, 243, 255, 0.28);
       
-      --magenta: #ff0055;
-      --magenta-glow: rgba(255, 0, 85, 0.55);
-      --magenta-dim: rgba(255, 0, 85, 0.12);
+      --stitch-magenta: #ff0055;
+      --stitch-magenta-glow: rgba(255, 0, 85, 0.55);
+      --stitch-magenta-dim: rgba(255, 0, 85, 0.12);
       
-      --gold: #ffd700;
-      --gold-glow: rgba(255, 215, 0, 0.55);
-      --gold-dim: rgba(255, 215, 0, 0.14);
+      --stitch-gold: #ffd700;
+      --stitch-gold-glow: rgba(255, 215, 0, 0.55);
+      --stitch-gold-dim: rgba(255, 215, 0, 0.14);
       
-      --green: #00ff66;
-      --green-glow: rgba(0, 255, 102, 0.55);
-      --green-dim: rgba(0, 255, 102, 0.12);
+      --stitch-green: #00ff66;
+      --stitch-green-glow: rgba(0, 255, 102, 0.55);
+      --stitch-green-dim: rgba(0, 255, 102, 0.12);
       
-      --yellow: #ffe600;
-      --purple: #9d00ff;
-      --blue: #0099ff;
+      --stitch-yellow: #ffe600;
+      --stitch-purple: #9d00ff;
+      --stitch-blue: #0099ff;
+
+      /* Backward-Compatible Standard Tokens */
+      --cyan: var(--stitch-cyan);
+      --cyan-glow: var(--stitch-cyan-glow);
+      --cyan-dim: var(--stitch-cyan-dim);
+      --cyan-border: var(--stitch-cyan-border);
+      --magenta: var(--stitch-magenta);
+      --magenta-glow: var(--stitch-magenta-glow);
+      --magenta-dim: var(--stitch-magenta-dim);
+      --gold: var(--stitch-gold);
+      --gold-glow: var(--stitch-gold-glow);
+      --gold-dim: var(--stitch-gold-dim);
+      --green: var(--stitch-green);
+      --green-glow: var(--stitch-green-glow);
+      --green-dim: var(--stitch-green-dim);
+      --yellow: var(--stitch-yellow);
+      --purple: var(--stitch-purple);
+      --blue: var(--stitch-blue);
 
       /* Dark Void Glass Surfaces */
-      --bg-dark: #060810;
+      --bg-dark: #05070e;
       --bg-glass-base: rgba(8, 12, 24, 0.88);
-      --bg-panel: rgba(10, 15, 29, 0.90);
-      --bg-card: rgba(14, 21, 40, 0.78);
-      --bg-card-hover: rgba(20, 31, 60, 0.90);
-      --bg-modal: rgba(9, 13, 26, 0.96);
-      --glass-border: rgba(0, 243, 255, 0.24);
-      --glass-border-bright: rgba(0, 243, 255, 0.65);
+      --bg-panel: rgba(9, 14, 28, 0.92);
+      --bg-card: rgba(13, 20, 38, 0.82);
+      --bg-card-hover: rgba(20, 32, 60, 0.92);
+      --bg-modal: rgba(8, 12, 26, 0.96);
+      --glass-border: rgba(0, 243, 255, 0.25);
+      --glass-border-bright: rgba(0, 243, 255, 0.75);
 
-      /* Typography */
+      /* Typography Tokens */
       --font-cyber: 'Orbitron', 'Rajdhani', sans-serif;
       --font-ui: 'Rajdhani', sans-serif;
       --font-mono: 'Share Tech Mono', monospace;
 
-      /* Stitch Geometry */
+      /* Stitch Geometry & Chamfered Angles */
       --radius-sm: 4px;
       --radius-md: 8px;
       --radius-lg: 12px;
       --radius-pill: 24px;
+      --stitch-clip-corner: polygon(0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px));
       --stitch-notch: 6px;
     }
 
@@ -444,7 +463,7 @@
       text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
     }
 
-    /* Polite AdBlock Detector Badge (Offset on Desktop Right so NEVER Collides with Radar) */
+    /* Polite AdBlock Detector Badge */
     #adblock-detector-badge {
       position: fixed;
       top: calc(44px + env(safe-area-inset-top, 0px));
@@ -572,7 +591,7 @@
     }
 
     /* =========================================================
-     *  IN-GAME CYBERPUNK HUD (ZERO-COLLISION LAYOUT)
+     *  IN-GAME CYBERPUNK HUD (ZERO-COLLISION ARCHITECTURE)
      * ========================================================= */
     #hud-overlay {
       position: fixed;
@@ -596,6 +615,7 @@
       pointer-events: auto;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      z-index: 35;
     }
     .hud-header-label {
       font-family: var(--font-cyber);
@@ -696,8 +716,9 @@
       letter-spacing: 0.8px;
       border-radius: var(--radius-sm);
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -712,6 +733,14 @@
     }
     .hud-btn:active {
       transform: scale(0.95);
+    }
+    .hud-btn-icon {
+      font-size: 13px;
+      display: inline-block;
+      line-height: 1;
+    }
+    .hud-btn-label {
+      display: inline;
     }
 
     /* Event Notifications Tier (Properly Stacked, Zero Overlaps) */
@@ -842,6 +871,7 @@
       pointer-events: auto;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      z-index: 34;
     }
     .leaderboard-list {
       list-style: none;
@@ -1181,14 +1211,14 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(5, 8, 18, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(5, 8, 18, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 60;
-      padding: calc(44px + env(safe-area-inset-top, 0px)) 14px 14px 14px;
+      padding: calc(40px + env(safe-area-inset-top, 0px)) 12px 12px 12px;
       overflow-y: auto;
     }
 
@@ -1897,82 +1927,166 @@
     }
 
     /* =========================================================
+     *  RESPONSIVE QUERIES: TABLET (<= 1024px)
+     * ========================================================= */
+    @media (max-width: 1024px) {
+      .hud-radar-box {
+        top: calc(40px + env(safe-area-inset-top, 0px));
+        left: calc(10px + env(safe-area-inset-left, 0px));
+        width: 95px;
+      }
+      #minimap-canvas { height: 80px; }
+      .hud-controls-bar {
+        top: calc(40px + env(safe-area-inset-top, 0px));
+        right: calc(10px + env(safe-area-inset-right, 0px));
+        gap: 4px;
+      }
+      .hud-btn {
+        padding: 5px 8px;
+        font-size: 10px;
+      }
+    }
+
+    /* =========================================================
      *  RESPONSIVE QUERIES: MOBILE (<= 768px)
+     *  GUARANTEED ZERO-COLLISION COMPACT ARCHITECTURE
      * ========================================================= */
     @media (max-width: 768px) {
       .ad-mobile-footer-wrapper { display: flex !important; }
 
       /* Top Header */
       #fixed-header-ad-bar {
-        height: calc(34px + env(safe-area-inset-top, 0px));
+        height: calc(32px + env(safe-area-inset-top, 0px));
       }
-      .header-ad-tag { font-size: 9.5px; padding: 1px 5px; }
-      .header-ad-text { font-size: 10px; }
+      .header-ad-tag { font-size: 9px; padding: 1px 4px; }
+      .header-ad-text { font-size: 9.5px; }
 
-      /* AdBlock badge on mobile */
+      /* AdBlock badge docked safely on mobile */
       #adblock-detector-badge {
-        top: calc(38px + env(safe-area-inset-top, 0px));
-        right: calc(10px + env(safe-area-inset-right, 0px));
-        font-size: 9.5px;
-        padding: 2px 8px;
+        display: none !important;
       }
 
-      /* Radar Minimap */
+      /* Radar Minimap - Pinned Top Left */
       .hud-radar-box {
-        top: calc(40px + env(safe-area-inset-top, 0px));
+        top: calc(36px + env(safe-area-inset-top, 0px));
         left: calc(8px + env(safe-area-inset-left, 0px));
-        width: 88px;
-        padding: 4px;
+        width: 78px;
+        padding: 3px;
+        z-index: 35;
       }
-      #minimap-canvas { height: 72px; }
-      .hud-header-label { font-size: 8px; }
+      #minimap-canvas {
+        width: 72px;
+        height: 60px;
+      }
+      .hud-header-label {
+        font-size: 7.5px;
+        margin-bottom: 2px;
+      }
 
-      /* Telemetry Center - Scaled & Protected from overlaps */
-      .hud-telemetry {
-        top: calc(40px + env(safe-area-inset-top, 0px));
-        gap: 4px;
-      }
-      .telemetry-card {
-        padding: 2px 8px;
-        min-width: 58px;
-      }
-      .telemetry-label { font-size: 7.5px; letter-spacing: 0.5px; }
-      .telemetry-val { font-size: 14px; }
-
-      /* Controls Bar Top Right */
+      /* Controls Bar - Pinned Top Right with compact icon-only buttons */
       .hud-controls-bar {
-        top: calc(40px + env(safe-area-inset-top, 0px));
+        top: calc(36px + env(safe-area-inset-top, 0px));
         right: calc(8px + env(safe-area-inset-right, 0px));
-        gap: 3px;
+        gap: 4px;
+        z-index: 55;
+      }
+      .hud-btn-label {
+        display: none !important;
       }
       .hud-btn {
-        padding: 4px 6px;
-        font-size: 9.5px;
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+        padding: 0 !important;
+        font-size: 13px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: var(--radius-sm);
+      }
+      .hud-btn-icon {
+        font-size: 13px !important;
       }
 
-      /* Stacking Events */
+      /* Telemetry Center - Strictly constrained between Radar and Controls */
+      .hud-telemetry {
+        position: absolute;
+        top: calc(36px + env(safe-area-inset-top, 0px));
+        left: calc(88px + env(safe-area-inset-left, 0px));
+        right: calc(136px + env(safe-area-inset-right, 0px));
+        transform: none !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3px;
+        z-index: 36;
+      }
+      .telemetry-card {
+        flex: 1;
+        min-width: 38px;
+        max-width: 50px;
+        padding: 2px 3px;
+        border-radius: 4px;
+      }
+      .telemetry-label {
+        font-size: 6.5px;
+        letter-spacing: 0.3px;
+      }
+      .telemetry-val {
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+
+      /* Stacking Events - Cleanly Tiered & Centered */
       #hud-king-bounty {
-        top: calc(78px + env(safe-area-inset-top, 0px));
-        padding: 3px 10px;
-        font-size: 9.5px;
-      }
-      .storm-badge {
-        top: calc(108px + env(safe-area-inset-top, 0px));
-        font-size: 9.5px;
+        top: calc(70px + env(safe-area-inset-top, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 140px;
         padding: 2px 8px;
+        font-size: 8.5px;
+        z-index: 38;
       }
-      .hud-powerup-tray {
-        top: calc(136px + env(safe-area-inset-top, 0px));
+      .king-compass-icon { font-size: 12px; }
+      .king-label { font-size: 8px; }
+      .king-target { font-size: 9px; }
+      .king-dist-badge { font-size: 8px; padding: 1px 4px; }
+
+      .storm-badge {
+        top: calc(96px + env(safe-area-inset-top, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 155px;
+        padding: 2px 8px;
+        font-size: 8.5px;
+        z-index: 37;
       }
 
-      /* Leaderboard Box Top Right */
-      .hud-leaderboard-box {
-        top: calc(78px + env(safe-area-inset-top, 0px));
-        right: calc(8px + env(safe-area-inset-right, 0px));
-        width: 125px;
-        padding: 4px 6px;
+      .hud-powerup-tray {
+        top: calc(122px + env(safe-area-inset-top, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 170px;
+        z-index: 36;
       }
-      .leaderboard-list { font-size: 8.5px; }
+
+      /* Leaderboard Box Top Right - Compact & Non-Colliding */
+      .hud-leaderboard-box {
+        top: calc(68px + env(safe-area-inset-top, 0px));
+        right: calc(8px + env(safe-area-inset-right, 0px));
+        width: 90px;
+        padding: 3px 5px;
+        z-index: 34;
+      }
+      .hud-leaderboard-box .hud-header-label {
+        font-size: 7.5px;
+        margin-bottom: 2px;
+      }
+      .leaderboard-list { font-size: 7.5px; }
+      .leaderboard-item { padding: 1px 2px; margin-bottom: 1px; }
+      #leaderboard-player-sticky { font-size: 7.5px; padding: 2px 4px; }
 
       /* Bottom Controls */
       #joystick-zone {
@@ -2026,70 +2140,181 @@
     }
 
     /* =========================================================
-     *  LANDSCAPE & SHORT SCREENS (max-height: 520px)
+     *  RESPONSIVE QUERIES: ULTRA-COMPACT MOBILE (<= 360px)
      * ========================================================= */
-    @media (max-height: 520px) {
+    @media (max-width: 360px) {
       .hud-radar-box {
-        top: calc(4px + env(safe-area-inset-top, 0px)) !important;
-        left: calc(8px + env(safe-area-inset-left, 0px)) !important;
-        width: 80px !important;
-        padding: 3px !important;
+        width: 66px !important;
+        padding: 2px !important;
       }
-      #minimap-canvas { height: 60px !important; }
+      #minimap-canvas {
+        width: 62px !important;
+        height: 50px !important;
+      }
+      .hud-controls-bar {
+        gap: 2px !important;
+        right: calc(4px + env(safe-area-inset-right, 0px)) !important;
+      }
+      .hud-btn {
+        width: 25px !important;
+        height: 25px !important;
+        min-width: 25px !important;
+        font-size: 11px !important;
+      }
       .hud-telemetry {
-        top: calc(4px + env(safe-area-inset-top, 0px)) !important;
-        gap: 4px !important;
+        left: calc(78px + env(safe-area-inset-left, 0px)) !important;
+        right: calc(114px + env(safe-area-inset-right, 0px)) !important;
+        gap: 2px !important;
       }
       .telemetry-card {
-        padding: 2px 6px !important;
-        min-width: 50px !important;
+        min-width: 32px !important;
+        padding: 1px 2px !important;
       }
-      .telemetry-val { font-size: 12px !important; }
-      .hud-controls-bar {
-        top: calc(4px + env(safe-area-inset-top, 0px)) !important;
-        right: calc(8px + env(safe-area-inset-right, 0px)) !important;
+      .telemetry-val {
+        font-size: 11px !important;
       }
-      .hud-btn { padding: 2px 5px !important; font-size: 8.5px !important; }
-
-      #hud-king-bounty {
-        top: calc(36px + env(safe-area-inset-top, 0px)) !important;
-        padding: 2px 8px !important;
-        font-size: 8.5px !important;
-      }
-      .storm-badge {
-        top: calc(36px + env(safe-area-inset-top, 0px)) !important;
-        left: calc(50% + 120px) !important;
-        font-size: 8.5px !important;
-        padding: 2px 6px !important;
-      }
-      .hud-powerup-tray {
-        top: calc(58px + env(safe-area-inset-top, 0px)) !important;
+      .telemetry-label {
+        font-size: 6px !important;
       }
       .hud-leaderboard-box {
-        top: calc(4px + env(safe-area-inset-top, 0px)) !important;
-        right: calc(8px + env(safe-area-inset-right, 0px)) !important;
-        width: 100px !important;
+        width: 78px !important;
+        right: calc(4px + env(safe-area-inset-right, 0px)) !important;
       }
+      #hud-king-bounty {
+        max-width: 120px !important;
+        font-size: 7.5px !important;
+      }
+      .storm-badge {
+        max-width: 130px !important;
+        font-size: 7.5px !important;
+      }
+    }
+
+    /* =========================================================
+     *  LANDSCAPE & SHORT SCREENS (max-height: 520px)
+     *  ZERO-COLLISION OFFSET BELOW FIXED HEADER
+     * ========================================================= */
+    @media (max-height: 520px) {
+      #fixed-header-ad-bar {
+        height: calc(24px + env(safe-area-inset-top, 0px)) !important;
+      }
+      .header-ad-tag {
+        font-size: 8px !important;
+        padding: 1px 4px !important;
+      }
+      .header-ad-text {
+        font-size: 9px !important;
+      }
+
+      /* Radar Minimap safely below header */
+      .hud-radar-box {
+        top: calc(27px + env(safe-area-inset-top, 0px)) !important;
+        left: calc(8px + env(safe-area-inset-left, 0px)) !important;
+        width: 68px !important;
+        padding: 2px !important;
+        z-index: 35 !important;
+      }
+      #minimap-canvas {
+        width: 64px !important;
+        height: 48px !important;
+      }
+      .hud-header-label {
+        font-size: 7px !important;
+      }
+
+      /* Controls Bar safely below header */
+      .hud-controls-bar {
+        top: calc(27px + env(safe-area-inset-top, 0px)) !important;
+        right: calc(8px + env(safe-area-inset-right, 0px)) !important;
+        gap: 3px !important;
+        z-index: 55 !important;
+      }
+      .hud-btn-label {
+        display: none !important;
+      }
+      .hud-btn {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        max-width: 22px !important;
+        font-size: 11px !important;
+        padding: 0 !important;
+      }
+
+      /* Telemetry safely below header */
+      .hud-telemetry {
+        top: calc(27px + env(safe-area-inset-top, 0px)) !important;
+        left: calc(80px + env(safe-area-inset-left, 0px)) !important;
+        right: calc(110px + env(safe-area-inset-right, 0px)) !important;
+        transform: none !important;
+        gap: 3px !important;
+        z-index: 36 !important;
+      }
+      .telemetry-card {
+        min-width: 36px !important;
+        padding: 1px 4px !important;
+      }
+      .telemetry-label {
+        font-size: 6.5px !important;
+      }
+      .telemetry-val {
+        font-size: 11px !important;
+      }
+
+      /* Leaderboard Box positioned cleanly BELOW Controls in landscape */
+      .hud-leaderboard-box {
+        top: calc(52px + env(safe-area-inset-top, 0px)) !important;
+        right: calc(8px + env(safe-area-inset-right, 0px)) !important;
+        width: 84px !important;
+        padding: 2px 4px !important;
+        z-index: 34 !important;
+      }
+
+      /* Stacking Events in Landscape */
+      #hud-king-bounty {
+        top: calc(27px + env(safe-area-inset-top, 0px)) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        padding: 1px 6px !important;
+        font-size: 7.5px !important;
+        z-index: 38 !important;
+      }
+      .storm-badge {
+        top: calc(48px + env(safe-area-inset-top, 0px)) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        font-size: 7.5px !important;
+        padding: 1px 6px !important;
+        z-index: 37 !important;
+      }
+      .hud-powerup-tray {
+        top: calc(68px + env(safe-area-inset-top, 0px)) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 36 !important;
+      }
+
       .hud-killfeed-box, #hud-taunt-bar { display: none !important; }
 
       #joystick-zone {
-        bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
-        left: calc(15px + env(safe-area-inset-left, 0px)) !important;
-        width: 85px !important;
-        height: 85px !important;
+        bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+        left: calc(12px + env(safe-area-inset-left, 0px)) !important;
+        width: 75px !important;
+        height: 75px !important;
       }
       #mobile-boost-btn {
-        bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
-        right: calc(15px + env(safe-area-inset-right, 0px)) !important;
-        width: 58px !important;
-        height: 58px !important;
+        bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+        right: calc(12px + env(safe-area-inset-right, 0px)) !important;
+        width: 52px !important;
+        height: 52px !important;
+        font-size: 9px !important;
       }
       .hud-boost-container {
         bottom: calc(4px + env(safe-area-inset-bottom, 0px)) !important;
-        width: 130px !important;
+        width: 120px !important;
       }
       .cyber-modal {
-        max-height: calc(100dvh - 36px) !important;
+        max-height: calc(100dvh - 30px) !important;
         padding: 10px 14px !important;
       }
     }
@@ -2184,10 +2409,10 @@
   <div id="hud-overlay">
     <!-- Top-Right Action Controls (Pause, Sound, Controls Mode, Settings) -->
     <div class="hud-controls-bar">
-      <button class="hud-btn" id="btn-audio-toggle" title="Toggle Sound">🔊 SFX ON</button>
-      <button class="hud-btn" id="btn-controls-mode" title="Toggle Controls Mode (Joystick / D-Pad / Off)">🕹️ CONTROLS</button>
-      <button class="hud-btn" id="btn-pause" title="Pause Game">⏸ PAUSE</button>
-      <button class="hud-btn" id="btn-open-settings" title="Adsterra &amp; Engine Settings">⚙️</button>
+      <button class="hud-btn" id="btn-audio-toggle" title="Toggle Sound"><span class="hud-btn-icon">🔊</span><span class="hud-btn-label"> SFX ON</span></button>
+      <button class="hud-btn" id="btn-controls-mode" title="Toggle Controls Mode (Joystick / D-Pad / Off)"><span class="hud-btn-icon">🕹️</span><span class="hud-btn-label"> CONTROLS</span></button>
+      <button class="hud-btn" id="btn-pause" title="Pause Game"><span class="hud-btn-icon">⏸</span><span class="hud-btn-label"> PAUSE</span></button>
+      <button class="hud-btn" id="btn-open-settings" title="Adsterra &amp; Engine Settings"><span class="hud-btn-icon">⚙️</span></button>
     </div>
 
     <!-- King Bounty Compass HUD -->
@@ -3798,7 +4023,7 @@
         btnControlsMode.addEventListener('click', () => {
           if (currentControlMode === 'joystick') {
             currentControlMode = 'dpad';
-            btnControlsMode.innerText = '🎮 D-PAD';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">🎮</span><span class="hud-btn-label"> D-PAD</span>';
             joystickZone.style.display = 'none';
             if (touchLeftZone) touchLeftZone.style.display = 'none';
             if (cyberDpad) cyberDpad.style.display = 'flex';
@@ -3806,13 +4031,13 @@
             touchControls.classList.remove('force-hide');
           } else if (currentControlMode === 'dpad') {
             currentControlMode = 'off';
-            btnControlsMode.innerText = '📱 TOUCH OFF';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">📱</span><span class="hud-btn-label"> TOUCH OFF</span>';
             if (cyberDpad) cyberDpad.style.display = 'none';
             touchControls.classList.remove('force-show');
             touchControls.classList.add('force-hide');
           } else {
             currentControlMode = 'joystick';
-            btnControlsMode.innerText = '🕹️ JOYSTICK';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">🕹️</span><span class="hud-btn-label"> JOYSTICK</span>';
             joystickZone.style.display = 'block';
             if (touchLeftZone) touchLeftZone.style.display = 'block';
             if (cyberDpad) cyberDpad.style.display = 'none';
@@ -3993,7 +4218,7 @@
         if (engine && engine.audio && engine.audio.masterGain) {
           engine.audio.masterGain.gain.value = isAudioMuted ? 0 : 0.6;
         }
-        btn.innerText = isAudioMuted ? '🔇 SFX OFF' : '🔊 SFX ON';
+        btn.innerHTML = `<span class="hud-btn-icon">${isAudioMuted ? '🔇' : '🔊'}</span><span class="hud-btn-label">${isAudioMuted ? ' SFX OFF' : ' SFX ON'}</span>`;
         btn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
       });
 

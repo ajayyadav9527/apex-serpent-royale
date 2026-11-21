@@ -5,20 +5,28 @@ Validates:
 2) Three.js canvas initializes properly (WebGL context, RAF animation loop, THREE global)
 3) Adsterra ad placeholders & Direct Link triggers (728x90, 300x250, 320x50, Interstitial, Cooldown)
 4) Blogger XML validates syntax & Blogger theme specs (XML parsing, b:skin, b:section, b:widget)
-5) Mobile responsive viewports (Desktop 1920x1080, Tablet 768x1024, Mobile 390x844) & Touch Controls
+5) Mobile & Responsive viewports with Zero-Collision HUD architecture:
+   - Desktop 1920x1080
+   - Tablet 768x1024
+   - Mobile Portrait 390x844
+   - Mobile Landscape 844x390
+   - Compact Mobile 320x568
 """
 
 import sys
 import os
 import time
 import json
+import socket
+import threading
+import http.server
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-BASE_DIR = Path("c:/Users/Ajay.AJAY/OneDrive/Desktop/test/apex_serpent_royale")
+BASE_DIR = Path(__file__).resolve().parent
 PORT = 8089
-SERVER_URL = f"http://localhost:{PORT}"
+SERVER_URL = f"http://127.0.0.1:{PORT}"
 SCREENSHOT_DIR = BASE_DIR / "test_results" / "screenshots"
 SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -48,6 +56,31 @@ def record_check(category, name, passed, details=""):
         "details": details
     })
     return passed
+
+class QuietHTTPHandler(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=str(BASE_DIR), **kwargs)
+    def log_message(self, format, *args):
+        pass
+
+def start_background_server():
+    # Check if port is already listening
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.connect(('127.0.0.1', PORT))
+        sock.close()
+        print(f"[Server] Port {PORT} is already open, using existing server.")
+        return None
+    except OSError:
+        sock.close()
+
+    print(f"[Server] Starting background HTTP server on port {PORT}...")
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', PORT), QuietHTTPHandler)
+    server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+    server_thread.start()
+    time.sleep(1)
+    print(f"[Server] Background HTTP server online at {SERVER_URL}")
+    return server
 
 def verify_blogger_xml():
     print("\n" + "=" * 60)
@@ -424,6 +457,30 @@ def run_playwright_e2e():
         }""")
         record_check("Monetag SmartLink", "Monetag Vignette & SmartLink Execution", smartlink_eval.get("tested", False) and smartlink_eval.get("smartlinkExecuted", False), f"Vignette & Smartlink evaluated: {smartlink_eval}")
         
+        # Desktop Layout Bounds & Overlap Checks
+        desktop_layout = page.evaluate("""() => {
+            const getBox = sel => {
+                const el = document.querySelector(sel);
+                if (!el || window.getComputedStyle(el).display === 'none') return null;
+                const r = el.getBoundingClientRect();
+                return (r.width > 0 && r.height > 0) ? { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom) } : null;
+            };
+            const overlaps = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+            const radar = getBox('.hud-radar-box');
+            const telem = getBox('.hud-telemetry');
+            const ctrl = getBox('.hud-controls-bar');
+            const king = getBox('#hud-king-bounty');
+            const lb = getBox('.hud-leaderboard-box');
+            return {
+                radar_telem: (radar && telem) ? overlaps(radar, telem) : false,
+                telem_ctrl: (telem && ctrl) ? overlaps(telem, ctrl) : false,
+                king_lb: (king && lb) ? overlaps(king, lb) : false
+            };
+        }""")
+        record_check("Layout & Bounds", "Desktop Radar vs Telemetry Clearance", not desktop_layout.get("radar_telem", True), "Radar and Telemetry clear on 1920x1080")
+        record_check("Layout & Bounds", "Desktop Telemetry vs Controls Clearance", not desktop_layout.get("telem_ctrl", True), "Telemetry and Controls clear on 1920x1080")
+        record_check("Layout & Bounds", "Desktop King Bounty vs Leaderboard Clearance", not desktop_layout.get("king_lb", True), "King Bounty and Leaderboard clear on 1920x1080")
+
         desktop_ctx.close()
         
         # --- TEST 5A: Mobile Viewport (iPhone 13/14 390x844, Touch Enabled) ---
@@ -464,12 +521,34 @@ def run_playwright_e2e():
                 const parentStyle = ad320.parentElement ? window.getComputedStyle(ad320.parentElement) : style;
                 ad320Visible = (style.display !== 'none' && parentStyle.display !== 'none');
             }
+
+            const getBox = sel => {
+                const el = document.querySelector(sel);
+                if (!el || window.getComputedStyle(el).display === 'none') return null;
+                const r = el.getBoundingClientRect();
+                return (r.width > 0 && r.height > 0) ? { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom) } : null;
+            };
+            const overlaps = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+            const radar = getBox('.hud-radar-box');
+            const telem = getBox('.hud-telemetry');
+            const ctrl = getBox('.hud-controls-bar');
+            const king = getBox('#hud-king-bounty');
+            const lb = getBox('.hud-leaderboard-box');
+            const header = getBox('#fixed-header-ad-bar');
             
             return {
                 hasJoystick: !!joystick,
                 hasBoostBtn: !!boostBtn,
                 ad320Visible: ad320Visible,
-                ad728Hidden: ad728Hidden
+                ad728Hidden: ad728Hidden,
+                radar_telem_overlap: (radar && telem) ? (radar.right > telem.left) : false,
+                telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false,
+                king_lb_overlap: (king && lb) ? (king.right > lb.left && king.bottom > lb.top) : false,
+                header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                radarRight: radar ? radar.right : 0,
+                telemLeft: telem ? telem.left : 0,
+                telemRight: telem ? telem.right : 0,
+                ctrlLeft: ctrl ? ctrl.left : 0
             };
         }""")
         
@@ -477,13 +556,58 @@ def run_playwright_e2e():
         record_check("Mobile Viewport", "Mobile Boost Action Button (#mobile-boost-btn)", mobile_eval.get("hasBoostBtn", False), "Dedicated mobile boost control present")
         record_check("Mobile Viewport", "320x50 Mobile Ad Banner Active", mobile_eval.get("ad320Visible", False), "320x50 footer banner visible on mobile")
         record_check("Mobile Viewport", "728x90 Desktop Leaderboard Hidden", mobile_eval.get("ad728Hidden", False), "Desktop banner cleanly hidden on mobile")
+        record_check("Mobile Layout", "Mobile Radar vs Telemetry Clearance", not mobile_eval.get("radar_telem_overlap", True), f"Radar right ({mobile_eval.get('radarRight')}) <= Telem left ({mobile_eval.get('telemLeft')})")
+        record_check("Mobile Layout", "Mobile Telemetry vs Controls Clearance", not mobile_eval.get("telem_ctrl_overlap", True), f"Telem right ({mobile_eval.get('telemRight')}) <= Controls left ({mobile_eval.get('ctrlLeft')})")
+        record_check("Mobile Layout", "Mobile King Bounty vs Leaderboard Clearance", not mobile_eval.get("king_lb_overlap", True), "King Bounty and Leaderboard zero overlap")
+        record_check("Mobile Layout", "Mobile Header Banner vs Radar Clearance", not mobile_eval.get("header_radar_overlap", True), "Top Banner does not clip Radar")
         
         mobile_img = SCREENSHOT_DIR / "mobile_390x844.png"
         m_page.screenshot(path=str(mobile_img))
         record_check("Visual Output", "Mobile Screenshot Captured", mobile_img.exists(), str(mobile_img))
         mobile_ctx.close()
+
+        # --- TEST 5B: Mobile Landscape Viewport (844x390, Touch Enabled) ---
+        print("\n--- Verifying Mobile Landscape Viewport (844x390) ---")
+        landscape_ctx = browser.new_context(
+            viewport={"width": 844, "height": 390},
+            is_mobile=True,
+            has_touch=True
+        )
+        l_page = landscape_ctx.new_page()
+        l_page.goto(target_url, wait_until="domcontentloaded")
+        time.sleep(2)
+        l_page.evaluate("() => { const b = document.getElementById('btn-start-game'); if (b) b.click(); }")
+        time.sleep(1)
+
+        ls_eval = l_page.evaluate("""() => {
+            const getBox = sel => {
+                const el = document.querySelector(sel);
+                if (!el || window.getComputedStyle(el).display === 'none') return null;
+                const r = el.getBoundingClientRect();
+                return (r.width > 0 && r.height > 0) ? { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom) } : null;
+            };
+            const radar = getBox('.hud-radar-box');
+            const ctrl = getBox('.hud-controls-bar');
+            const lb = getBox('.hud-leaderboard-box');
+            const header = getBox('#fixed-header-ad-bar');
+            const overlaps = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+
+            return {
+                header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false,
+                ctrl_lb_overlap: (ctrl && lb) ? overlaps(ctrl, lb) : false
+            };
+        }""")
+        record_check("Landscape Layout", "Landscape Header vs Radar Clearance", not ls_eval.get("header_radar_overlap", True), "Banner does not clip radar in landscape")
+        record_check("Landscape Layout", "Landscape Header vs Controls Clearance", not ls_eval.get("header_ctrl_overlap", True), "Banner does not clip controls in landscape")
+        record_check("Landscape Layout", "Landscape Controls vs Leaderboard Clearance", not ls_eval.get("ctrl_lb_overlap", True), "Controls bar cleanly above leaderboard")
         
-        # --- TEST 5B: Tablet Viewport (iPad 768x1024, Touch Enabled) ---
+        landscape_img = SCREENSHOT_DIR / "landscape_844x390.png"
+        l_page.screenshot(path=str(landscape_img))
+        record_check("Visual Output", "Landscape Screenshot Captured", landscape_img.exists(), str(landscape_img))
+        landscape_ctx.close()
+        
+        # --- TEST 5C: Tablet Viewport (iPad 768x1024, Touch Enabled) ---
         print("\n--- Verifying Tablet Viewport (768x1024) ---")
         tablet_ctx = browser.new_context(
             viewport={"width": 768, "height": 1024},
@@ -504,19 +628,72 @@ def run_playwright_e2e():
             const canvas = document.querySelector('#game-canvas');
             const hud = document.querySelector('#hud-overlay');
             const hudVisible = !!hud && window.getComputedStyle(hud).display !== 'none';
+            const getBox = sel => {
+                const el = document.querySelector(sel);
+                if (!el || window.getComputedStyle(el).display === 'none') return null;
+                const r = el.getBoundingClientRect();
+                return (r.width > 0 && r.height > 0) ? { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom) } : null;
+            };
+            const radar = getBox('.hud-radar-box');
+            const telem = getBox('.hud-telemetry');
+            const ctrl = getBox('.hud-controls-bar');
             return {
                 canvasResponsive: !!canvas && canvas.clientWidth > 0,
-                hudVisible: hudVisible
+                hudVisible: hudVisible,
+                radar_telem_overlap: (radar && telem) ? (radar.right > telem.left) : false,
+                telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false
             };
         }""")
         
         record_check("Tablet Viewport", "Canvas Scales to Tablet Width", tablet_eval.get("canvasResponsive", False), "Responsive canvas adapts to 768px width")
         record_check("Tablet Viewport", "Cyberpunk HUD Responsive & Active", tablet_eval.get("hudVisible", False), "HUD adapts without clipping")
+        record_check("Tablet Layout", "Tablet Radar vs Telemetry Clearance", not tablet_eval.get("radar_telem_overlap", True), "Zero overlap between radar and telemetry on tablet")
+        record_check("Tablet Layout", "Tablet Telemetry vs Controls Clearance", not tablet_eval.get("telem_ctrl_overlap", True), "Zero overlap between telemetry and controls on tablet")
         
         tablet_img = SCREENSHOT_DIR / "tablet_768x1024.png"
         t_page.screenshot(path=str(tablet_img))
         record_check("Visual Output", "Tablet Screenshot Captured", tablet_img.exists(), str(tablet_img))
         tablet_ctx.close()
+
+        # --- TEST 5D: Compact Mobile Viewport (iPhone SE 320x568) ---
+        print("\n--- Verifying Compact Mobile Viewport (320x568) ---")
+        compact_ctx = browser.new_context(
+            viewport={"width": 320, "height": 568},
+            is_mobile=True,
+            has_touch=True
+        )
+        c_page = compact_ctx.new_page()
+        c_page.goto(target_url, wait_until="domcontentloaded")
+        time.sleep(2)
+        c_page.evaluate("() => { const b = document.getElementById('btn-start-game'); if (b) b.click(); }")
+        time.sleep(1)
+
+        compact_eval = c_page.evaluate("""() => {
+            const getBox = sel => {
+                const el = document.querySelector(sel);
+                if (!el || window.getComputedStyle(el).display === 'none') return null;
+                const r = el.getBoundingClientRect();
+                return (r.width > 0 && r.height > 0) ? { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom) } : null;
+            };
+            const radar = getBox('.hud-radar-box');
+            const telem = getBox('.hud-telemetry');
+            const ctrl = getBox('.hud-controls-bar');
+            return {
+                radar_telem_overlap: (radar && telem) ? (radar.right > telem.left) : false,
+                telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false,
+                radarRight: radar ? radar.right : 0,
+                telemLeft: telem ? telem.left : 0,
+                telemRight: telem ? telem.right : 0,
+                ctrlLeft: ctrl ? ctrl.left : 0
+            };
+        }""")
+        record_check("Compact Mobile Layout", "320px Radar vs Telemetry Clearance", not compact_eval.get("radar_telem_overlap", True), f"Radar right ({compact_eval.get('radarRight')}) <= Telem left ({compact_eval.get('telemLeft')})")
+        record_check("Compact Mobile Layout", "320px Telemetry vs Controls Clearance", not compact_eval.get("telem_ctrl_overlap", True), f"Telem right ({compact_eval.get('telemRight')}) <= Controls left ({compact_eval.get('ctrlLeft')})")
+
+        compact_img = SCREENSHOT_DIR / "compact_320x568.png"
+        c_page.screenshot(path=str(compact_img))
+        record_check("Visual Output", "Compact Mobile Screenshot Captured", compact_img.exists(), str(compact_img))
+        compact_ctx.close()
         
         browser.close()
 
@@ -525,6 +702,7 @@ if __name__ == "__main__":
     print("# APEX SERPENT ROYALE - E2E AUTOMATED VERIFICATION SUITE")
     print("#" * 60)
     
+    server = start_background_server()
     xml_success = verify_blogger_xml()
     browser_success = False
     try:
@@ -534,6 +712,14 @@ if __name__ == "__main__":
         print(f"\n[FATAL ERROR IN E2E SUITE] {exc}")
         import traceback
         traceback.print_exc()
+        record_check("Playwright E2E Suite", "Execution without Fatal Crash", False, str(exc))
+    finally:
+        if server:
+            try:
+                server.shutdown()
+                print("[Server] Background HTTP server shut down.")
+            except Exception:
+                pass
         
     print("\n" + "=" * 60)
     print("FINAL TEST SCOREBOARD")

@@ -1,16 +1,16 @@
 {
   "suite": "Apex Serpent Royale E2E Verification",
-  "timestamp": "2026-11-21T23:24:24Z",
-  "server_url": "http://localhost:8089",
-  "total": 73,
-  "passed": 73,
+  "timestamp": "2026-11-22T00:18:28Z",
+  "server_url": "http://127.0.0.1:8089",
+  "total": 89,
+  "passed": 89,
   "failed": 0,
   "checks": [
     {
       "category": "Blogger XML",
       "name": "Theme File Existence",
       "status": "PASS",
-      "details": "Path: c:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\blogger_theme.xml"
+      "details": "Path: C:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\blogger_theme.xml"
     },
     {
       "category": "Blogger XML",
@@ -142,7 +142,7 @@
       "category": "Visual Output",
       "name": "Desktop Screenshot Captured",
       "status": "PASS",
-      "details": "c:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\desktop_1920x1080.png"
+      "details": "C:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\desktop_1920x1080.png"
     },
     {
       "category": "Adsterra Units",
@@ -397,6 +397,24 @@
       "details": "Vignette & Smartlink evaluated: {'tested': True, 'vignetteExecuted': False, 'smartlinkExecuted': True, 'network': 'hybrid', 'smartlinkUrl': 'https://uplcm.com/4/12310259'}"
     },
     {
+      "category": "Layout & Bounds",
+      "name": "Desktop Radar vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Radar and Telemetry clear on 1920x1080"
+    },
+    {
+      "category": "Layout & Bounds",
+      "name": "Desktop Telemetry vs Controls Clearance",
+      "status": "PASS",
+      "details": "Telemetry and Controls clear on 1920x1080"
+    },
+    {
+      "category": "Layout & Bounds",
+      "name": "Desktop King Bounty vs Leaderboard Clearance",
+      "status": "PASS",
+      "details": "King Bounty and Leaderboard clear on 1920x1080"
+    },
+    {
       "category": "Mobile Viewport",
       "name": "Virtual Touch Joystick Zone (#joystick-zone)",
       "status": "PASS",
@@ -421,10 +439,58 @@
       "details": "Desktop banner cleanly hidden on mobile"
     },
     {
+      "category": "Mobile Layout",
+      "name": "Mobile Radar vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Radar right (86) <= Telem left (88)"
+    },
+    {
+      "category": "Mobile Layout",
+      "name": "Mobile Telemetry vs Controls Clearance",
+      "status": "PASS",
+      "details": "Telem right (254) <= Controls left (258)"
+    },
+    {
+      "category": "Mobile Layout",
+      "name": "Mobile King Bounty vs Leaderboard Clearance",
+      "status": "PASS",
+      "details": "King Bounty and Leaderboard zero overlap"
+    },
+    {
+      "category": "Mobile Layout",
+      "name": "Mobile Header Banner vs Radar Clearance",
+      "status": "PASS",
+      "details": "Top Banner does not clip Radar"
+    },
+    {
       "category": "Visual Output",
       "name": "Mobile Screenshot Captured",
       "status": "PASS",
-      "details": "c:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\mobile_390x844.png"
+      "details": "C:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\mobile_390x844.png"
+    },
+    {
+      "category": "Landscape Layout",
+      "name": "Landscape Header vs Radar Clearance",
+      "status": "PASS",
+      "details": "Banner does not clip radar in landscape"
+    },
+    {
+      "category": "Landscape Layout",
+      "name": "Landscape Header vs Controls Clearance",
+      "status": "PASS",
+      "details": "Banner does not clip controls in landscape"
+    },
+    {
+      "category": "Landscape Layout",
+      "name": "Landscape Controls vs Leaderboard Clearance",
+      "status": "PASS",
+      "details": "Controls bar cleanly above leaderboard"
+    },
+    {
+      "category": "Visual Output",
+      "name": "Landscape Screenshot Captured",
+      "status": "PASS",
+      "details": "C:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\landscape_844x390.png"
     },
     {
       "category": "Tablet Viewport",
@@ -439,10 +505,40 @@
       "details": "HUD adapts without clipping"
     },
     {
+      "category": "Tablet Layout",
+      "name": "Tablet Radar vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Zero overlap between radar and telemetry on tablet"
+    },
+    {
+      "category": "Tablet Layout",
+      "name": "Tablet Telemetry vs Controls Clearance",
+      "status": "PASS",
+      "details": "Zero overlap between telemetry and controls on tablet"
+    },
+    {
       "category": "Visual Output",
       "name": "Tablet Screenshot Captured",
       "status": "PASS",
-      "details": "c:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\tablet_768x1024.png"
+      "details": "C:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\tablet_768x1024.png"
+    },
+    {
+      "category": "Compact Mobile Layout",
+      "name": "320px Radar vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Radar right (74) <= Telem left (78)"
+    },
+    {
+      "category": "Compact Mobile Layout",
+      "name": "320px Telemetry vs Controls Clearance",
+      "status": "PASS",
+      "details": "Telem right (206) <= Controls left (210)"
+    },
+    {
+      "category": "Visual Output",
+      "name": "Compact Mobile Screenshot Captured",
+      "status": "PASS",
+      "details": "C:\\Users\\Ajay.AJAY\\OneDrive\\Desktop\\test\\apex_serpent_royale\\test_results\\screenshots\\compact_320x568.png"
     }
   ]
 }
