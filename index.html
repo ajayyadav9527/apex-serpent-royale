@@ -212,251 +212,75 @@
   <!-- Three.js Local Bundle (CSP Friendly for Discord Activities & Offline PWA) -->
   <script src="./three.min.js"></script>
 
+    <!-- External 3rd-Party Ad SDK Resilience Shield -->
+  <script>
+    window.addEventListener('unhandledrejection', function(e) {
+      if (e && e.reason && String(e.reason).toLowerCase().includes('adex')) {
+        e.preventDefault();
+      }
+    });
+    window.addEventListener('error', function(e) {
+      if (e && (String(e.message || '').toLowerCase().includes('adex') || String(e.error || '').toLowerCase().includes('adex'))) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+  </script>
+
   <style>
-    
-    /* =========================================================
-     *  ORBIT MERGE FEATURE EXTENSIONS (Missions, Daily Supply, Armory)
-     * ========================================================= */
-    .lobby-header-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(0, 243, 255, 0.2);
-    }
-    .platform-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0, 243, 255, 0.12);
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      font-family: var(--font-cyber);
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      letter-spacing: 1px;
-    }
-    .platform-pill.tg {
-      background: rgba(36, 161, 222, 0.2);
-      border-color: #24a1de;
-      color: #64b5f6;
-    }
-    .platform-pill.discord {
-      background: rgba(88, 101, 242, 0.2);
-      border-color: #5865f2;
-      color: #9fa8da;
-    }
-    .orbit-nav-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-      margin-bottom: 14px;
-    }
-    .orbit-nav-btn {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(0, 243, 255, 0.35);
-      color: #e0f7fa;
-      font-family: var(--font-cyber);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-    .orbit-nav-btn:hover {
-      background: rgba(0, 243, 255, 0.2);
-      border-color: var(--cyan);
-      transform: translateY(-1px);
-    }
-    .orbit-badge {
-      background: var(--magenta);
-      color: #fff;
-      font-size: 9px;
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-    }
-    .orbit-badge.ready {
-      background: var(--green);
-      color: #051a0d;
-      box-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
-    }
-
-    /* Missions & Booster Cards */
-    .mission-list, .booster-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      text-align: left;
-      margin-top: 12px;
-      max-height: 380px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-    .mission-card, .booster-card {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(0, 243, 255, 0.25);
-      border-radius: 6px;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      transition: border-color 0.2s;
-    }
-    .mission-card:hover, .booster-card:hover {
-      border-color: var(--cyan);
-    }
-    .mission-info h4, .booster-info h4 {
-      font-family: var(--font-cyber);
-      font-size: 13px;
-      color: #fff;
-      margin-bottom: 2px;
-    }
-    .mission-info p, .booster-info p {
-      font-size: 11px;
-      color: #94a3b8;
-      margin-bottom: 6px;
-    }
-    .mission-progress-bar {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      overflow: hidden;
-      margin-top: 4px;
-    }
-    .mission-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--cyan), var(--green));
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-    .reward-tag {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--gold);
-      background: rgba(255, 215, 0, 0.1);
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .inventory-bar {
-      display: flex;
-      justify-content: space-around;
-      background: rgba(0, 243, 255, 0.08);
-      border: 1px solid rgba(0, 243, 255, 0.2);
-      border-radius: 6px;
-      padding: 8px;
-      margin-bottom: 12px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-    }
-    .inventory-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .inventory-val {
-      font-weight: 700;
-      color: var(--cyan);
-    }
-
-    /* Daily Supply Big Card */
-    .supply-hero {
-      background: radial-gradient(circle at center, rgba(0, 243, 255, 0.15) 0%, rgba(15, 23, 42, 0.95) 70%);
-      border: 1px solid var(--cyan);
-      border-radius: 8px;
-      padding: 20px;
-      margin: 14px 0;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
-    }
-    .supply-hero h3 {
-      font-family: var(--font-cyber);
-      font-size: 18px;
-      color: var(--gold);
-      margin-bottom: 8px;
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    }
-    .supply-items-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 14px 0;
-    }
-    .supply-box {
-      background: rgba(10, 14, 26, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      padding: 10px 4px;
-      font-size: 11px;
-    }
-    .supply-box strong {
-      display: block;
-      color: #fff;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    /* Pilot Records Table */
-    .records-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 14px 0;
-    }
-    .record-card {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(0, 243, 255, 0.2);
-      border-radius: 6px;
-      padding: 10px;
-      text-align: center;
-    }
-    .record-card .label {
-      font-size: 10px;
-      color: #94a3b8;
-      font-family: var(--font-mono);
-      display: block;
-      margin-bottom: 4px;
-    }
-    .record-card .value {
-      font-family: var(--font-cyber);
-      font-size: 20px;
-      color: var(--cyan);
-      font-weight: 700;
-    }
 
     /* =========================================================
-     *  CYBERPUNK NEON DESIGN SYSTEM
+     *  CYBERPUNK STITCH UI/UX DESIGN SYSTEM (v3.0.0)
+     *  Unified, Ultra-Responsive, Zero-Collision Architecture
      * ========================================================= */
     :root {
+      /* Neon Core Palette */
       --cyan: #00f3ff;
+      --cyan-glow: rgba(0, 243, 255, 0.55);
+      --cyan-dim: rgba(0, 243, 255, 0.12);
+      --cyan-border: rgba(0, 243, 255, 0.28);
+      
       --magenta: #ff0055;
-      --yellow: #ffe600;
-      --green: #00ff66;
-      --purple: #9d00ff;
+      --magenta-glow: rgba(255, 0, 85, 0.55);
+      --magenta-dim: rgba(255, 0, 85, 0.12);
+      
       --gold: #ffd700;
-      --bg-dark: #070913;
-      --bg-panel: rgba(10, 14, 26, 0.85);
-      --glass-border: rgba(0, 243, 255, 0.3);
+      --gold-glow: rgba(255, 215, 0, 0.55);
+      --gold-dim: rgba(255, 215, 0, 0.14);
+      
+      --green: #00ff66;
+      --green-glow: rgba(0, 255, 102, 0.55);
+      --green-dim: rgba(0, 255, 102, 0.12);
+      
+      --yellow: #ffe600;
+      --purple: #9d00ff;
+      --blue: #0099ff;
+
+      /* Dark Void Glass Surfaces */
+      --bg-dark: #060810;
+      --bg-glass-base: rgba(8, 12, 24, 0.88);
+      --bg-panel: rgba(10, 15, 29, 0.90);
+      --bg-card: rgba(14, 21, 40, 0.78);
+      --bg-card-hover: rgba(20, 31, 60, 0.90);
+      --bg-modal: rgba(9, 13, 26, 0.96);
+      --glass-border: rgba(0, 243, 255, 0.24);
+      --glass-border-bright: rgba(0, 243, 255, 0.65);
+
+      /* Typography */
       --font-cyber: 'Orbitron', 'Rajdhani', sans-serif;
       --font-ui: 'Rajdhani', sans-serif;
       --font-mono: 'Share Tech Mono', monospace;
+
+      /* Stitch Geometry */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-pill: 24px;
+      --stitch-notch: 6px;
     }
 
-    * {
+    /* Global Reset & Performance */
+    *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -468,33 +292,52 @@
     html, body {
       width: 100%;
       height: 100%;
+      height: 100dvh;
       overflow: hidden;
       background-color: var(--bg-dark);
       font-family: var(--font-ui);
-      color: #e0f7fa;
+      color: #e2e8f0;
+      touch-action: none;
     }
 
-    /* Scanlines effect */
+    /* Minimalist Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(6, 10, 20, 0.6);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 243, 255, 0.35);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan-glow);
+    }
+
+    /* Ambient CRT Scanlines & Cyber Vignette */
     .scanlines {
       position: fixed;
       inset: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
       background-size: 100% 4px, 6px 100%;
       pointer-events: none;
       z-index: 50;
-      opacity: 0.7;
+      opacity: 0.55;
     }
-
-    /* Ambient vignette */
     .vignette {
       position: fixed;
       inset: 0;
-      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.85);
+      box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.85);
       pointer-events: none;
       z-index: 45;
     }
 
-    /* Main Canvas */
+    /* 3D WebGL Canvas */
     #game-canvas {
       position: absolute;
       inset: 0;
@@ -506,7 +349,7 @@
     }
 
     /* =========================================================
-     *  SLEEK FIXED ROTATING HEADER AD BANNER (#fixed-header-ad-bar)
+     *  FIXED HEADER ROTATING AD BAR (#fixed-header-ad-bar)
      * ========================================================= */
     #fixed-header-ad-bar {
       position: fixed;
@@ -514,39 +357,38 @@
       left: 0;
       right: 0;
       width: 100%;
-      height: 36px;
+      height: calc(36px + env(safe-area-inset-top, 0px));
+      padding-top: env(safe-area-inset-top, 0px);
       z-index: 99;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(10, 15, 29, 0.95);
-      border-bottom: 1px solid rgba(0, 243, 255, 0.3);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(8, 12, 24, 0.94);
+      border-bottom: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       overflow: hidden;
-      box-sizing: border-box;
-      padding: 0 12px;
       cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
       transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
     #fixed-header-ad-bar:hover {
-      background: rgba(14, 21, 40, 0.98);
-      border-bottom-color: rgba(0, 243, 255, 0.6);
-      box-shadow: 0 2px 14px rgba(0, 243, 255, 0.25);
+      background: rgba(12, 18, 36, 0.98);
+      border-bottom-color: var(--cyan);
+      box-shadow: 0 2px 16px rgba(0, 243, 255, 0.22);
     }
     .header-ad-slide {
       position: absolute;
       inset: 0;
+      top: env(safe-area-inset-top, 0px);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       padding: 0 16px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .header-ad-slide.active {
       opacity: 1;
@@ -554,44 +396,43 @@
     }
     .header-ad-tag {
       font-family: var(--font-cyber);
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 800;
       letter-spacing: 0.8px;
       padding: 2px 7px;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       text-transform: uppercase;
       flex-shrink: 0;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
     .header-ad-tag.sponsor {
-      color: #ffd700;
-      background: rgba(255, 215, 0, 0.15);
-      border: 1px solid rgba(255, 215, 0, 0.55);
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+      color: var(--gold);
+      background: var(--gold-dim);
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      text-shadow: 0 0 8px var(--gold-glow);
     }
     .header-ad-tag.featured {
       color: var(--cyan);
-      background: rgba(0, 243, 255, 0.15);
-      border: 1px solid rgba(0, 243, 255, 0.55);
-      text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+      background: var(--cyan-dim);
+      border: 1px solid rgba(0, 243, 255, 0.5);
+      text-shadow: 0 0 8px var(--cyan-glow);
     }
     .header-ad-tag.hot {
       color: var(--magenta);
-      background: rgba(255, 0, 85, 0.15);
-      border: 1px solid rgba(255, 0, 85, 0.55);
-      text-shadow: 0 0 8px rgba(255, 0, 85, 0.5);
+      background: var(--magenta-dim);
+      border: 1px solid rgba(255, 0, 85, 0.5);
+      text-shadow: 0 0 8px var(--magenta-glow);
     }
     .header-ad-tag.reward {
       color: var(--green);
-      background: rgba(0, 255, 102, 0.15);
-      border: 1px solid rgba(0, 255, 102, 0.55);
-      text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+      background: var(--green-dim);
+      border: 1px solid rgba(0, 255, 102, 0.5);
+      text-shadow: 0 0 8px var(--green-glow);
     }
     .header-ad-text {
       font-family: var(--font-cyber);
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
-      color: #e2e8f0;
+      color: #cbd5e1;
       letter-spacing: 0.4px;
       white-space: nowrap;
       overflow: hidden;
@@ -603,87 +444,20 @@
       text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
     }
 
-    @media (max-width: 640px) {
-      #fixed-header-ad-bar {
-        height: 34px;
-        padding: 0 8px;
-      }
-      .header-ad-slide {
-        gap: 6px;
-        padding: 0 8px;
-      }
-      .header-ad-tag {
-        font-size: 9.5px;
-        padding: 1px 5px;
-      }
-      .header-ad-text {
-        font-size: 10px;
-        letter-spacing: 0.2px;
-      }
-    }
-
-    /* Unobtrusive Fixed Banners - Old Top Banner hidden in favor of sleek header bar */
-    .ad-top-wrapper {
-      display: none !important;
-    }
-
-    #asr-ad-leaderboard {
-      display: none !important;
-    }
-
-    .ad-mobile-footer-wrapper {
-      position: fixed;
-      bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 40;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      pointer-events: auto;
-    }
-
-    #asr-ad-mobile-footer {
-      width: 320px;
-      height: 50px;
-      background: rgba(10, 14, 26, 0.95);
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    /* 300x250 Rectangle Placements inside modals */
-    .ad-slot-300x250 {
-      width: 300px;
-      height: 250px;
-      margin: 12px auto;
-      background: rgba(8, 11, 20, 0.95);
-      border: 1px solid rgba(0, 243, 255, 0.35);
-      box-shadow: 0 0 18px rgba(0, 243, 255, 0.15);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    /* Polite AdBlock Detector Badge with Gaming Incentive - Offset cleanly below 36px header */
+    /* Polite AdBlock Detector Badge (Offset on Desktop Right so NEVER Collides with Radar) */
     #adblock-detector-badge {
       position: fixed;
       top: calc(44px + env(safe-area-inset-top, 0px));
-      left: calc(15px + env(safe-area-inset-left, 0px));
+      right: calc(180px + env(safe-area-inset-right, 0px));
       z-index: 52;
-      background: rgba(15, 23, 42, 0.88);
+      background: rgba(15, 23, 42, 0.90);
       border: 1px solid var(--yellow);
-      border-radius: 20px;
-      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      padding: 3px 12px;
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 11px;
+      font-size: 10.5px;
       font-family: var(--font-cyber);
       color: #fef08a;
       box-shadow: 0 0 12px rgba(255, 230, 0, 0.25);
@@ -698,19 +472,60 @@
     #adblock-detector-badge.buff-active {
       border-color: var(--green);
       color: var(--green);
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+      box-shadow: 0 0 15px var(--green-glow);
     }
 
-    /* Mock Ad Fallback styling */
+    /* Ad Units & Mock Containers */
+    .ad-top-wrapper, #asr-ad-leaderboard {
+      display: none !important;
+    }
+    .ad-mobile-footer-wrapper {
+      position: fixed;
+      bottom: calc(4px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 40;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      pointer-events: auto;
+    }
+    #asr-ad-mobile-footer {
+      width: 320px;
+      height: 50px;
+      background: rgba(10, 14, 26, 0.95);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: var(--radius-sm);
+    }
+    .ad-slot-300x250 {
+      width: 300px;
+      height: 250px;
+      margin: 12px auto;
+      background: rgba(8, 11, 20, 0.95);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 0 18px rgba(0, 243, 255, 0.15);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+    }
     .adsterra-mock-banner {
       width: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 10px;
-      background: radial-gradient(circle at 80% 20%, rgba(255, 0, 85, 0.15), rgba(7, 9, 19, 0.95)), repeating-linear-gradient(45deg, rgba(0,243,255,0.03) 0, rgba(0,243,255,0.03) 10px, transparent 10px, transparent 20px);
-      border: 1px dashed rgba(0, 243, 255, 0.4);
+      padding: 12px;
+      background: radial-gradient(circle at 80% 20%, rgba(255, 0, 85, 0.15), rgba(7, 9, 19, 0.96)),
+                  repeating-linear-gradient(45deg, rgba(0,243,255,0.02) 0, rgba(0,243,255,0.02) 10px, transparent 10px, transparent 20px);
+      border: 1px dashed rgba(0, 243, 255, 0.35);
       color: #fff;
       cursor: pointer;
       position: relative;
@@ -718,17 +533,17 @@
     }
     .adsterra-mock-banner:hover {
       border-color: var(--cyan);
-      box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.25);
+      box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.2);
     }
     .ad-badge {
       position: absolute;
-      top: 4px;
-      right: 6px;
+      top: 6px;
+      right: 8px;
       font-size: 9px;
       font-family: var(--font-mono);
-      color: rgba(255, 255, 255, 0.6);
-      background: rgba(0, 0, 0, 0.6);
-      padding: 2px 4px;
+      color: rgba(255, 255, 255, 0.65);
+      background: rgba(0, 0, 0, 0.65);
+      padding: 1px 5px;
       border-radius: 2px;
     }
     .ad-title {
@@ -737,12 +552,12 @@
       font-weight: 700;
       color: var(--yellow);
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
     }
     .ad-desc {
       font-size: 11px;
-      color: #cbe5ff;
-      line-height: 1.3;
+      color: #94a3b8;
+      line-height: 1.35;
     }
     .ad-cta {
       align-self: flex-start;
@@ -752,347 +567,12 @@
       font-size: 10px;
       font-family: var(--font-cyber);
       font-weight: bold;
-      border-radius: 3px;
-      box-shadow: 0 0 8px rgba(255, 0, 85, 0.5);
-    }
-
-    
-    /* =========================================================
-     *  MONETAG IN-PAGE PUSH (IPP) & MULTITAG STYLING (Disabled to prevent popups)
-     * ========================================================= */
-    #monetag-ipp-slot {
-      display: none !important;
-    }
-
-    /* Zero UX degradation on mobile: keep clear of virtual touch joystick on bottom-left */
-    @media (max-width: 768px) {
-      #monetag-ipp-slot {
-        display: none !important;
-      }
-    }
-
-    
-    /* =========================================================
-     *  TOP .IO GAME RETENTION & UI/UX STYLING
-     * ========================================================= */
-    /* 1. King Bounty Compass HUD - Offset below Combat Telemetry */
-    #hud-king-bounty {
-      position: absolute;
-      top: calc(94px + env(safe-area-inset-top, 0px));
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(10, 16, 30, 0.9);
-      border: 1px solid #ffd700;
-      border-radius: 20px;
-      padding: 5px 14px;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-      z-index: 38;
-      pointer-events: none;
-      backdrop-filter: blur(6px);
-      transition: all 0.2s ease;
-    }
-    .king-compass-icon {
-      font-size: 16px;
-      color: #ffd700;
-      display: inline-block;
-      transform-origin: center center;
-      transition: transform 0.1s linear;
-      filter: drop-shadow(0 0 6px #ffd700);
-    }
-    .king-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .king-label {
-      font-family: var(--font-cyber);
-      font-size: 10px;
-      font-weight: 700;
-      color: #ffd700;
-      letter-spacing: 0.5px;
-    }
-    .king-target {
-      font-size: 11px;
-      font-weight: 600;
-      color: #fff;
-    }
-    .king-dist-badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      background: rgba(0, 243, 255, 0.2);
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      padding: 1px 6px;
-      border-radius: 10px;
-      margin-left: 4px;
-    }
-
-    /* 2. Pinned Sticky Leaderboard Row */
-    #leaderboard-player-sticky {
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px dashed rgba(0, 243, 255, 0.4);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 243, 255, 0.15);
-      border: 1px solid var(--cyan);
-      border-radius: 4px;
-      padding: 4px 8px;
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-      animation: pulseGlow 2s infinite alternate;
-    }
-    @keyframes pulseGlow {
-      from { box-shadow: 0 0 5px rgba(0, 243, 255, 0.2); }
-      to { box-shadow: 0 0 12px rgba(0, 243, 255, 0.5); }
-    }
-
-    /* 3. In-Game Emoji Taunt Quick Bar */
-    #hud-taunt-bar {
-      position: fixed;
-      right: calc(20px + env(safe-area-inset-right, 0px));
-      bottom: calc(85px + env(safe-area-inset-bottom, 0px));
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      z-index: 46;
-    }
-    .taunt-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(10, 16, 30, 0.88);
-      border: 1px solid var(--cyan);
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
-      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
-      user-select: none;
-    }
-    .taunt-btn:hover, .taunt-btn:active {
-      transform: scale(1.2);
-      border-color: var(--yellow);
-      box-shadow: 0 0 18px var(--yellow);
-    }
-    
-    /* Killstreak Banner Callout */
-    .killstreak-banner {
-      position: fixed;
-      top: 18%;
-      left: 50%;
-      transform: translateX(-50%) scale(0.7);
-      font-family: var(--font-cyber);
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--yellow);
-      text-shadow: 0 0 20px var(--yellow), 0 0 35px var(--magenta);
-      background: rgba(10, 16, 30, 0.92);
-      border: 2px solid var(--yellow);
-      border-radius: 8px;
-      padding: 8px 24px;
-      z-index: 60;
-      pointer-events: none;
-      animation: killstreakPop 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      letter-spacing: 2px;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-    }
-    @keyframes killstreakPop {
-      0% { transform: translateX(-50%) scale(0.6); opacity: 0; }
-      15% { transform: translateX(-50%) scale(1.15); opacity: 1; }
-      30% { transform: translateX(-50%) scale(1.0); opacity: 1; }
-      80% { transform: translateX(-50%) scale(1.0); opacity: 1; }
-      100% { transform: translateX(-50%) translateY(-30px) scale(0.9); opacity: 0; }
-    }
-
-    .floating-taunt-bubble {
-      position: fixed;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.5);
-      font-size: 60px;
-      z-index: 65;
-      pointer-events: none;
-      animation: tauntFloat 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.8));
-    }
-    @keyframes tauntFloat {
-      0% { transform: translate(-50%, -20%) scale(0.5); opacity: 0; }
-      20% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
-      60% { transform: translate(-50%, -80%) scale(1.0); opacity: 1; }
-      100% { transform: translate(-50%, -150%) scale(0.8); opacity: 0; }
-    }
-
-    /* 4. 5-Second Circular Revive Timer Modal */
-    
-    /* =========================================================
-     *  VIRAL SOCIAL SHARE & CHALLENGE SYSTEM STYLING
-     * ========================================================= */
-    .challenge-banner-pill {
-      background: rgba(255, 215, 0, 0.12);
-      border: 1px solid #ffd700;
-      border-radius: 20px;
-      padding: 8px 16px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-family: var(--font-cyber);
-      font-size: 11px;
-      color: #ffd700;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-      animation: bannerPulse 2s infinite alternate;
-    }
-    @keyframes bannerPulse {
-      0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-      100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
-    }
-
-    .viral-share-box {
-      margin: 14px 0 10px;
-      padding: 12px;
-      background: rgba(10, 15, 28, 0.88);
-      border: 1px solid rgba(0, 243, 255, 0.3);
-      border-radius: 6px;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
-    }
-    .viral-share-header {
-      font-family: var(--font-cyber);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--yellow);
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .viral-share-buttons {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .share-btn {
-      font-family: var(--font-cyber);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 7px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      border: none;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: transform 0.15s, filter 0.15s;
-    }
-    .share-btn:hover {
-      transform: scale(1.05);
-      filter: brightness(1.15);
-    }
-    .share-whatsapp { background: #25d366; }
-    .share-telegram { background: #0088cc; }
-    .share-x { background: #111; border: 1px solid #555; }
-    .share-native { background: linear-gradient(135deg, #00f3ff, #ff0055); }
-
-    .pulse-cyan {
-      animation: pulseCyan 1.8s infinite alternate;
-    }
-    @keyframes pulseCyan {
-      0% { box-shadow: 0 0 5px rgba(0, 243, 255, 0.3); }
-      100% { box-shadow: 0 0 15px rgba(0, 243, 255, 0.7); }
-    }
-
-    .countdown-svg-wrap {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 12px;
-    }
-    .countdown-svg {
-      transform: rotate(-90deg);
-    }
-    .countdown-circle-bg {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.1);
-      stroke-width: 8;
-    }
-    .countdown-circle-bar {
-      fill: none;
-      stroke: var(--magenta);
-      stroke-width: 8;
-      stroke-linecap: round;
-      stroke-dasharray: 314.16;
-      stroke-dashoffset: 0;
-      transition: stroke-dashoffset 0.1s linear;
-      filter: drop-shadow(0 0 8px var(--magenta));
-    }
-    .countdown-number {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: var(--font-cyber);
-      font-size: 40px;
-      font-weight: 900;
-      color: #fff;
-      text-shadow: 0 0 15px var(--magenta);
-    }
-
-    /* 5. Lobby Lucky Cyber Spin Wheel */
-    .wheel-outer-container {
-      position: relative;
-      width: 280px;
-      height: 280px;
-      margin: 15px auto;
-    }
-    .wheel-pointer {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 26px;
-      color: #ffd700;
-      z-index: 10;
-      filter: drop-shadow(0 0 8px #ffd700);
-      pointer-events: none;
-    }
-    #spin-wheel-canvas {
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      box-shadow: 0 0 25px rgba(0, 243, 255, 0.4), inset 0 0 15px rgba(0,0,0,0.8);
-      border: 3px solid var(--cyan);
-    }
-
-    @media (max-width: 768px) {
-      #hud-king-bounty {
-        top: calc(84px + env(safe-area-inset-top, 0px));
-        padding: 4px 10px;
-        font-size: 10px;
-      }
-      #hud-taunt-bar {
-        right: calc(12px + env(safe-area-inset-right, 0px));
-        bottom: calc(160px + env(safe-area-inset-bottom, 0px));
-        gap: 6px;
-      }
-      .taunt-btn {
-        width: 34px;
-        height: 34px;
-        font-size: 16px;
-      }
+      border-radius: var(--radius-sm);
+      box-shadow: 0 0 10px var(--magenta-glow);
     }
 
     /* =========================================================
-     *  CYBERPUNK HUD (In-Game Overlay)
+     *  IN-GAME CYBERPUNK HUD (ZERO-COLLISION LAYOUT)
      * ========================================================= */
     #hud-overlay {
       position: fixed;
@@ -1102,24 +582,26 @@
       display: none;
     }
 
-    /* Top Left: Minimap Radar - Positioned cleanly below 36px header ad */
+    /* Top Left: 3D Radar Minimap */
     .hud-radar-box {
       position: absolute;
       top: calc(44px + env(safe-area-inset-top, 0px));
-      left: calc(15px + env(safe-area-inset-left, 0px));
-      width: 140px;
+      left: calc(14px + env(safe-area-inset-left, 0px));
+      width: 115px;
       background: var(--bg-panel);
       border: 1px solid var(--glass-border);
-      border-radius: 6px;
-      padding: 8px;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+      border-radius: var(--radius-md);
+      padding: 6px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 243, 255, 0.15);
       pointer-events: auto;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
     .hud-header-label {
       font-family: var(--font-cyber);
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
       color: var(--cyan);
       display: flex;
       justify-content: space-between;
@@ -1127,35 +609,38 @@
     }
     #minimap-canvas {
       width: 100%;
-      height: 120px;
-      background: #04060d;
+      height: 95px;
+      background: #04060e;
       border: 1px solid rgba(0, 243, 255, 0.2);
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       display: block;
     }
 
-    /* Top Center: Main Combat Telemetry - Positioned cleanly below 36px header ad */
+    /* Top Center: Main Combat Telemetry (Score, Length, Alive) */
     .hud-telemetry {
       position: absolute;
       top: calc(44px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 12px;
+      gap: 8px;
       pointer-events: auto;
+      z-index: 36;
     }
     .telemetry-card {
       background: var(--bg-panel);
       border: 1px solid var(--glass-border);
-      border-radius: 6px;
-      padding: 6px 16px;
+      border-radius: var(--radius-md);
+      padding: 4px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-width: 90px;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+      min-width: 78px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 12px rgba(0, 243, 255, 0.12);
       position: relative;
       overflow: hidden;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
     .telemetry-card::before {
       content: '';
@@ -1165,139 +650,204 @@
       width: 100%;
       height: 2px;
       background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
     }
     .telemetry-card.danger::before {
       background: var(--magenta);
+      box-shadow: 0 0 8px var(--magenta);
     }
     .telemetry-label {
       font-family: var(--font-cyber);
-      font-size: 9px;
-      letter-spacing: 1.2px;
-      color: #79a6d2;
+      font-size: 8.5px;
+      letter-spacing: 1px;
+      color: #94a3b8;
       text-transform: uppercase;
     }
     .telemetry-val {
       font-family: var(--font-cyber);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
       color: #fff;
-      text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+      line-height: 1.2;
     }
     .telemetry-val.pulse {
-      animation: neonPulse 1s infinite alternate;
+      animation: neonPulse 1.2s infinite alternate;
     }
 
-    /* Storm Status Badge */
-    .storm-badge {
+    /* Top Right: Quick Action Controls Bar */
+    .hud-controls-bar {
       position: absolute;
-      top: calc(165px + env(safe-area-inset-top, 0px));
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(18, 12, 28, 0.85);
-      border: 1px solid var(--magenta);
-      border-radius: 4px;
-      padding: 4px 14px;
+      top: calc(44px + env(safe-area-inset-top, 0px));
+      right: calc(14px + env(safe-area-inset-right, 0px));
+      display: flex;
+      gap: 6px;
+      pointer-events: auto;
+      z-index: 55;
+    }
+    .hud-btn {
+      background: var(--bg-panel);
+      border: 1px solid var(--glass-border);
+      color: var(--cyan);
+      padding: 6px 10px;
       font-family: var(--font-cyber);
       font-size: 11px;
-      letter-spacing: 1px;
-      color: #ff80aa;
-      box-shadow: 0 0 12px rgba(255, 0, 85, 0.3);
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .hud-btn:hover {
+      background: rgba(0, 243, 255, 0.2);
+      border-color: var(--cyan);
+      box-shadow: 0 0 16px var(--cyan-glow);
+      transform: translateY(-1px);
+    }
+    .hud-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Event Notifications Tier (Properly Stacked, Zero Overlaps) */
+    #hud-king-bounty {
+      position: absolute;
+      top: calc(92px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       align-items: center;
       gap: 8px;
+      background: rgba(10, 16, 32, 0.92);
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-pill);
+      padding: 4px 14px;
+      box-shadow: 0 0 16px var(--gold-glow);
+      z-index: 38;
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+    .king-compass-icon {
+      font-size: 15px;
+      color: var(--gold);
+      display: inline-block;
+      transform-origin: center center;
+      filter: drop-shadow(0 0 6px var(--gold));
+    }
+    .king-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .king-label {
+      font-family: var(--font-cyber);
+      font-size: 9.5px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+    .king-target {
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .king-dist-badge {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+
+    /* Storm Warning Badge (Cleanly Positioned BELOW King Bounty) */
+    .storm-badge {
+      position: absolute;
+      top: calc(130px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 12, 28, 0.92);
+      border: 1px solid var(--magenta);
+      border-radius: var(--radius-sm);
+      padding: 3px 12px;
+      font-family: var(--font-cyber);
+      font-size: 10.5px;
+      letter-spacing: 0.8px;
+      color: #ff99bb;
+      box-shadow: 0 0 14px var(--magenta-glow);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 37;
+      pointer-events: none;
+      backdrop-filter: blur(6px);
+      white-space: nowrap;
     }
     .storm-icon {
       color: var(--yellow);
       animation: blink 0.8s infinite;
     }
 
-    /* Boost Stamina Bar (Center Bottom) */
-    .hud-boost-container {
-      position: absolute;
-      bottom: calc(25px + env(safe-area-inset-bottom, 0px));
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      pointer-events: auto;
-      width: 240px;
-    }
-    .boost-bar-label {
-      font-family: var(--font-cyber);
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      color: var(--cyan);
-      margin-bottom: 4px;
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-    }
-    .boost-bar-bg {
-      width: 100%;
-      height: 8px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid var(--glass-border);
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 0 8px rgba(0, 243, 255, 0.2);
-    }
-    .boost-bar-fill {
-      height: 100%;
-      width: 100%;
-      background: linear-gradient(90deg, var(--cyan), #00aaff);
-      box-shadow: 0 0 10px var(--cyan);
-      transition: width 0.1s linear;
-    }
-
-    /* Active Power-up Badges */
+    /* Active Power-up Tray (Cleanly Positioned BELOW Storm Badge) */
     .hud-powerup-tray {
       position: absolute;
-      top: calc(200px + env(safe-area-inset-top, 0px));
+      top: calc(168px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 8px;
+      gap: 6px;
       pointer-events: auto;
+      z-index: 36;
     }
     .powerup-pill {
-      background: rgba(10, 14, 26, 0.9);
+      background: rgba(10, 15, 30, 0.92);
       border: 1px solid var(--yellow);
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       padding: 3px 8px;
-      font-size: 10px;
+      font-size: 9.5px;
       font-family: var(--font-cyber);
       color: #fff;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       box-shadow: 0 0 10px rgba(255, 230, 0, 0.4);
-      animation: slideDown 0.3s ease;
+      animation: slideDown 0.25s ease;
+      backdrop-filter: blur(6px);
     }
-    .powerup-pill.boost { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 8px rgba(0, 243, 255, 0.4); }
+    .powerup-pill.boost { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
     .powerup-pill.shield { border-color: #4488ff; color: #4488ff; box-shadow: 0 0 8px rgba(68, 136, 255, 0.4); }
     .powerup-pill.ghost { border-color: #c084fc; color: #c084fc; box-shadow: 0 0 8px rgba(192, 132, 252, 0.4); }
     .powerup-pill.magnet { border-color: var(--yellow); color: var(--yellow); }
     .powerup-pill.multiplier { border-color: var(--green); color: var(--green); }
 
-    /* Top Right: Real-time Leaderboard - Positioned cleanly below Controls Bar */
+    /* Top Right: Real-time Leaderboard Box */
     .hud-leaderboard-box {
       position: absolute;
       top: calc(88px + env(safe-area-inset-top, 0px));
-      right: calc(15px + env(safe-area-inset-right, 0px));
-      width: 180px;
+      right: calc(14px + env(safe-area-inset-right, 0px));
+      width: 175px;
       background: var(--bg-panel);
       border: 1px solid var(--glass-border);
-      border-radius: 6px;
-      padding: 8px 10px;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 12px rgba(0, 243, 255, 0.12);
       pointer-events: auto;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
     .leaderboard-list {
       list-style: none;
       margin-top: 4px;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
     }
     .leaderboard-item {
       display: flex;
@@ -1306,7 +856,7 @@
       padding: 2px 4px;
       margin-bottom: 2px;
       border-radius: 2px;
-      color: #a0aec0;
+      color: #94a3b8;
     }
     .leaderboard-item.player-row {
       background: rgba(0, 243, 255, 0.18);
@@ -1316,73 +866,154 @@
     }
     .leaderboard-item.dead {
       text-decoration: line-through;
-      opacity: 0.4;
+      opacity: 0.45;
     }
-    .lb-rank { width: 20px; font-weight: 700; }
+    .lb-rank { width: 22px; font-weight: 700; }
     .lb-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .lb-score { width: 40px; text-align: right; }
+    .lb-score { width: 38px; text-align: right; }
+    #leaderboard-player-sticky {
+      margin-top: 4px;
+      padding: 3px 6px;
+      border-top: 1px dashed rgba(0, 243, 255, 0.35);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 243, 255, 0.14);
+      border-radius: 3px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--cyan);
+    }
 
-    /* Bottom Left: Cyber Kill Feed */
+    /* Bottom HUD Elements: Killfeed, Taunts, Boost Stamina */
     .hud-killfeed-box {
       position: absolute;
-      bottom: calc(25px + env(safe-area-inset-bottom, 0px));
-      left: calc(15px + env(safe-area-inset-left, 0px));
-      width: 260px;
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      left: calc(14px + env(safe-area-inset-left, 0px));
+      width: 220px;
       display: flex;
       flex-direction: column;
       gap: 4px;
       pointer-events: none;
+      z-index: 25;
     }
     .killfeed-entry {
-      background: rgba(10, 14, 26, 0.85);
+      background: rgba(10, 14, 26, 0.88);
       border-left: 3px solid var(--magenta);
       border-radius: 2px;
-      padding: 4px 8px;
-      font-size: 11px;
+      padding: 3px 6px;
+      font-size: 10.5px;
       font-family: var(--font-cyber);
       color: #e2e8f0;
       animation: feedFadeIn 0.3s ease;
-      box-shadow: 0 0 8px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
     .kf-killer { color: var(--cyan); font-weight: bold; }
     .kf-victim { color: var(--magenta); font-weight: bold; }
 
-    /* Top Corner HUD Actions (Pause & Settings & Audio) - Offset below 36px header ad */
-    .hud-controls-bar {
-      position: absolute;
-      top: calc(44px + env(safe-area-inset-top, 0px));
-      right: calc(15px + env(safe-area-inset-right, 0px));
+    #hud-taunt-bar {
+      position: fixed;
+      right: calc(18px + env(safe-area-inset-right, 0px));
+      bottom: calc(175px + env(safe-area-inset-bottom, 0px));
       display: flex;
+      flex-direction: column;
       gap: 8px;
-      pointer-events: auto;
-      z-index: 55;
+      z-index: 46;
     }
-    .hud-btn {
-      background: var(--bg-panel);
-      border: 1px solid var(--glass-border);
-      color: var(--cyan);
-      padding: 6px 12px;
-      font-family: var(--font-cyber);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      border-radius: 4px;
-      cursor: pointer;
+    .taunt-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(10, 16, 32, 0.90);
+      border: 1px solid var(--cyan);
+      font-size: 18px;
       display: flex;
       align-items: center;
-      gap: 4px;
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
-      transition: all 0.2s;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
     }
-    .hud-btn:hover {
-      background: rgba(0, 243, 255, 0.2);
-      border-color: var(--cyan);
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
-      transform: translateY(-1px);
+    .taunt-btn:hover, .taunt-btn:active {
+      transform: scale(1.18);
+      border-color: var(--yellow);
+      box-shadow: 0 0 16px var(--yellow);
+    }
+
+    .hud-boost-container {
+      position: absolute;
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: auto;
+      width: min(240px, 50vw);
+      z-index: 25;
+    }
+    .boost-bar-label {
+      font-family: var(--font-cyber);
+      font-size: 9.5px;
+      letter-spacing: 1.2px;
+      color: var(--cyan);
+      margin-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .boost-bar-bg {
+      width: 100%;
+      height: 7px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0, 243, 255, 0.2);
+    }
+    .boost-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--cyan), #0099ff);
+      box-shadow: 0 0 10px var(--cyan);
+      transition: width 0.1s linear;
+    }
+
+    /* Killstreak Banner Callout */
+    .killstreak-banner {
+      position: fixed;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.7);
+      font-family: var(--font-cyber);
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--yellow);
+      text-shadow: 0 0 20px var(--yellow), 0 0 35px var(--magenta);
+      background: rgba(10, 16, 32, 0.94);
+      border: 2px solid var(--yellow);
+      border-radius: var(--radius-md);
+      padding: 8px 24px;
+      z-index: 60;
+      pointer-events: none;
+      animation: killstreakPop 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      letter-spacing: 1.8px;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+    }
+    .floating-taunt-bubble {
+      position: fixed;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      font-size: 55px;
+      z-index: 65;
+      pointer-events: none;
+      animation: tauntFloat 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      filter: drop-shadow(0 0 18px var(--cyan));
     }
 
     /* =========================================================
-     *  MOBILE & CROSS-DEVICE CONTROLS (Floating Joystick, D-Pad, Boost)
+     *  TOUCH & MOBILE CONTROLS (VIRTUAL JOYSTICK & BOOST)
      * ========================================================= */
     .touch-controls {
       position: fixed;
@@ -1391,40 +1022,33 @@
       z-index: 30;
       display: none;
     }
-    /* Auto-display on any touch-capable screen, mobile, or tablet viewport */
     @media (max-width: 1024px), (hover: none), (pointer: coarse) {
       .touch-controls { display: block !important; }
     }
-    .touch-controls.force-show {
-      display: block !important;
-    }
-    .touch-controls.force-hide {
-      display: none !important;
-    }
+    .touch-controls.force-show { display: block !important; }
+    .touch-controls.force-hide { display: none !important; }
 
-    /* Left Floating Touch Steering Zone (Entire Left 55vw) */
     .touch-left-zone {
       position: absolute;
       top: 0;
       left: 0;
-      width: 55vw;
+      width: 52vw;
       height: 100vh;
       pointer-events: auto;
       touch-action: none;
       z-index: 29;
     }
 
-    /* Left Joystick */
     #joystick-zone {
       position: absolute;
-      bottom: calc(75px + env(safe-area-inset-bottom, 0px));
-      left: calc(35px + env(safe-area-inset-left, 0px));
-      width: 130px;
-      height: 130px;
+      bottom: calc(65px + env(safe-area-inset-bottom, 0px));
+      left: calc(28px + env(safe-area-inset-left, 0px));
+      width: 120px;
+      height: 120px;
       pointer-events: auto;
       touch-action: none;
       z-index: 31;
-      opacity: 0.88;
+      opacity: 0.92;
       transition: opacity 0.2s;
     }
     .joystick-base {
@@ -1432,9 +1056,9 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 243, 255, 0.15) 0%, rgba(10, 14, 26, 0.8) 70%);
-      border: 2px solid rgba(0, 243, 255, 0.6);
-      box-shadow: 0 0 25px rgba(0, 243, 255, 0.35);
+      background: radial-gradient(circle, rgba(0, 243, 255, 0.12) 0%, rgba(10, 15, 30, 0.85) 75%);
+      border: 2px solid rgba(0, 243, 255, 0.5);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1442,31 +1066,31 @@
     .joystick-base::after {
       content: '';
       position: absolute;
-      width: 50px;
-      height: 50px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      border: 1px dashed rgba(0, 243, 255, 0.45);
+      border: 1px dashed rgba(0, 243, 255, 0.4);
     }
     .joystick-thumb {
       position: absolute;
-      width: 54px;
-      height: 54px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #00f3ff, #0088cc);
-      box-shadow: 0 0 20px var(--cyan);
-      border: 2px solid #fff;
+      background: radial-gradient(circle at 35% 35%, #00f3ff, #0077b6);
+      box-shadow: 0 0 16px var(--cyan);
+      border: 2px solid #ffffff;
       transform: translate(0, 0);
       pointer-events: none;
       transition: transform 0.04s ease-out;
     }
 
-    /* Alternative Cyber D-Pad */
+    /* Cyber D-Pad (Alternative Controls Mode) */
     .cyber-dpad {
       position: absolute;
-      bottom: calc(65px + env(safe-area-inset-bottom, 0px));
-      left: calc(25px + env(safe-area-inset-left, 0px));
-      width: 150px;
-      height: 150px;
+      bottom: calc(55px + env(safe-area-inset-bottom, 0px));
+      left: calc(20px + env(safe-area-inset-left, 0px));
+      width: 140px;
+      height: 140px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1479,54 +1103,53 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
     }
     .dpad-btn {
-      width: 46px;
-      height: 46px;
-      background: rgba(10, 20, 40, 0.85);
-      border: 2px solid rgba(0, 243, 255, 0.6);
-      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      background: rgba(12, 22, 45, 0.88);
+      border: 2px solid rgba(0, 243, 255, 0.55);
+      border-radius: var(--radius-sm);
       color: var(--cyan);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.25);
-      transition: background 0.1s, transform 0.08s, box-shadow 0.1s;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
       touch-action: none;
-      user-select: none;
+      transition: transform 0.08s, background 0.1s;
     }
     .dpad-btn:active, .dpad-btn.active {
       background: rgba(0, 243, 255, 0.5);
       transform: scale(0.92);
-      box-shadow: 0 0 25px var(--cyan);
+      box-shadow: 0 0 20px var(--cyan);
       color: #fff;
     }
     .dpad-center {
-      width: 32px;
-      height: 32px;
-      font-size: 11px;
-      opacity: 0.5;
-      border-color: rgba(255, 255, 255, 0.3);
+      width: 28px;
+      height: 28px;
+      font-size: 10px;
+      opacity: 0.45;
+      border-color: rgba(255, 255, 255, 0.25);
     }
 
-    /* Right Boost Button */
+    /* Mobile Boost Button */
     #mobile-boost-btn {
       position: absolute;
-      bottom: calc(75px + env(safe-area-inset-bottom, 0px));
-      right: calc(35px + env(safe-area-inset-right, 0px));
-      width: 86px;
-      height: 86px;
+      bottom: calc(65px + env(safe-area-inset-bottom, 0px));
+      right: calc(28px + env(safe-area-inset-right, 0px));
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, rgba(255, 0, 85, 0.88), rgba(120, 0, 40, 0.95));
+      background: radial-gradient(circle at 35% 35%, rgba(255, 0, 85, 0.90), rgba(130, 0, 45, 0.96));
       border: 3px solid rgba(255, 0, 85, 0.8);
-      box-shadow: 0 0 30px rgba(255, 0, 85, 0.6);
+      box-shadow: 0 0 25px var(--magenta-glow);
       color: #fff;
       font-family: var(--font-cyber);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 900;
       letter-spacing: 1px;
       display: flex;
@@ -1536,7 +1159,6 @@
       pointer-events: auto;
       touch-action: none;
       cursor: pointer;
-      user-select: none;
       z-index: 31;
       transition: transform 0.1s, box-shadow 0.1s;
     }
@@ -1546,188 +1168,253 @@
       background: radial-gradient(circle at 35% 35%, #ff0055, #990033);
     }
     #mobile-boost-btn .boost-icon {
-      font-size: 24px;
+      font-size: 22px;
       color: var(--yellow);
     }
 
-    /* Controls Guide Pill in Lobby & HUD */
-    .controls-guide-pill {
-      background: rgba(0, 243, 255, 0.08);
-      border: 1px solid rgba(0, 243, 255, 0.3);
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin: 10px 0 14px 0;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      color: #e2e8f0;
-      text-align: left;
-      line-height: 1.6;
-    }
-    .controls-guide-pill .ctrl-badge {
-      display: inline-block;
-      background: rgba(0, 243, 255, 0.2);
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      border-radius: 4px;
-      padding: 2px 6px;
-      font-weight: bold;
-      font-size: 10px;
-      margin-right: 6px;
-    }
-
     /* =========================================================
-     *  MODAL OVERLAYS (Lobby, Pause, Game Over, Ad Settings)
-     *  Offset top by 36px so modals sit cleanly below fixed header
+     *  STITCH MODALS ARCHITECTURE (LOBBY, GAMEOVER, SETTINGS, ETC.)
      * ========================================================= */
     .modal-backdrop {
       position: fixed;
-      top: 36px;
+      top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(5, 7, 15, 0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(5, 8, 18, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 60;
-      padding: 16px;
+      padding: calc(44px + env(safe-area-inset-top, 0px)) 14px 14px 14px;
       overflow-y: auto;
     }
+
+    /* Stitched Card with Corner Accents */
     .cyber-modal {
-      background: rgba(11, 15, 28, 0.95);
-      border: 1px solid var(--cyan);
-      box-shadow: 0 0 30px rgba(0, 243, 255, 0.25), inset 0 0 20px rgba(0, 243, 255, 0.05);
-      border-radius: 8px;
+      background: var(--bg-modal);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 243, 255, 0.15);
+      border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 540px;
-      max-height: calc(90dvh - 20px);
+      max-width: 530px;
+      max-height: calc(100dvh - 56px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
-      padding: 24px;
+      padding: 20px 22px;
       text-align: center;
       position: relative;
-      animation: modalPop 0.3s ease;
+      animation: modalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .cyber-modal::before {
       content: '';
       position: absolute;
       top: -1px;
-      left: 10%;
-      right: 10%;
+      left: 15%;
+      right: 15%;
       height: 2px;
       background: linear-gradient(90deg, transparent, var(--cyan), transparent);
     }
 
+    /* Lobby Header Bar */
+    .lobby-header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 243, 255, 0.18);
+    }
+    .platform-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-family: var(--font-cyber);
+      font-size: 10.5px;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.8px;
+    }
+    .platform-pill.tg {
+      background: rgba(36, 161, 222, 0.18);
+      border-color: #24a1de;
+      color: #64b5f6;
+    }
+    .platform-pill.discord {
+      background: rgba(88, 101, 242, 0.18);
+      border-color: #5865f2;
+      color: #9fa8da;
+    }
+
+    /* Orbit / Stitch Navigation Pills */
+    .orbit-nav-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .orbit-nav-btn {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      color: #e2e8f0;
+      font-family: var(--font-cyber);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.18s ease;
+    }
+    .orbit-nav-btn:hover {
+      background: rgba(0, 243, 255, 0.18);
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+    }
+    .orbit-badge {
+      background: var(--magenta);
+      color: #fff;
+      font-size: 8.5px;
+      padding: 1px 5px;
+      border-radius: 8px;
+      font-weight: 900;
+    }
+    .orbit-badge.ready {
+      background: var(--green);
+      color: #04140a;
+      box-shadow: 0 0 6px var(--green-glow);
+    }
+
+    /* Titles & Subtitles */
     .modal-title {
       font-family: var(--font-cyber);
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 900;
       letter-spacing: 2px;
       color: #fff;
       text-transform: uppercase;
-      margin-bottom: 6px;
-      text-shadow: 0 0 15px var(--cyan);
+      margin-bottom: 4px;
+      text-shadow: 0 0 16px var(--cyan);
     }
     .modal-subtitle {
       font-family: var(--font-mono);
-      font-size: 12px;
-      color: #8da4be;
-      margin-bottom: 16px;
-      letter-spacing: 1px;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 14px;
+      letter-spacing: 0.8px;
     }
 
-    /* Form Fields & Options */
+    /* Form Fields */
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       text-align: left;
     }
     .form-label {
       font-family: var(--font-cyber);
-      font-size: 11px;
-      letter-spacing: 1px;
+      font-size: 10.5px;
+      letter-spacing: 0.8px;
       color: var(--cyan);
       margin-bottom: 4px;
       display: block;
     }
+    .input-row {
+      display: flex;
+      gap: 6px;
+    }
     .cyber-input {
       width: 100%;
       padding: 8px 12px;
-      background: rgba(5, 7, 15, 0.8);
+      background: rgba(6, 10, 20, 0.85);
       border: 1px solid var(--glass-border);
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       color: #fff;
       font-family: var(--font-cyber);
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
     .cyber-input:focus {
       border-color: var(--cyan);
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.35);
     }
 
     /* Skin Selector */
     .skin-picker {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       margin-top: 6px;
+      flex-wrap: wrap;
     }
     .skin-swatch {
       width: 38px;
       height: 38px;
-      border-radius: 6px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(255, 255, 255, 0.25);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
     .skin-swatch.active {
       transform: scale(1.15);
       border-color: #fff;
-      box-shadow: 0 0 15px currentColor;
+      box-shadow: 0 0 16px currentColor;
     }
 
-    /* Action Buttons */
+    /* Action Buttons Hierarchy */
     .btn-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
-      margin-top: 14px;
+      margin-top: 12px;
+      flex-wrap: wrap;
     }
     .cyber-btn {
-      padding: 10px 20px;
+      padding: 9px 18px;
       font-family: var(--font-cyber);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.2s;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
       border: none;
     }
-    .cyber-btn-primary {
-      background: linear-gradient(90deg, #00f3ff, #0099ff);
-      color: #04060d;
-      box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
-    }
-    .cyber-btn-primary:hover {
-      box-shadow: 0 0 30px var(--cyan);
+    .cyber-btn:hover {
       transform: translateY(-2px);
     }
+    .cyber-btn:active {
+      transform: scale(0.96);
+    }
+    .cyber-btn-primary {
+      background: linear-gradient(90deg, #00f3ff, #0088ff);
+      color: #050814;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.45);
+      font-weight: 900;
+    }
+    .cyber-btn-primary:hover {
+      box-shadow: 0 0 28px var(--cyan);
+    }
     .cyber-btn-secondary {
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(15, 23, 42, 0.90);
       border: 1px solid var(--glass-border);
       color: #cbd5e1;
     }
@@ -1738,68 +1425,351 @@
     .cyber-btn-magenta {
       background: linear-gradient(90deg, var(--magenta), #b3003b);
       color: #fff;
-      box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+      box-shadow: 0 0 20px var(--magenta-glow);
     }
     .cyber-btn-magenta:hover {
-      box-shadow: 0 0 30px var(--magenta);
-      transform: translateY(-2px);
+      box-shadow: 0 0 28px var(--magenta);
     }
     .cyber-btn-gold {
-      background: linear-gradient(90deg, #ffd700, #ff8800);
-      color: #05070f;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      background: linear-gradient(90deg, var(--gold), #ff8800);
+      color: #050814;
+      box-shadow: 0 0 20px var(--gold-glow);
+      font-weight: 900;
     }
 
-    /* Rewarded Gameplay Offer Banners */
+    /* Universal Controls Guide Pill */
+    .controls-guide-pill {
+      background: rgba(0, 243, 255, 0.06);
+      border: 1px solid rgba(0, 243, 255, 0.25);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      margin: 10px 0 12px 0;
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      color: #cbd5e1;
+      text-align: left;
+      line-height: 1.5;
+    }
+    .controls-guide-pill .ctrl-badge {
+      display: inline-block;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-weight: bold;
+      font-size: 9.5px;
+      margin-right: 4px;
+    }
+
+    /* Rewarded Gameplay Perks */
     .rewarded-hooks-box {
       margin: 10px 0;
-      padding: 10px;
-      background: rgba(0, 243, 255, 0.05);
-      border: 1px dashed rgba(0, 243, 255, 0.35);
-      border-radius: 6px;
+      padding: 8px;
+      background: rgba(0, 243, 255, 0.04);
+      border: 1px dashed rgba(0, 243, 255, 0.3);
+      border-radius: var(--radius-md);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     .reward-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      background: rgba(10, 14, 26, 0.7);
+      gap: 8px;
+      background: rgba(10, 15, 30, 0.75);
       padding: 6px 10px;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .reward-info {
       text-align: left;
-      font-size: 11px;
-      color: #e2e8f0;
+      font-size: 10.5px;
+      color: #cbd5e1;
     }
 
-    /* Stats Summary Grid */
+    /* Viral Social Share Suite */
+    .viral-share-box {
+      margin: 12px 0 8px;
+      padding: 10px;
+      background: rgba(10, 16, 32, 0.90);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.12);
+    }
+    .viral-share-header {
+      font-family: var(--font-cyber);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--yellow);
+      margin-bottom: 6px;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .viral-share-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .share-btn {
+      font-family: var(--font-cyber);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .share-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.15);
+    }
+    .share-whatsapp { background: #25d366; }
+    .share-telegram { background: #0088cc; }
+    .share-x { background: #111; border: 1px solid #555; }
+    .share-native { background: linear-gradient(135deg, #00f3ff, #ff0055); }
+
+    /* Match Stats Grid */
     .match-stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 14px 0;
+      gap: 6px;
+      margin: 12px 0;
     }
     .stat-pill {
-      background: rgba(8, 11, 20, 0.8);
+      background: rgba(8, 12, 24, 0.85);
       border: 1px solid rgba(0, 243, 255, 0.2);
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       padding: 6px;
     }
     .stat-pill-label {
-      font-size: 9px;
+      font-size: 8.5px;
       font-family: var(--font-cyber);
-      color: #718096;
+      color: #94a3b8;
     }
     .stat-pill-val {
-      font-size: 18px;
+      font-size: 17px;
       font-family: var(--font-cyber);
       font-weight: 700;
       color: #fff;
+    }
+
+    /* Revive Countdown Modal */
+    .countdown-svg-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 10px;
+    }
+    .countdown-svg {
+      transform: rotate(-90deg);
+    }
+    .countdown-circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 7;
+    }
+    .countdown-circle-bar {
+      fill: none;
+      stroke: var(--magenta);
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-dasharray: 314.16;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.1s linear;
+      filter: drop-shadow(0 0 8px var(--magenta));
+    }
+    .countdown-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-cyber);
+      font-size: 38px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 15px var(--magenta);
+    }
+
+    /* Lucky Cyber Spin Wheel */
+    .wheel-outer-container {
+      position: relative;
+      width: min(260px, 75vw);
+      height: min(260px, 75vw);
+      margin: 10px auto;
+    }
+    .wheel-pointer {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: var(--gold);
+      z-index: 10;
+      filter: drop-shadow(0 0 8px var(--gold));
+      pointer-events: none;
+    }
+    #spin-wheel-canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.35);
+      border: 3px solid var(--cyan);
+      display: block;
+    }
+
+    /* Orbit Feature Modals (Missions, Boosters, Records, Supply) */
+    .mission-list, .booster-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      margin-top: 10px;
+      max-height: 340px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .mission-card, .booster-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: border-color 0.2s;
+    }
+    .mission-card:hover, .booster-card:hover {
+      border-color: var(--cyan);
+    }
+    .mission-info h4, .booster-info h4 {
+      font-family: var(--font-cyber);
+      font-size: 12px;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .mission-info p, .booster-info p {
+      font-size: 10.5px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .mission-progress-bar {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .mission-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .reward-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--gold);
+      background: var(--gold-dim);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .inventory-bar {
+      display: flex;
+      justify-content: space-around;
+      background: var(--cyan-dim);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 6px;
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .inventory-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .inventory-val {
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    .supply-hero {
+      background: radial-gradient(circle at center, rgba(0, 243, 255, 0.15) 0%, rgba(15, 23, 42, 0.95) 75%);
+      border: 1px solid var(--cyan);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin: 12px 0;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+    }
+    .supply-hero h3 {
+      font-family: var(--font-cyber);
+      font-size: 16px;
+      color: var(--gold);
+      margin-bottom: 6px;
+      text-shadow: 0 0 10px var(--gold-glow);
+    }
+    .supply-items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 12px 0;
+    }
+    .supply-box {
+      background: rgba(10, 14, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 8px 4px;
+      font-size: 10.5px;
+    }
+    .supply-box strong {
+      display: block;
+      color: #fff;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .records-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .record-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      text-align: center;
+    }
+    .record-card .label {
+      font-size: 9.5px;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .record-card .value {
+      font-family: var(--font-cyber);
+      font-size: 18px;
+      color: var(--cyan);
+      font-weight: 700;
     }
 
     /* Ad Settings Modal Styles */
@@ -1807,29 +1777,27 @@
       width: 100%;
       text-align: left;
       font-size: 11px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .settings-table td {
       padding: 4px;
     }
     .log-box {
       width: 100%;
-      height: 80px;
+      height: 75px;
       background: #030408;
       border: 1px solid #1a202c;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       padding: 6px;
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 9.5px;
       color: #38bdf8;
       overflow-y: auto;
       text-align: left;
-      margin-top: 10px;
+      margin-top: 8px;
     }
 
-    /* =========================================================
-     *  CRAWLABLE SEMANTIC SEO SECTION (Crawlable by Googlebot)
-     * ========================================================= */
+    /* Semantic SEO & Strategy Guide */
     .seo-semantic-container {
       position: absolute;
       bottom: -99999px;
@@ -1840,17 +1808,15 @@
       color: #cbd5e1;
       padding: 24px;
       font-family: sans-serif;
-      line-height: 1.6;
     }
-    /* Expandable drawer for human players who want the strategy guide */
     .guide-toggle-btn {
       position: fixed;
       bottom: 12px;
-      left: 15px;
+      left: 14px;
       z-index: 45;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.88);
       border: 1px solid var(--glass-border);
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       padding: 4px 10px;
       font-size: 10px;
       font-family: var(--font-cyber);
@@ -1860,297 +1826,274 @@
     .guide-drawer {
       position: fixed;
       inset: 0;
-      background: rgba(7, 9, 19, 0.95);
+      background: rgba(7, 9, 19, 0.96);
       z-index: 70;
       overflow-y: auto;
-      padding: 40px 20px;
+      padding: 30px 18px;
       display: none;
     }
     .guide-content {
-      max-width: 800px;
+      max-width: 780px;
       margin: 0 auto;
       text-align: left;
       color: #e2e8f0;
     }
-    .guide-content h1 { font-family: var(--font-cyber); color: var(--cyan); margin-bottom: 12px; font-size: 24px; }
-    .guide-content h2 { font-family: var(--font-cyber); color: var(--yellow); margin-top: 20px; margin-bottom: 8px; font-size: 18px; }
-    .guide-content p { margin-bottom: 12px; font-size: 14px; color: #cbd5e1; }
+    .guide-content h1 { font-family: var(--font-cyber); color: var(--cyan); margin-bottom: 12px; font-size: 22px; }
+    .guide-content h2 { font-family: var(--font-cyber); color: var(--yellow); margin-top: 18px; margin-bottom: 8px; font-size: 16px; }
+    .guide-content p { margin-bottom: 10px; font-size: 13px; color: #cbd5e1; line-height: 1.5; }
     .faq-accordion details {
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(0, 243, 255, 0.2);
-      border-radius: 4px;
-      padding: 10px 14px;
-      margin-bottom: 10px;
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      margin-bottom: 8px;
     }
     .faq-accordion summary {
       cursor: pointer;
       font-family: var(--font-cyber);
       font-weight: 700;
       color: var(--cyan);
-      font-size: 14px;
+      font-size: 13px;
     }
     .faq-accordion p {
-      margin-top: 8px;
-      font-size: 13px;
+      margin-top: 6px;
+      font-size: 12px;
       color: #94a3b8;
     }
 
-    /* =========================================================
-     *  KEYFRAME ANIMATIONS
-     * ========================================================= */
+    /* Keyframe Animations */
     @keyframes modalPop {
       0% { opacity: 0; transform: scale(0.92); }
       100% { opacity: 1; transform: scale(1); }
     }
     @keyframes neonPulse {
       0% { text-shadow: 0 0 5px var(--cyan); }
-      100% { text-shadow: 0 0 20px var(--cyan), 0 0 30px var(--cyan); }
+      100% { text-shadow: 0 0 18px var(--cyan), 0 0 25px var(--cyan); }
     }
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.2; }
     }
     @keyframes feedFadeIn {
-      0% { opacity: 0; transform: translateX(-15px); }
+      0% { opacity: 0; transform: translateX(-12px); }
       100% { opacity: 1; transform: translateX(0); }
     }
     @keyframes slideDown {
-      0% { opacity: 0; transform: translateY(-10px); }
+      0% { opacity: 0; transform: translateY(-8px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    @keyframes pulseGlow {
-      0% { transform: scale(1); filter: drop-shadow(0 0 4px var(--yellow)); }
-      100% { transform: scale(1.15); filter: drop-shadow(0 0 10px var(--yellow)); }
+    @keyframes killstreakPop {
+      0% { transform: translateX(-50%) scale(0.6); opacity: 0; }
+      15% { transform: translateX(-50%) scale(1.12); opacity: 1; }
+      30% { transform: translateX(-50%) scale(1.0); opacity: 1; }
+      80% { transform: translateX(-50%) scale(1.0); opacity: 1; }
+      100% { transform: translateX(-50%) translateY(-25px) scale(0.9); opacity: 0; }
+    }
+    @keyframes tauntFloat {
+      0% { transform: translate(-50%, -20%) scale(0.5); opacity: 0; }
+      20% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+      60% { transform: translate(-50%, -75%) scale(1.0); opacity: 1; }
+      100% { transform: translate(-50%, -140%) scale(0.8); opacity: 0; }
     }
 
     /* =========================================================
-     *  RESPONSIVE BREAKPOINTS (Mobile <= 768px)
+     *  RESPONSIVE QUERIES: MOBILE (<= 768px)
      * ========================================================= */
     @media (max-width: 768px) {
-      .ad-top-wrapper { display: none !important; }
       .ad-mobile-footer-wrapper { display: flex !important; }
-      .touch-controls { display: block !important; }
 
-      .hud-radar-box {
-        top: calc(84px + env(safe-area-inset-top, 0px));
-        left: calc(10px + env(safe-area-inset-left, 0px));
-        width: 110px;
-        padding: 5px;
+      /* Top Header */
+      #fixed-header-ad-bar {
+        height: calc(34px + env(safe-area-inset-top, 0px));
       }
-      #minimap-canvas { height: 90px; }
+      .header-ad-tag { font-size: 9.5px; padding: 1px 5px; }
+      .header-ad-text { font-size: 10px; }
 
-      .hud-telemetry {
-        top: calc(42px + env(safe-area-inset-top, 0px));
-        gap: 6px;
-      }
-      .telemetry-card {
-        padding: 4px 10px;
-        min-width: 70px;
-      }
-      .telemetry-val { font-size: 16px; }
-
-      .hud-controls-bar {
-        top: calc(42px + env(safe-area-inset-top, 0px));
+      /* AdBlock badge on mobile */
+      #adblock-detector-badge {
+        top: calc(38px + env(safe-area-inset-top, 0px));
         right: calc(10px + env(safe-area-inset-right, 0px));
-        gap: 4px;
-      }
-      .hud-btn {
-        padding: 4px 8px;
-        font-size: 10px;
-      }
-
-      .storm-badge {
-        top: calc(84px + env(safe-area-inset-top, 0px));
-        font-size: 10px;
+        font-size: 9.5px;
         padding: 2px 8px;
       }
 
-      .hud-leaderboard-box {
-        top: calc(84px + env(safe-area-inset-top, 0px));
-        right: calc(10px + env(safe-area-inset-right, 0px));
-        width: 140px;
-        padding: 5px;
+      /* Radar Minimap */
+      .hud-radar-box {
+        top: calc(40px + env(safe-area-inset-top, 0px));
+        left: calc(8px + env(safe-area-inset-left, 0px));
+        width: 88px;
+        padding: 4px;
       }
-      .leaderboard-list { font-size: 9px; }
+      #minimap-canvas { height: 72px; }
+      .hud-header-label { font-size: 8px; }
+
+      /* Telemetry Center - Scaled & Protected from overlaps */
+      .hud-telemetry {
+        top: calc(40px + env(safe-area-inset-top, 0px));
+        gap: 4px;
+      }
+      .telemetry-card {
+        padding: 2px 8px;
+        min-width: 58px;
+      }
+      .telemetry-label { font-size: 7.5px; letter-spacing: 0.5px; }
+      .telemetry-val { font-size: 14px; }
+
+      /* Controls Bar Top Right */
+      .hud-controls-bar {
+        top: calc(40px + env(safe-area-inset-top, 0px));
+        right: calc(8px + env(safe-area-inset-right, 0px));
+        gap: 3px;
+      }
+      .hud-btn {
+        padding: 4px 6px;
+        font-size: 9.5px;
+      }
+
+      /* Stacking Events */
+      #hud-king-bounty {
+        top: calc(78px + env(safe-area-inset-top, 0px));
+        padding: 3px 10px;
+        font-size: 9.5px;
+      }
+      .storm-badge {
+        top: calc(108px + env(safe-area-inset-top, 0px));
+        font-size: 9.5px;
+        padding: 2px 8px;
+      }
+      .hud-powerup-tray {
+        top: calc(136px + env(safe-area-inset-top, 0px));
+      }
+
+      /* Leaderboard Box Top Right */
+      .hud-leaderboard-box {
+        top: calc(78px + env(safe-area-inset-top, 0px));
+        right: calc(8px + env(safe-area-inset-right, 0px));
+        width: 125px;
+        padding: 4px 6px;
+      }
+      .leaderboard-list { font-size: 8.5px; }
+
+      /* Bottom Controls */
+      #joystick-zone {
+        bottom: calc(55px + env(safe-area-inset-bottom, 0px));
+        left: calc(16px + env(safe-area-inset-left, 0px));
+        width: 105px;
+        height: 105px;
+      }
+      .joystick-thumb {
+        width: 44px;
+        height: 44px;
+      }
+      #mobile-boost-btn {
+        bottom: calc(55px + env(safe-area-inset-bottom, 0px));
+        right: calc(16px + env(safe-area-inset-right, 0px));
+        width: 72px;
+        height: 72px;
+        font-size: 11px;
+      }
+      #mobile-boost-btn .boost-icon { font-size: 18px; }
+
+      #hud-taunt-bar {
+        right: calc(10px + env(safe-area-inset-right, 0px));
+        bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+        gap: 5px;
+      }
+      .taunt-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+      }
 
       .hud-boost-container {
         bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-        width: 160px;
+        width: 150px;
       }
 
       .hud-killfeed-box {
-        bottom: calc(75px + env(safe-area-inset-bottom, 0px));
-        left: calc(10px + env(safe-area-inset-left, 0px));
-        width: 180px;
+        bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+        left: calc(8px + env(safe-area-inset-left, 0px));
+        width: 160px;
         font-size: 9px;
       }
 
-      #joystick-zone {
-        bottom: calc(65px + env(safe-area-inset-bottom, 0px));
-        left: calc(20px + env(safe-area-inset-left, 0px));
+      /* Modals */
+      .cyber-modal {
+        padding: 14px 16px;
       }
-      #mobile-boost-btn {
-        bottom: calc(65px + env(safe-area-inset-bottom, 0px));
-        right: calc(20px + env(safe-area-inset-right, 0px));
-      }
-
-      .modal-title { font-size: 22px; }
-      .cyber-modal { padding: 16px; }
+      .modal-title { font-size: 20px; }
+      .modal-subtitle { font-size: 10px; margin-bottom: 10px; }
     }
 
     /* =========================================================
-     *  MOBILE LANDSCAPE & COMPACT VIEWPORTS (max-height: 520px)
+     *  LANDSCAPE & SHORT SCREENS (max-height: 520px)
      * ========================================================= */
     @media (max-height: 520px) {
-      .ad-top-wrapper { display: none !important; }
-
-      /* Top Left: Scaled-down Minimap Radar */
       .hud-radar-box {
-        top: calc(6px + env(safe-area-inset-top, 0px)) !important;
-        left: calc(10px + env(safe-area-inset-left, 0px)) !important;
-        width: 90px !important;
-        padding: 4px !important;
+        top: calc(4px + env(safe-area-inset-top, 0px)) !important;
+        left: calc(8px + env(safe-area-inset-left, 0px)) !important;
+        width: 80px !important;
+        padding: 3px !important;
       }
-      #minimap-canvas {
-        height: 70px !important;
-      }
-      .hud-header-label {
-        font-size: 8px !important;
-        margin-bottom: 2px !important;
-      }
-
-      /* Top Center: Scaled-down Combat Telemetry Cards */
+      #minimap-canvas { height: 60px !important; }
       .hud-telemetry {
-        top: calc(6px + env(safe-area-inset-top, 0px)) !important;
-        gap: 6px !important;
+        top: calc(4px + env(safe-area-inset-top, 0px)) !important;
+        gap: 4px !important;
       }
       .telemetry-card {
-        padding: 2px 8px !important;
-        min-width: 60px !important;
+        padding: 2px 6px !important;
+        min-width: 50px !important;
       }
-      .telemetry-label {
-        font-size: 7.5px !important;
-        letter-spacing: 0.8px !important;
+      .telemetry-val { font-size: 12px !important; }
+      .hud-controls-bar {
+        top: calc(4px + env(safe-area-inset-top, 0px)) !important;
+        right: calc(8px + env(safe-area-inset-right, 0px)) !important;
       }
-      .telemetry-val {
-        font-size: 13px !important;
-      }
+      .hud-btn { padding: 2px 5px !important; font-size: 8.5px !important; }
 
-      /* Storm status badge & King Bounty in landscape */
+      #hud-king-bounty {
+        top: calc(36px + env(safe-area-inset-top, 0px)) !important;
+        padding: 2px 8px !important;
+        font-size: 8.5px !important;
+      }
       .storm-badge {
-        top: calc(38px + env(safe-area-inset-top, 0px)) !important;
-        font-size: 9px !important;
+        top: calc(36px + env(safe-area-inset-top, 0px)) !important;
+        left: calc(50% + 120px) !important;
+        font-size: 8.5px !important;
         padding: 2px 6px !important;
       }
-      #hud-king-bounty {
-        top: calc(38px + env(safe-area-inset-top, 0px)) !important;
-        font-size: 8.5px !important;
-        padding: 2px 8px !important;
-      }
       .hud-powerup-tray {
-        top: calc(62px + env(safe-area-inset-top, 0px)) !important;
+        top: calc(58px + env(safe-area-inset-top, 0px)) !important;
       }
-
-      /* Top Right: Compact Leaderboard */
       .hud-leaderboard-box {
-        top: calc(6px + env(safe-area-inset-top, 0px)) !important;
-        right: calc(10px + env(safe-area-inset-right, 0px)) !important;
-        width: 120px !important;
-        padding: 4px !important;
+        top: calc(4px + env(safe-area-inset-top, 0px)) !important;
+        right: calc(8px + env(safe-area-inset-right, 0px)) !important;
+        width: 100px !important;
       }
-      .leaderboard-list {
-        font-size: 8px !important;
-      }
+      .hud-killfeed-box, #hud-taunt-bar { display: none !important; }
 
-      /* Controls bar (Pause/Settings/Audio) */
-      .hud-controls-bar {
-        top: calc(6px + env(safe-area-inset-top, 0px)) !important;
-        right: calc(10px + env(safe-area-inset-right, 0px)) !important;
-      }
-      .hud-btn {
-        padding: 3px 6px !important;
-        font-size: 9px !important;
-      }
-
-      /* Bottom Controls: Scaled Joystick & Boost */
       #joystick-zone {
-        bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
-        left: calc(18px + env(safe-area-inset-left, 0px)) !important;
-        width: 95px !important;
-        height: 95px !important;
-      }
-      .cyber-dpad {
         bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
         left: calc(15px + env(safe-area-inset-left, 0px)) !important;
-        transform: scale(0.8);
-        transform-origin: bottom left;
+        width: 85px !important;
+        height: 85px !important;
       }
       #mobile-boost-btn {
-        bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
-        right: calc(18px + env(safe-area-inset-right, 0px)) !important;
-        width: 65px !important;
-        height: 65px !important;
-        font-size: 10px !important;
-      }
-      #mobile-boost-btn .boost-icon {
-        font-size: 18px !important;
+        bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+        right: calc(15px + env(safe-area-inset-right, 0px)) !important;
+        width: 58px !important;
+        height: 58px !important;
       }
       .hud-boost-container {
         bottom: calc(4px + env(safe-area-inset-bottom, 0px)) !important;
-        width: 140px !important;
+        width: 130px !important;
       }
-
-      /* Occlusion Prevention in Tight Landscape */
-      .hud-killfeed-box {
-        display: none !important;
-      }
-      #hud-taunt-bar {
-        display: none !important;
-      }
-
-      /* Modals (Lobby, GameOver, Pause, Daily Supply, Missions): offset below 36px fixed header */
-      .modal-backdrop {
-        top: 36px !important;
-        padding: 6px !important;
-        align-items: flex-start !important;
-      }
-      #modal-lobby .cyber-modal,
       .cyber-modal {
-        max-height: calc(100dvh - 48px) !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
+        max-height: calc(100dvh - 36px) !important;
         padding: 10px 14px !important;
-        margin: auto !important;
-      }
-      .modal-title {
-        font-size: 18px !important;
-        margin-bottom: 2px !important;
-      }
-      .modal-subtitle {
-        font-size: 10px !important;
-        margin-bottom: 6px !important;
-      }
-      .lobby-header-bar {
-        margin-bottom: 4px !important;
-      }
-      .orbit-nav-pills {
-        gap: 4px !important;
-        margin-bottom: 6px !important;
-      }
-      .orbit-nav-btn {
-        padding: 3px 6px !important;
-        font-size: 9px !important;
-      }
-      .form-group {
-        margin-bottom: 6px !important;
-      }
-      .controls-guide-pill {
-        padding: 4px 8px !important;
-        margin: 6px 0 !important;
-        font-size: 9.5px !important;
       }
     }
+
   </style>
 </head>
 <body>
@@ -2175,7 +2118,7 @@
     </div>
   </div>
 
-  <!-- Retro Scanline Overlay -->
+  <!-- Ambient CRT Scanline & Cyber Vignette Overlay -->
   <div class="scanlines"></div>
   <div class="vignette"></div>
 
@@ -2189,9 +2132,9 @@
   <canvas id="game-canvas"></canvas>
 
   <!-- =========================================================
-   *  ADSTERRA FIXED BANNERS & SPONSOR SLOTS
+   *  ADSTERRA & MONETAG AD SLOTS & PLACEHOLDERS
    * ========================================================= -->
-  <!-- 728x90 Desktop Leaderboard Banner (Hidden - Replaced by sleek fixed header ad bar) -->
+  <!-- 728x90 Desktop Leaderboard Banner -->
   <div class="ad-top-wrapper" id="ad-leaderboard-wrapper" style="display:none;">
     <div id="asr-ad-leaderboard">
       <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('banner_728x90')">
@@ -2203,7 +2146,7 @@
     </div>
   </div>
 
-  <!-- 320x50 Mobile Sticky Banner -->
+  <!-- 320x50 Mobile Sticky Banner Container -->
   <div class="ad-mobile-footer-wrapper" id="ad-mobile-footer-wrapper">
     <div id="asr-ad-mobile-footer">
       <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('banner_320x50')">
@@ -2214,13 +2157,18 @@
     </div>
   </div>
 
-  <!-- Hidden Popunder / Interstitial Trigger Anchor -->
+  <!-- Hidden Interstitial Trigger Anchor -->
   <div id="asr-ad-interstitial" style="display:none;"></div>
 
-  <!-- Monetag MultiTag Script Container Slot (Zero UX Degradation) -->
+  <!-- High-eCPM Floating Social Bar Slot (#asr-ad-social-bar) -->
+  <div id="asr-ad-social-bar" style="display:none;" onclick="ApexAdManager.triggerDirectLink('social_bar')">
+    <div class="social-bar-close" onclick="event.stopPropagation(); document.getElementById('asr-ad-social-bar').style.display='none';">&#10005;</div>
+  </div>
+
+  <!-- Monetag MultiTag Script Container Slot -->
   <div id="monetag-multitag-container" data-zone="12310286" style="display:none;"></div>
 
-  <!-- Monetag In-Page Push (IPP) Cyber Quest Slot (Hidden to eliminate popups) -->
+  <!-- Monetag In-Page Push (IPP) Cyber Quest Slot -->
   <div id="monetag-ipp-slot" onclick="ApexAdManager.triggerSmartLink('monetag_quest_ipp')" style="display:none;">
     <div class="ipp-icon">⚡</div>
     <div class="ipp-body">
@@ -2230,9 +2178,8 @@
     <div class="ipp-close" onclick="event.stopPropagation(); document.getElementById('monetag-ipp-slot').style.display='none';">✕</div>
   </div>
 
-
   <!-- =========================================================
-   *  CYBERPUNK HUD (In-Game Overlay)
+   *  IN-GAME HUD OVERLAY (ZERO-COLLISION ARCHITECTURE)
    * ========================================================= -->
   <div id="hud-overlay">
     <!-- Top-Right Action Controls (Pause, Sound, Controls Mode, Settings) -->
@@ -2243,7 +2190,7 @@
       <button class="hud-btn" id="btn-open-settings" title="Adsterra &amp; Engine Settings">⚙️</button>
     </div>
 
-        <!-- King Bounty Compass HUD -->
+    <!-- King Bounty Compass HUD -->
     <div id="hud-king-bounty" class="king-bounty-widget">
       <div class="king-compass-icon" id="king-compass-pointer">➤</div>
       <div class="king-info">
@@ -2252,7 +2199,7 @@
       </div>
     </div>
 
-    <!-- Minimap Radar -->
+    <!-- Minimap Radar 3D -->
     <div class="hud-radar-box">
       <div class="hud-header-label">
         <span>RADAR 3D</span>
@@ -2261,7 +2208,7 @@
       <canvas id="minimap-canvas" width="120" height="120"></canvas>
     </div>
 
-    <!-- Top Center Telemetry -->
+    <!-- Top Center Telemetry (Score, Length, Alive) -->
     <div class="hud-telemetry">
       <div class="telemetry-card">
         <span class="telemetry-label">SCORE</span>
@@ -2277,13 +2224,13 @@
       </div>
     </div>
 
-    <!-- Storm Status Badge -->
+    <!-- Storm Status Badge (Positioned safely below King Bounty) -->
     <div class="storm-badge" id="hud-storm-badge">
       <span class="storm-icon">⚡</span>
       <span id="storm-status-text">STORM INCOMING: 08s</span>
     </div>
 
-    <!-- Power-up Tray -->
+    <!-- Power-up Tray (Positioned safely below Storm Badge) -->
     <div class="hud-powerup-tray" id="hud-powerup-tray"></div>
 
     <!-- Real-time Leaderboard -->
@@ -2299,8 +2246,7 @@
     <!-- Kill Feed -->
     <div class="hud-killfeed-box" id="hud-killfeed"></div>
 
-    <!-- Boost Stamina Bar -->
-        <!-- In-Game Neon Emoji Taunt Quick Bar -->
+    <!-- Neon Emoji Taunt Quick Bar -->
     <div id="hud-taunt-bar">
       <button class="taunt-btn" data-emoji="👑" title="King Taunt">👑</button>
       <button class="taunt-btn" data-emoji="⚡" title="Lightning Taunt">⚡</button>
@@ -2308,6 +2254,7 @@
       <button class="taunt-btn" data-emoji="🔥" title="Fire Taunt">🔥</button>
     </div>
 
+    <!-- Boost Stamina Bar -->
     <div class="hud-boost-container">
       <div class="boost-bar-label">
         <span id="boost-label-text">TURBO BOOST</span>
@@ -2323,7 +2270,7 @@
    *  MOBILE & CROSS-DEVICE TOUCH CONTROLS
    * ========================================================= -->
   <div class="touch-controls" id="touch-controls">
-    <!-- Left Dynamic Touch Steering Zone (Entire Left 55vw) -->
+    <!-- Left Dynamic Touch Steering Zone (Entire Left Half) -->
     <div id="touch-left-zone" class="touch-left-zone" title="Drag anywhere here to steer"></div>
 
     <!-- Virtual Joystick -->
@@ -2352,17 +2299,18 @@
   </div>
 
   <!-- =========================================================
-   *  MODAL: LOBBY / MAIN MENU
+   *  MODAL: LOBBY / MAIN DASHBOARD
    * ========================================================= -->
   <div class="modal-backdrop" id="modal-lobby">
     <div class="cyber-modal">
       
-      <!-- Orbit Merge Navigation Pills (Daily Supply, Missions, Boosters, Records, Audio) -->
+      <!-- Platform Header Bar -->
       <div class="lobby-header-bar">
         <div id="platform-pill" class="platform-pill">🌐 WEB APP</div>
         <button class="orbit-nav-btn" id="btn-lobby-audio" title="Toggle Game SFX">🔊 SFX ON</button>
       </div>
 
+      <!-- Quick Hub Navigation Pills -->
       <div class="orbit-nav-pills">
         <button class="orbit-nav-btn" id="btn-open-daily-supply">🎁 DAILY SUPPLY <span class="orbit-badge ready" id="daily-supply-badge">READY</span></button>
         <button class="orbit-nav-btn" id="btn-open-missions">📜 MISSIONS <span class="orbit-badge" id="missions-badge">0/5</span></button>
@@ -2373,17 +2321,22 @@
       <h1 class="modal-title">APEX SERPENT</h1>
       <p class="modal-subtitle">NEON 3D BATTLE ROYALE // SHRINKING ELECTRIC ARENA</p>
 
-            <!-- Incoming Viral High-Score Challenge Banner -->
-      <div id="lobby-challenge-banner" class="challenge-banner-pill" style="display:none;">
+      <!-- Incoming Challenge Banner -->
+      <div id="lobby-challenge-banner" class="challenge-banner-pill" style="display:none; background:rgba(255,215,0,0.12); border:1px solid #ffd700; border-radius:20px; padding:6px 14px; margin-bottom:12px; font-family:var(--font-cyber); font-size:10.5px; color:#ffd700;">
         <span class="challenge-icon">⚡</span>
         <span id="challenge-banner-text">CHALLENGE: BEAT 10,000 TO CLAIM RANK #1!</span>
       </div>
 
+      <!-- Callsign Input with Randomizer -->
       <div class="form-group">
         <label class="form-label">SERPENT CALLSIGN</label>
-        <input type="text" class="cyber-input" id="player-callsign" value="CYBER_VIPER_01" maxlength="15">
+        <div class="input-row">
+          <input type="text" class="cyber-input" id="player-callsign" value="CYBER_VIPER_01" maxlength="15">
+          <button type="button" class="cyber-btn cyber-btn-secondary" id="btn-random-callsign" title="Generate Cyber Name" style="padding:6px 12px; font-size:14px;">🎲</button>
+        </div>
       </div>
 
+      <!-- Neon Core Skin Picker -->
       <div class="form-group">
         <label class="form-label">NEON CORE SKIN</label>
         <div class="skin-picker">
@@ -2396,39 +2349,40 @@
         </div>
       </div>
 
-      <!-- PRIMARY START BATTLE (PROMINENT AT TOP FOR ALL MOBILE & DESKTOP SCREENS) -->
+      <!-- Primary START BATTLE Button -->
       <div style="margin: 14px 0 10px 0;">
-        <button class="cyber-btn cyber-btn-primary" id="btn-start-game" style="font-size:18px; padding:14px 28px; width:100%; box-shadow:0 0 25px rgba(0,243,255,0.45); letter-spacing:2px;">
+        <button class="cyber-btn cyber-btn-primary" id="btn-start-game" style="font-size:17px; padding:13px 26px; width:100%; box-shadow:0 0 25px rgba(0,243,255,0.45); letter-spacing:1.8px;">
           🚀 START BATTLE
         </button>
       </div>
 
-      <!-- UNIVERSAL CONTROLS GUIDE -->
+      <!-- Universal Controls Guide -->
       <div class="controls-guide-pill">
-        <div><span class="ctrl-badge">📱 MOBILE</span> <b>Drag Floating Joystick</b> • <b>Swipe anywhere to steer</b> • <b>Hold ⚡ BOOST</b></div>
-        <div style="margin-top:5px;"><span class="ctrl-badge">💻 PC / LAPTOP</span> <b>WASD / Arrow Keys</b> • <b>Mouse Pointer Tracking</b> • <b>Space to Boost</b></div>
+        <div><span class="ctrl-badge">📱 MOBILE</span> <b>Drag Joystick</b> • <b>Swipe to steer</b> • <b>Hold ⚡ BOOST</b></div>
+        <div style="margin-top:4px;"><span class="ctrl-badge">💻 PC / LAPTOP</span> <b>WASD / Arrow Keys</b> • <b>Mouse Aim Steering</b> • <b>Space to Boost</b></div>
       </div>
 
-      <div class="btn-row" style="margin-bottom:12px;">
-        <button class="cyber-btn cyber-btn-secondary" id="btn-install-pwa" style="font-size:11px; border-color:var(--cyan); color:var(--cyan);">
+      <!-- Quick Action Buttons -->
+      <div class="btn-row" style="margin-bottom:10px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-install-pwa" style="font-size:10.5px; border-color:var(--cyan); color:var(--cyan);">
           📱 INSTALL APP
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-open-spin-wheel" style="font-size:11px; border-color:#ffd700; color:#ffd700; text-shadow:0 0 8px rgba(255,215,0,0.5);">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-open-spin-wheel" style="font-size:10.5px; border-color:#ffd700; color:#ffd700; text-shadow:0 0 8px rgba(255,215,0,0.5);">
           🎰 LUCKY WHEEL
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-vip-rewards" onclick="ApexAdManager.triggerDirectLink('lobby_vip_btn')" style="font-size:11px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-vip-rewards" onclick="ApexAdManager.triggerDirectLink('lobby_vip_btn')" style="font-size:10.5px;">
           🎁 VIP BONUS
         </button>
       </div>
 
-      <!-- Rewarded Gameplay Offers in Lobby -->
+      <!-- Rewarded Gameplay Perks in Lobby -->
       <div class="rewarded-hooks-box">
         <div class="reward-item">
           <div class="reward-info">
             <strong style="color:var(--gold);">🐉 VIP CYBER DRAGON SKIN</strong><br>
             <span style="font-size:10px; color:#94a3b8;">Unlock legendary golden serpent skin for 3 matches</span>
           </div>
-          <button class="cyber-btn cyber-btn-gold" id="btn-unlock-dragon-skin" style="font-size:10px; padding:6px 12px;">
+          <button class="cyber-btn cyber-btn-gold" id="btn-unlock-dragon-skin" style="font-size:9.5px; padding:5px 10px;">
             UNLOCK (FREE)
           </button>
         </div>
@@ -2437,7 +2391,7 @@
             <strong style="color:var(--yellow);">🧲 MAGNET STARTER PACK</strong><br>
             <span style="font-size:10px; color:#94a3b8;">Spawn with +30 seconds auto-collect magnet power</span>
           </div>
-          <button class="cyber-btn cyber-btn-secondary" id="btn-magnet-pack" style="font-size:10px; padding:6px 12px; border-color:var(--yellow); color:var(--yellow);">
+          <button class="cyber-btn cyber-btn-secondary" id="btn-magnet-pack" style="font-size:9.5px; padding:5px 10px; border-color:var(--yellow); color:var(--yellow);">
             CLAIM BUFF
           </button>
         </div>
@@ -2454,8 +2408,8 @@
       </div>
 
       <!-- Controls footer hint -->
-      <p style="font-size:10px; color:#64748b; margin-top:10px; font-family:var(--font-mono); text-align:center;">
-        🎮 Multi-Device Ready: Mobile Touch Joystick &amp; Swipe • PC Keyboard WASD &amp; Mouse Trackpad
+      <p style="font-size:9.5px; color:#64748b; margin-top:8px; font-family:var(--font-mono); text-align:center;">
+        🎮 Multi-Device Ready: Mobile Touch Joystick &amp; Swipe • PC Keyboard WASD &amp; Mouse Steering
       </p>
     </div>
   </div>
@@ -2468,7 +2422,6 @@
       <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow);">SYSTEM PAUSED</h2>
       <p class="modal-subtitle">NEURAL LINK SUSPENDED // COMBAT IN PROGRESS</p>
 
-      <!-- 300x250 Medium Rectangle Ad Slot -->
       <div class="ad-slot-300x250" id="asr-ad-rectangle-pause">
         <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('pause_300x250')">
           <span class="ad-badge">SPONSORED</span>
@@ -2486,35 +2439,35 @@
   </div>
 
   <!-- =========================================================
-   *  MODAL: GAME OVER / VICTORY ROYALE
-   * ========================================================= -->
-    <!-- =========================================================
    *  MODAL: 5-SECOND CIRCULAR REVIVE TIMER
    * ========================================================= -->
   <div class="modal-backdrop" id="modal-death-countdown" style="display:none; z-index:90;">
     <div class="cyber-modal death-countdown-modal" style="max-width:380px; text-align:center;">
       <div class="countdown-svg-wrap">
-        <svg class="countdown-svg" width="120" height="120" viewBox="0 0 120 120">
+        <svg class="countdown-svg" width="110" height="110" viewBox="0 0 120 120">
           <circle class="countdown-circle-bg" cx="60" cy="60" r="50"></circle>
           <circle class="countdown-circle-bar" id="countdown-circle-bar" cx="60" cy="60" r="50"></circle>
         </svg>
         <div class="countdown-number" id="countdown-number">5</div>
       </div>
-      <h2 style="font-family:var(--font-cyber); font-size:18px; color:var(--magenta); text-shadow:0 0 10px var(--magenta); margin:8px 0 4px;">
+      <h2 style="font-family:var(--font-cyber); font-size:18px; color:var(--magenta); text-shadow:0 0 10px var(--magenta); margin:6px 0 2px;">
         SYSTEM CRITICAL
       </h2>
-      <p style="font-size:11px; color:#94a3b8; margin-bottom:14px; letter-spacing:0.5px;">
+      <p style="font-size:10.5px; color:#94a3b8; margin-bottom:12px; letter-spacing:0.5px;">
         RESPAWN WITH 50% MASS + 3.5s PHASE SHIELD
       </p>
-      <button class="cyber-btn cyber-btn-primary" id="btn-countdown-revive" style="width:100%; margin-bottom:8px; font-size:13px; background:linear-gradient(135deg, #00f3ff, #ff0055);">
+      <button class="cyber-btn cyber-btn-primary" id="btn-countdown-revive" style="width:100%; margin-bottom:8px; font-size:12.5px; background:linear-gradient(135deg, #00f3ff, #ff0055);">
         ⚡ INSTANT REVIVE (AD / TOKEN)
       </button>
-      <button class="cyber-btn cyber-btn-secondary" id="btn-countdown-skip" style="width:100%; font-size:11px; opacity:0.8;">
+      <button class="cyber-btn cyber-btn-secondary" id="btn-countdown-skip" style="width:100%; font-size:10.5px; opacity:0.85;">
         SKIP TO STATS ❯
       </button>
     </div>
   </div>
 
+  <!-- =========================================================
+   *  MODAL: GAME OVER / VICTORY ROYALE
+   * ========================================================= -->
   <div class="modal-backdrop" id="modal-gameover" style="display:none;">
     <div class="cyber-modal">
       <h2 class="modal-title" id="gameover-title" style="color:var(--magenta); text-shadow:0 0 15px var(--magenta);">
@@ -2538,19 +2491,28 @@
         </div>
       </div>
 
+      <!-- Action Buttons PROMINENT AT TOP so user NEVER has to scroll down -->
+      <div class="btn-row" style="margin: 10px 0 14px 0;">
+        <button class="cyber-btn cyber-btn-primary" id="btn-play-again" style="flex: 2; font-size:14px; padding:12px 20px;">
+          🎮 PLAY AGAIN
+        </button>
+        <button class="cyber-btn cyber-btn-secondary" id="btn-menu-return" style="flex: 1; font-size:12px;">
+          LOBBY
+        </button>
+      </div>
+
       <!-- Rewarded Ad Revival Option (Extra Life) -->
-      <div class="revive-offer-box" id="revive-offer-box" style="margin:12px 0; padding:10px; background:rgba(255,230,0,0.08); border:1px dashed var(--yellow); border-radius:6px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
-        <div class="revive-desc" style="font-size:11px; color:#fff; text-align:left;">
+      <div class="revive-offer-box" id="revive-offer-box" style="margin:10px 0; padding:8px 10px; background:rgba(255,230,0,0.08); border:1px dashed var(--yellow); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <div class="revive-desc" style="font-size:10.5px; color:#fff; text-align:left;">
           <strong style="color:var(--yellow); font-family:var(--font-cyber);">⚡ QUANTUM REVIVAL (EXTRA LIFE)</strong><br>
           Watch quick sponsor video to instantly respawn with current score!
         </div>
-        <button class="cyber-btn cyber-btn-magenta" id="btn-revive-player" style="font-size:11px; padding:6px 14px;">
+        <button class="cyber-btn cyber-btn-magenta" id="btn-revive-player" style="font-size:10px; padding:5px 12px; white-space:nowrap;">
           REVIVE NOW
         </button>
       </div>
 
-      <!-- 300x250 Medium Rectangle Ad Slot -->
-            <!-- Viral High-Score Challenge & Social Share -->
+      <!-- Viral Social Share Suite -->
       <div class="viral-share-box" id="viral-share-container">
         <div class="viral-share-header">
           <span>⚡</span>
@@ -2568,14 +2530,15 @@
             𝕏 Share
           </button>
           <button class="share-btn share-native" id="btn-share-native" title="Copy Challenge Link">
-            🔗 Copy Challenge Link
+            🔗 Copy Link
           </button>
         </div>
-        <div id="share-copy-toast" style="display:none; font-size:11px; color:var(--green); margin-top:6px; font-weight:700;">
+        <div id="share-copy-toast" style="display:none; font-size:10.5px; color:var(--green); margin-top:5px; font-weight:700;">
           ✓ CHALLENGE LINK COPIED TO CLIPBOARD!
         </div>
       </div>
 
+      <!-- 300x250 Medium Rectangle Ad Slot -->
       <div class="ad-slot-300x250" id="asr-ad-rectangle-gameover">
         <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('gameover_300x250')">
           <span class="ad-badge">SPONSORED</span>
@@ -2584,27 +2547,15 @@
           <div class="ad-cta">VIEW REWARDS &gt;</div>
         </a>
       </div>
-
-      <div class="btn-row">
-        <button class="cyber-btn cyber-btn-primary" id="btn-play-again" style="font-size:15px;">
-          🎮 PLAY AGAIN
-        </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-menu-return">
-          MAIN MENU
-        </button>
-      </div>
     </div>
   </div>
 
   <!-- =========================================================
-   *  MODAL: AD SETTINGS & MULTI-NETWORK FALLBACK TEST SUITE
-   * ========================================================= -->
-    <!-- =========================================================
    *  MODAL: LOBBY LUCKY CYBER SPIN WHEEL
    * ========================================================= -->
   <div class="modal-backdrop" id="modal-spin-wheel" style="display:none; z-index:85;">
-    <div class="cyber-modal spin-wheel-modal" style="max-width:440px; text-align:center;">
-      <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow); font-size:20px;">
+    <div class="cyber-modal spin-wheel-modal" style="max-width:420px; text-align:center;">
+      <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow); font-size:19px;">
         🎰 CYBERNETIC LUCKY WHEEL
       </h2>
       <p class="modal-subtitle">DAILY QUANTUM REWARDS // SPIN TO UNLOCK</p>
@@ -2614,10 +2565,10 @@
         <canvas id="spin-wheel-canvas" width="280" height="280"></canvas>
       </div>
 
-      <div id="spin-result-banner" style="display:none; margin:10px 0; font-family:var(--font-cyber); font-size:14px; color:var(--green); text-shadow:0 0 10px var(--green);"></div>
+      <div id="spin-result-banner" style="display:none; margin:8px 0; font-family:var(--font-cyber); font-size:13px; color:var(--green); text-shadow:0 0 10px var(--green);"></div>
 
-      <div class="btn-row" style="margin-top:12px;">
-        <button class="cyber-btn cyber-btn-primary" id="btn-spin-wheel" style="flex:2; font-size:13px; background:linear-gradient(135deg, #ffd700, #ff0055);">
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="cyber-btn cyber-btn-primary" id="btn-spin-wheel" style="flex:2; font-size:12px; background:linear-gradient(135deg, #ffd700, #ff0055);">
           ⚡ SPIN FOR REWARD
         </button>
         <button class="cyber-btn cyber-btn-secondary" id="btn-close-spin-wheel" style="flex:1; font-size:11px;">
@@ -2627,9 +2578,12 @@
     </div>
   </div>
 
+  <!-- =========================================================
+   *  MODAL: AD SETTINGS & MULTI-NETWORK FALLBACK TEST SUITE
+   * ========================================================= -->
   <div class="modal-backdrop" id="modal-ad-settings" style="display:none;">
-    <div class="cyber-modal" style="max-width:580px;">
-      <h2 class="modal-title" style="font-size:22px; color:var(--cyan);">AD SETTINGS &amp; TEST SUITE</h2>
+    <div class="cyber-modal" style="max-width:560px;">
+      <h2 class="modal-title" style="font-size:20px; color:var(--cyan);">AD SETTINGS &amp; TEST SUITE</h2>
       <p class="modal-subtitle">MULTI-NETWORK MONETIZATION (ADSTERRA • MONETAG • ADSENSE)</p>
 
       <table class="settings-table">
@@ -2669,7 +2623,6 @@
           <td><input type="text" class="cyber-input" id="cfg-key-320" value="ADSTERRA_KEY_320x50"></td>
         </tr>
         <tr>
-                  <tr>
           <td><label class="form-label">MONETAG SMARTLINK</label></td>
           <td><input type="text" class="cyber-input" id="cfg-monetag-smartlink" value="https://uplcm.com/4/12310259"></td>
         </tr>
@@ -2688,35 +2641,34 @@
         </tr>
       </table>
 
-      <!-- Live Simulation Action Buttons -->
-      <div class="btn-row" style="flex-wrap:wrap; gap:6px;">
-        <button class="cyber-btn cyber-btn-secondary" id="btn-test-directlink" style="font-size:11px;">
+      <!-- Simulation Action Buttons -->
+      <div class="btn-row" style="flex-wrap:wrap; gap:5px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-directlink" style="font-size:10.5px;">
           🔗 TEST DIRECT LINK
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-test-header-ad" style="font-size:11px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-header-ad" style="font-size:10.5px;">
           📢 TEST HEADER AD
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-test-interstitial" style="font-size:11px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-interstitial" style="font-size:10.5px;">
           📺 SIMULATE GAME OVER AD
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-test-vignette" style="font-size:11px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-vignette" style="font-size:10.5px;">
           📺 TEST MONETAG VIGNETTE
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-test-ipp" style="font-size:11px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-ipp" style="font-size:10.5px;">
           💬 TEST MONETAG IPP
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-test-refresh" style="font-size:11px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-test-refresh" style="font-size:10.5px;">
           🔄 REFRESH BANNERS
         </button>
-        <button class="cyber-btn cyber-btn-primary" id="btn-save-ad-settings" style="font-size:11px;">
+        <button class="cyber-btn cyber-btn-primary" id="btn-save-ad-settings" style="font-size:10.5px;">
           💾 SAVE CONFIG
         </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-close-ad-settings" style="font-size:11px;">
+        <button class="cyber-btn cyber-btn-secondary" id="btn-close-ad-settings" style="font-size:10.5px;">
           CLOSE
         </button>
       </div>
 
-      <!-- Live Event Log -->
       <div class="log-box" id="ad-event-log">
         [AdManager] Ready. Monetization engine initialized.
       </div>
@@ -2779,18 +2731,17 @@
     <p>Play the premier browser-native 3D snake battle royale with 10 snakes, shrinking storm barrier, procedural synth Web Audio FX, full mobile touch joystick support, and Adsterra monetization slots.</p>
   </div>
 
-  
   <!-- =========================================================
    *  MODAL: DAILY CYBER SUPPLY (ORBIT MERGE FEATURE)
    * ========================================================= -->
   <div class="modal-backdrop" id="modal-daily-supply" style="display:none; z-index:92;">
-    <div class="cyber-modal" style="max-width:480px;">
-      <h2 class="modal-title" style="color:var(--gold); text-shadow:0 0 15px rgba(255,215,0,0.6);">DAILY CYBER SUPPLY</h2>
+    <div class="cyber-modal" style="max-width:460px;">
+      <h2 class="modal-title" style="color:var(--gold); text-shadow:0 0 15px rgba(255,215,0,0.6); font-size:22px;">DAILY CYBER SUPPLY</h2>
       <p class="modal-subtitle">TRANSMITTING HIGH-VOLTAGE ORBIT REINFORCEMENTS</p>
 
       <div class="supply-hero">
         <h3>🎁 ORBITAL AIRDROP #2026</h3>
-        <p style="font-size:11px; color:#cbd5e1;">Free mystery supply drop available once every 24 hours.</p>
+        <p style="font-size:10.5px; color:#cbd5e1;">Free mystery supply drop available once every 24 hours.</p>
 
         <div class="supply-items-grid">
           <div class="supply-box">
@@ -2807,15 +2758,15 @@
           </div>
         </div>
 
-        <button class="cyber-btn cyber-btn-primary" id="btn-claim-daily-supply" style="width:100%; font-size:14px; background:linear-gradient(135deg, #ffd700, #ff0055);">
+        <button class="cyber-btn cyber-btn-primary" id="btn-claim-daily-supply" style="width:100%; font-size:13px; background:linear-gradient(135deg, #ffd700, #ff0055);">
           🎁 CLAIM FREE SUPPLY
         </button>
-        <p id="daily-countdown-text" style="font-size:11px; color:#94a3b8; margin-top:8px; font-family:var(--font-mono); display:none;">
+        <p id="daily-countdown-text" style="font-size:10.5px; color:#94a3b8; margin-top:8px; font-family:var(--font-mono); display:none;">
           ⏳ Next supply drop in: <span id="daily-timer-val">--:--:--</span>
         </p>
       </div>
 
-      <button class="cyber-btn cyber-btn-secondary" id="btn-close-daily-supply" style="width:100%; font-size:12px;">
+      <button class="cyber-btn cyber-btn-secondary" id="btn-close-daily-supply" style="width:100%; font-size:11.5px;">
         RETURN TO LOBBY
       </button>
     </div>
@@ -2825,15 +2776,15 @@
    *  MODAL: MISSIONS & PROGRESSION (ORBIT MERGE FEATURE)
    * ========================================================= -->
   <div class="modal-backdrop" id="modal-missions" style="display:none; z-index:92;">
-    <div class="cyber-modal" style="max-width:520px;">
-      <h2 class="modal-title" style="color:var(--cyan); text-shadow:0 0 15px var(--cyan);">CYBER MISSIONS</h2>
+    <div class="cyber-modal" style="max-width:500px;">
+      <h2 class="modal-title" style="color:var(--cyan); text-shadow:0 0 15px var(--cyan); font-size:22px;">CYBER MISSIONS</h2>
       <p class="modal-subtitle">COMPLETE COMBAT MILESTONES TO FORGE LEGENDARY GEAR</p>
 
       <div class="mission-list" id="missions-container">
         <!-- Dynamically rendered via JS -->
       </div>
 
-      <button class="cyber-btn cyber-btn-secondary" id="btn-close-missions" style="width:100%; margin-top:14px; font-size:12px;">
+      <button class="cyber-btn cyber-btn-secondary" id="btn-close-missions" style="width:100%; margin-top:12px; font-size:11.5px;">
         CLOSE MISSIONS
       </button>
     </div>
@@ -2843,8 +2794,8 @@
    *  MODAL: BOOSTERS ARMORY (ORBIT MERGE FEATURE)
    * ========================================================= -->
   <div class="modal-backdrop" id="modal-boosters" style="display:none; z-index:92;">
-    <div class="cyber-modal" style="max-width:520px;">
-      <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow);">BOOSTER ARMORY</h2>
+    <div class="cyber-modal" style="max-width:500px;">
+      <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow); font-size:22px;">BOOSTER ARMORY</h2>
       <p class="modal-subtitle">TACTICAL ADVANTAGES FOR THE ELECTRIC ARENA</p>
 
       <div class="inventory-bar">
@@ -2860,7 +2811,7 @@
             <p>Respawn instantly with 50% mass + 3.5s Phase Shield upon death.</p>
             <span class="reward-tag">Cost: 200 Credits / Free Ad</span>
           </div>
-          <button class="cyber-btn cyber-btn-primary" id="btn-buy-revive" style="font-size:11px; padding:6px 12px;">
+          <button class="cyber-btn cyber-btn-primary" id="btn-buy-revive" style="font-size:10.5px; padding:6px 12px;">
             ACQUIRE
           </button>
         </div>
@@ -2871,7 +2822,7 @@
             <p>Spawns with 30 seconds of high-range automatic food attraction.</p>
             <span class="reward-tag">Cost: 150 Credits / Free Ad</span>
           </div>
-          <button class="cyber-btn cyber-btn-primary" id="btn-buy-magnet" style="font-size:11px; padding:6px 12px;">
+          <button class="cyber-btn cyber-btn-primary" id="btn-buy-magnet" style="font-size:10.5px; padding:6px 12px;">
             ACQUIRE
           </button>
         </div>
@@ -2882,13 +2833,13 @@
             <p>Sprint boost stamina depletes 50% slower for 3 full battles.</p>
             <span class="reward-tag">Cost: 100 Credits / Free Ad</span>
           </div>
-          <button class="cyber-btn cyber-btn-primary" id="btn-buy-overdrive" style="font-size:11px; padding:6px 12px;">
+          <button class="cyber-btn cyber-btn-primary" id="btn-buy-overdrive" style="font-size:10.5px; padding:6px 12px;">
             ACQUIRE
           </button>
         </div>
       </div>
 
-      <button class="cyber-btn cyber-btn-secondary" id="btn-close-boosters" style="width:100%; margin-top:14px; font-size:12px;">
+      <button class="cyber-btn cyber-btn-secondary" id="btn-close-boosters" style="width:100%; margin-top:12px; font-size:11.5px;">
         CLOSE ARMORY
       </button>
     </div>
@@ -2898,8 +2849,8 @@
    *  MODAL: PILOT RECORDS & THEMES (ORBIT MERGE FEATURE)
    * ========================================================= -->
   <div class="modal-backdrop" id="modal-records" style="display:none; z-index:92;">
-    <div class="cyber-modal" style="max-width:500px;">
-      <h2 class="modal-title" style="color:#fff; text-shadow:0 0 15px var(--cyan);">PILOT DOSSIER</h2>
+    <div class="cyber-modal" style="max-width:480px;">
+      <h2 class="modal-title" style="color:#fff; text-shadow:0 0 15px var(--cyan); font-size:22px;">PILOT DOSSIER</h2>
       <p class="modal-subtitle">LIFETIME TELEMETRY &amp; ARENA ACHIEVEMENTS</p>
 
       <div class="records-grid">
@@ -2921,13 +2872,13 @@
         </div>
       </div>
 
-      <div class="btn-row" style="margin-top:12px;">
-        <button class="cyber-btn cyber-btn-primary" id="btn-share-records" style="width:100%; font-size:12px;">
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="cyber-btn cyber-btn-primary" id="btn-share-records" style="width:100%; font-size:11.5px;">
           📢 SHARE DOSSIER &amp; INVITE RIVALS
         </button>
       </div>
 
-      <button class="cyber-btn cyber-btn-secondary" id="btn-close-records" style="width:100%; margin-top:10px; font-size:12px;">
+      <button class="cyber-btn cyber-btn-secondary" id="btn-close-records" style="width:100%; margin-top:8px; font-size:11.5px;">
         CLOSE DOSSIER
       </button>
     </div>
@@ -4921,6 +4872,24 @@
       if (initialCfg.dragonSkinMatches > 0) {
         const swatch = document.getElementById('swatch-dragon-skin');
         if (swatch) swatch.style.display = 'flex';
+      }
+
+      
+      // Callsign Randomizer (Cyberpunk Callout Generator)
+      const btnRandomCallsign = document.getElementById('btn-random-callsign');
+      if (btnRandomCallsign) {
+        const CYBER_PREFIXES = ['CYBER', 'QUANTUM', 'NEON', 'VOID', 'APEX', 'SYNTH', 'HYPER', 'CHRONO', 'VIPER', 'SHADOW'];
+        const CYBER_SUFFIXES = ['VIPER', 'DRAKE', 'NEXUS', 'COBRA', 'SPECTRE', 'TITAN', 'STRIKER', 'ZERO', 'MATRIX', 'GHOST'];
+        btnRandomCallsign.addEventListener('click', () => {
+          const pre = CYBER_PREFIXES[Math.floor(Math.random() * CYBER_PREFIXES.length)];
+          const suf = CYBER_SUFFIXES[Math.floor(Math.random() * CYBER_SUFFIXES.length)];
+          const num = Math.floor(Math.random() * 90) + 10;
+          const input = document.getElementById('player-callsign');
+          if (input) {
+            input.value = `${pre}_${suf}_${num}`.slice(0, 15);
+            playerName = input.value;
+          }
+        });
       }
 
       // Sleek Fixed Rotating Header Ad Banner (8s CSS opacity crossfade)

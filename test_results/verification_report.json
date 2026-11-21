@@ -1,6 +1,6 @@
 {
   "suite": "Apex Serpent Royale E2E Verification",
-  "timestamp": "2026-11-20T13:49:37Z",
+  "timestamp": "2026-11-21T23:24:24Z",
   "server_url": "http://localhost:8089",
   "total": 73,
   "passed": 73,
@@ -394,7 +394,7 @@
       "category": "Monetag SmartLink",
       "name": "Monetag Vignette & SmartLink Execution",
       "status": "PASS",
-      "details": "Vignette & Smartlink evaluated: {'tested': True, 'vignetteExecuted': False, 'smartlinkExecuted': True, 'network': 'hybrid', 'smartlinkUrl': 'https://alwingulla.com/example_monetag_smartlink'}"
+      "details": "Vignette & Smartlink evaluated: {'tested': True, 'vignetteExecuted': False, 'smartlinkExecuted': True, 'network': 'hybrid', 'smartlinkUrl': 'https://uplcm.com/4/12310259'}"
     },
     {
       "category": "Mobile Viewport",
