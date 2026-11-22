@@ -25,7 +25,7 @@
     GRID:              1.5,         // snake segment spacing
     TICK_MS:           100,         // base move tick (ms)
     NUM_AI:            9,           // AI snakes (player = 1 → total 10)
-    FOOD_COUNT:        90,          // live food pellets (abundant .io arena feel)
+    FOOD_COUNT:        200,         // live food pellets (abundant .io arena feel)
     POWERUP_COUNT:     8,           // live power-ups
     STORM_START_DELAY: 8000,        // ms before storm begins shrinking
     STORM_SHRINK_RATE: 0.012,       // arena fraction lost per second
@@ -546,6 +546,25 @@
 
       // Attach Cyber Visor Eyes to head segment
       this._attachVisorEyes();
+
+      // Pre-allocated circular ring buffer for exact zero-GC path following
+      this._maxTrail = 4096;
+      this._trailX = new Float32Array(this._maxTrail);
+      this._trailZ = new Float32Array(this._maxTrail);
+      this._trailHead = 0;
+      this._trailCount = 0;
+
+      // Seed initial trail behind head along -dir so body segments immediately track
+      const seedDist = this.length * this.segmentSpacing * 2.5;
+      const seedStep = 0.12;
+      const seedCount = Math.ceil(seedDist / seedStep);
+      for (let i = seedCount; i >= 0; i--) {
+        const idx = this._trailCount % this._maxTrail;
+        this._trailX[idx] = startPos.x - i * seedStep * this.dir.x;
+        this._trailZ[idx] = startPos.z - i * seedStep * this.dir.z;
+        this._trailCount++;
+      }
+      this._trailHead = (this._trailCount - 1) % this._maxTrail;
     }
 
     // ── Cyber Visor Eyes ─────────────────────────────────────
@@ -562,9 +581,11 @@
       this._leftEye  = new this.THREE.Mesh(eyeGeo, eyeMat);
       this._rightEye = new this.THREE.Mesh(eyeGeo, eyeMat);
 
-      // Position on front edges of head segment
-      this._leftEye.position.set(0.42, 0.22, 0.38);
-      this._rightEye.position.set(0.42, 0.22, -0.38);
+      // Position prominently on brow surface of head sphere (r=0.82)
+      this._leftEye.position.set(0.72, 0.28, 0.36);
+      this._rightEye.position.set(0.72, 0.28, -0.36);
+      this._leftEye.rotation.y = 0.25;
+      this._rightEye.rotation.y = -0.25;
 
       this.segments[0].add(this._leftEye);
       this.segments[0].add(this._rightEye);
@@ -669,12 +690,12 @@
       this.scale = 1.0 + Math.log10(Math.max(1, this.length / 5)) * 0.22;
     }
 
-    // ── Movement step (Continuous & Zero-GC) ─────────────────
+    // ── Movement step (Continuous Trail-Following & Zero-GC) ──────
     step(dt) {
       if (!this.alive) return;
-      if (dt === undefined || dt <= 0) dt = 0.1;
+      if (dt === undefined || dt <= 0) dt = 0.016;
 
-      // 1. Butter-smooth angular turning interpolation
+      // 1. Butter-smooth continuous angular turning interpolation
       const curAngle = Math.atan2(this.dir.z, this.dir.x);
       const targetAngle = Math.atan2(this.nextDir.z, this.nextDir.x);
       let diff = targetAngle - curAngle;
@@ -694,23 +715,55 @@
       this.positions[0].x += this.dir.x * moveDist;
       this.positions[0].z += this.dir.z * moveDist;
 
-      // 3. Inverse Kinematics / Chaining distance constraint
-      const scale = this.scale || 1.0;
-      const spacing = (this.segmentSpacing || 1.05) * scale;
-      for (let i = 1; i < this.positions.length; i++) {
-        const prev = this.positions[i - 1];
-        const curr = this.positions[i];
-        const dx = curr.x - prev.x;
-        const dz = curr.z - prev.z;
-        const dist = Math.hypot(dx, dz);
-        if (dist > spacing) {
-          const f = spacing / dist;
-          curr.x = prev.x + dx * f;
-          curr.z = prev.z + dz * f;
-        }
+      // 3. Record head trajectory into circular path buffer (Zero-GC)
+      const lastX = this._trailX[this._trailHead];
+      const lastZ = this._trailZ[this._trailHead];
+      const dx = this.positions[0].x - lastX;
+      const dz = this.positions[0].z - lastZ;
+      const dFromLast = Math.hypot(dx, dz);
+
+      if (dFromLast >= 0.12) {
+        this._trailHead = (this._trailHead + 1) % this._maxTrail;
+        this._trailX[this._trailHead] = this.positions[0].x;
+        this._trailZ[this._trailHead] = this.positions[0].z;
+        if (this._trailCount < this._maxTrail) this._trailCount++;
       }
 
-      // 4. Update Three.js meshes with natural slither undulation
+      // 4. Exact path-following interpolation for all body segments (No corner cutting)
+      const scale = this.scale || 1.0;
+      const spacing = (this.segmentSpacing || 1.05) * scale;
+      let currIdx = this._trailHead;
+      let pNearX = this.positions[0].x;
+      let pNearZ = this.positions[0].z;
+      let pFarX = this._trailX[currIdx];
+      let pFarZ = this._trailZ[currIdx];
+      let segD = Math.hypot(pNearX - pFarX, pNearZ - pFarZ);
+      let distNear = 0;
+      let distFar = segD;
+      let targetD = spacing;
+
+      for (let seg = 1; seg < this.positions.length; seg++) {
+        while (distFar < targetD && this._trailCount > 2) {
+          distNear = distFar;
+          pNearX = pFarX;
+          pNearZ = pFarZ;
+          currIdx = (currIdx - 1 + this._maxTrail) % this._maxTrail;
+          pFarX = this._trailX[currIdx];
+          pFarZ = this._trailZ[currIdx];
+          const d = Math.hypot(pNearX - pFarX, pNearZ - pFarZ);
+          segD = d;
+          distFar += d;
+        }
+
+        const span = distFar - distNear;
+        const t = span > 0.0001 ? Math.max(0, Math.min(1, (targetD - distNear) / span)) : 0;
+        this.positions[seg].x = pNearX + (pFarX - pNearX) * t;
+        this.positions[seg].z = pNearZ + (pFarZ - pNearZ) * t;
+
+        targetD += spacing;
+      }
+
+      // 5. Update Three.js meshes with natural slither undulation
       this.slitherTime = (this.slitherTime || 0) + dt * this.speed * 8.0;
       for (let i = 0; i < this.segments.length; i++) {
         const m = this.segments[i];
@@ -723,7 +776,7 @@
           const segAngle = Math.atan2(prev.z - p.z, prev.x - p.x);
           m.rotation.y = -segAngle;
           // Fluid organic wave undulation
-          const wave = Math.sin(this.slitherTime + i * 0.42) * 0.12 * Math.min(1.0, i * 0.25);
+          const wave = Math.sin(this.slitherTime + i * 0.42) * 0.10 * Math.min(1.0, i * 0.25);
           m.position.set(
             p.x - Math.sin(segAngle) * wave,
             p.y,
@@ -784,13 +837,14 @@
       let best = null;
       let bestScore = -Infinity;
 
-      const lookAhead = 4.0 * (snake.scale || 1.0);
-      const A = CFG.ARENA_SIZE - 2;
+      const speedMult = (snake.speed > 1 || snake.isBoosting) ? 1.5 : 1.0;
+      const lookAhead = Math.max(7.0, (9.5 * speedMult) * (snake.scale || 1.0));
+      const A = CFG.ARENA_SIZE - 2.5;
       const dirs = SAMPLE_DIRECTIONS || CARDINAL_DIRECTIONS;
 
       for (let i = 0; i < dirs.length; i++) {
         const d = dirs[i];
-        if (d.dot(snake.dir) < -0.4) continue; // filter out suicidal >115° reverse
+        if (d.dot(snake.dir) < -0.72) continue; // Allow agile turns up to 136°
 
         const candX = head.x + d.x * lookAhead;
         const candZ = head.z + d.z * lookAhead;
@@ -798,10 +852,10 @@
 
         // 1. Arena boundary avoidance
         if (Math.abs(candX) > A || Math.abs(candZ) > A) {
-          score -= 4000;
+          score -= 8000;
         } else {
           const edgeDist = Math.min(A - Math.abs(candX), A - Math.abs(candZ));
-          if (edgeDist < 8) score -= (8 - edgeDist) * 120;
+          if (edgeDist < 12) score -= (12 - edgeDist) * 350;
         }
 
         // 2. Storm boundary avoidance
@@ -809,9 +863,9 @@
         const dzStorm = candZ - stormCenter.z;
         const distStorm = Math.hypot(dxStorm, dzStorm);
         if (distStorm > stormRadius - 2) {
-          score -= 3000;
+          score -= 5000;
         } else {
-          score += (stormRadius - distStorm) * 2.0;
+          score += (stormRadius - distStorm) * 3.0;
         }
 
         // 3. Enemy body avoidance & tactical combat
@@ -825,24 +879,24 @@
           const distToOHead = Math.hypot(candX - oHead.x, candZ - oHead.z);
           if (other.length >= snake.length) {
             // Flee larger snakes
-            if (distToOHead < 12) {
-              score -= (12 - distToOHead) * 350;
+            if (distToOHead < 15) {
+              score -= (15 - distToOHead) * 450;
               nearHazard = true;
             }
-          } else if (snake.aiMode === 'aggressive' && distToOHead < 18) {
+          } else if (snake.aiMode === 'aggressive' && distToOHead < 20) {
             // Cut off smaller snakes (aim slightly ahead)
-            const cutoffX = oHead.x + other.dir.x * 3.0;
-            const cutoffZ = oHead.z + other.dir.z * 3.0;
+            const cutoffX = oHead.x + other.dir.x * 4.0;
+            const cutoffZ = oHead.z + other.dir.z * 4.0;
             const distCutoff = Math.hypot(candX - cutoffX, candZ - cutoffZ);
-            score += (25 - distCutoff) * 15;
+            score += (25 - distCutoff) * 20;
           }
 
           // Check distance to other's body segments
           for (let k = 1; k < other.positions.length; k += 2) {
             const p = other.positions[k];
             const distToSeg = Math.hypot(candX - p.x, candZ - p.z);
-            if (distToSeg < 4.5 * (other.scale || 1.0)) {
-              score -= (4.5 - distToSeg) * 800;
+            if (distToSeg < 5.2 * (other.scale || 1.0)) {
+              score -= (5.2 - distToSeg) * 950;
               nearHazard = true;
             }
           }
@@ -850,26 +904,27 @@
 
         // 4. Food & Nutrient pellets attraction
         if (!nearHazard) {
-          const maxFoods = Math.min(25, foods.length);
+          const maxFoods = Math.min(30, foods.length);
           for (let f = 0; f < maxFoods; f++) {
             const fPos = foods[f].mesh.position;
             const distF = Math.hypot(candX - fPos.x, candZ - fPos.z);
-            if (distF < 30) {
-              score += (30 - distF) * 4.0;
+            if (distF < 32) {
+              const val = foods[f].isDeathPellet ? 12.0 : 4.5;
+              score += (32 - distF) * val;
             }
           }
           const maxPowerups = Math.min(6, powerups.length);
           for (let p = 0; p < maxPowerups; p++) {
             const pPos = powerups[p].mesh.position;
             const distP = Math.hypot(candX - pPos.x, candZ - pPos.z);
-            if (distP < 25) {
-              score += (25 - distP) * 5.0;
+            if (distP < 28) {
+              score += (28 - distP) * 8.0;
             }
           }
         }
 
         // Forward momentum bias
-        score += d.dot(snake.dir) * 15;
+        score += d.dot(snake.dir) * 20;
 
         if (score > bestScore) {
           bestScore = score;
@@ -879,17 +934,28 @@
 
       if (best) snake.nextDir.copy(best);
 
-      // Tactical boosting logic for AI
-      if (snake.aiMode === 'aggressive' && bestScore > 50) {
-        snake.isBoosting = true;
-        snake.speed = 2;
-      } else if (bestScore < -500) {
-        // Emergency escape boost
+      // Tactical boosting logic for AI (with burst duration & cooldown)
+      if (!snake.aiBoostCooldown) snake.aiBoostCooldown = 0;
+      if (!snake.aiBoostDuration) snake.aiBoostDuration = 0;
+
+      if (snake.aiBoostDuration > 0) {
+        snake.aiBoostDuration -= 0.05;
         snake.isBoosting = true;
         snake.speed = 2;
       } else {
-        snake.isBoosting = false;
-        snake.speed = 1;
+        if (snake.aiBoostCooldown > 0) {
+          snake.aiBoostCooldown -= 0.05;
+        }
+        if (snake.aiBoostCooldown <= 0 && ((snake.aiMode === 'aggressive' && bestScore > 60) || bestScore < -600)) {
+          // Trigger a 1.2-second tactical sprint
+          snake.aiBoostDuration = 1.2;
+          snake.aiBoostCooldown = 3.5;
+          snake.isBoosting = true;
+          snake.speed = 2;
+        } else {
+          snake.isBoosting = false;
+          snake.speed = 1;
+        }
       }
     }
   }
@@ -1123,23 +1189,71 @@
     const gridHelper = new THREE.GridHelper(CFG.ARENA_SIZE * 2, 40, 0x111144, 0x111144);
     scene.add(gridHelper);
 
-    // Walls (4 neon border lines)
+    // 3D Cyber Forcefield Perimeter Barrier Walls (Translucent Glowing Energy Fence)
     const wallColor = 0x0088ff;
     const A = CFG.ARENA_SIZE;
-    const corners = [
-      [[-A, 0, -A], [A, 0, -A]],
-      [[A, 0, -A],  [A, 0, A]],
-      [[A, 0, A],   [-A, 0, A]],
-      [[-A, 0, A],  [-A, 0, -A]],
-    ];
-    for (const [from, to] of corners) {
-      const pts = [new THREE.Vector3(...from), new THREE.Vector3(...to)];
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      const mat = new THREE.LineBasicMaterial({ color: wallColor, linewidth: 2 });
-      const line = new THREE.Line(geo, mat);
-      line.position.y = 0.05;
-      scene.add(line);
-    }
+    const wallHeight = 5.5;
+    const wallMat = new THREE.MeshBasicMaterial({
+      color: 0x0099ff,
+      transparent: true,
+      opacity: 0.16,
+      side: THREE.DoubleSide
+    });
+    const railMat = new THREE.MeshBasicMaterial({
+      color: 0x00f3ff,
+      transparent: true,
+      opacity: 0.8
+    });
+
+    const wallGeoH = new THREE.PlaneGeometry(A * 2, wallHeight);
+    const wallN = new THREE.Mesh(wallGeoH, wallMat);
+    wallN.position.set(0, wallHeight / 2, -A);
+    scene.add(wallN);
+    const wallS = new THREE.Mesh(wallGeoH, wallMat);
+    wallS.position.set(0, wallHeight / 2, A);
+    scene.add(wallS);
+    const wallE = new THREE.Mesh(wallGeoH, wallMat);
+    wallE.position.set(A, wallHeight / 2, 0);
+    wallE.rotation.y = Math.PI / 2;
+    scene.add(wallE);
+    const wallW = new THREE.Mesh(wallGeoH, wallMat);
+    wallW.position.set(-A, wallHeight / 2, 0);
+    wallW.rotation.y = Math.PI / 2;
+    scene.add(wallW);
+
+    // Glowing top laser rail along each wall
+    const railGeoH = new THREE.CylinderGeometry(0.12, 0.12, A * 2, 8);
+    const railN = new THREE.Mesh(railGeoH, railMat);
+    railN.rotation.z = Math.PI / 2;
+    railN.position.set(0, wallHeight, -A);
+    scene.add(railN);
+    const railS = new THREE.Mesh(railGeoH, railMat);
+    railS.rotation.z = Math.PI / 2;
+    railS.position.set(0, wallHeight, A);
+    scene.add(railS);
+    const railE = new THREE.Mesh(railGeoH, railMat);
+    railE.rotation.x = Math.PI / 2;
+    railE.position.set(A, wallHeight, 0);
+    scene.add(railE);
+    const railW = new THREE.Mesh(railGeoH, railMat);
+    railW.rotation.x = Math.PI / 2;
+    railW.position.set(-A, wallHeight, 0);
+    scene.add(railW);
+
+    // 4 Corner Cyber Energy Beacons
+    const beaconGeo = new THREE.CylinderGeometry(0.3, 0.45, wallHeight * 1.4, 8);
+    const beaconMat = new THREE.MeshStandardMaterial({
+      color: 0x00f3ff,
+      emissive: 0x0099ff,
+      emissiveIntensity: 1.6,
+      metalness: 0.8,
+      roughness: 0.2
+    });
+    [[-A, -A], [A, -A], [A, A], [-A, A]].forEach(([px, pz]) => {
+      const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+      beacon.position.set(px, (wallHeight * 1.4) / 2, pz);
+      scene.add(beacon);
+    });
 
     // Ambient + directional lights
     scene.add(new THREE.AmbientLight(0x111133, 0.8));
@@ -1472,7 +1586,8 @@
     }
 
     /* ── Spawn all snakes ────────────────────────────────────── */
-    _spawnSnakes() {
+    _spawnSnakes(playerColor) {
+      const pColor = playerColor || SNAKE_COLORS[0];
       for (let i = 0; i <= CFG.NUM_AI; i++) {
         const angle  = (i / (CFG.NUM_AI + 1)) * Math.PI * 2;
         const radius = 20 + Math.random() * 15;
@@ -1481,7 +1596,8 @@
           0.6,
           Math.sin(angle) * radius
         );
-        const snake = new Snake(i, i === 0, SNAKE_COLORS[i], startPos, this.scene, this.THREE, this);
+        const col = i === 0 ? pColor : SNAKE_COLORS[i];
+        const snake = new Snake(i, i === 0, col, startPos, this.scene, this.THREE, this);
         if (i > 0) {
           const a = Math.random() * Math.PI * 2;
           snake.dir.set(Math.cos(a), 0, Math.sin(a));
@@ -1529,7 +1645,6 @@
 
     _queueDirection(targetDir) {
       if (!this.player || !this.player.alive) return;
-      if (targetDir.dot(this.player.dir) < 0) return; // filter out 180 reverse
       this.player.nextDir.copy(targetDir);
       if (this._inputQueue.length > 0) {
         this._inputQueue[this._inputQueue.length - 1].copy(targetDir);
@@ -1776,8 +1891,30 @@
           const otherRadius = 0.72 * (other.scale || 1.0);
           const minColDistSq = (sRadius + otherRadius) * (sRadius + otherRadius);
 
-          // vs other's body vertebrae
-          for (let i = 1; i < other.positions.length; i++) {
+          // Head-on collision evaluated FIRST!
+          const oHead = other.headPos();
+          const headDistSq = (head.x - oHead.x) * (head.x - oHead.x) + (head.z - oHead.z) * (head.z - oHead.z);
+          if (headDistSq < minColDistSq * 1.1) {
+            if (!s.hasPowerup('GHOST') && !other.hasPowerup('GHOST') && !s.isPhaseShielded && !other.isPhaseShielded) {
+              if (s.length === other.length) {
+                this._eliminate(s, now, other);
+                this._eliminate(other, now, s);
+                collided = true;
+                break;
+              } else {
+                const shorter = s.length < other.length ? s : other;
+                const victor  = s.length < other.length ? other : s;
+                this._eliminate(shorter, now, victor);
+                if (shorter === s) {
+                  collided = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          // vs other's body vertebrae (i >= 2 to strictly check body, avoiding false clash on segment 0-1)
+          for (let i = 2; i < other.positions.length; i++) {
             const p1 = other.positions[i - 1];
             const p2 = other.positions[i];
             const segDistSq = distToSegmentSq(head.x, head.z, p1.x, p1.z, p2.x, p2.z);
@@ -1790,19 +1927,6 @@
             }
           }
           if (collided) break;
-
-          // Head-on collision
-          const oHead = other.headPos();
-          const headDistSq = (head.x - oHead.x) * (head.x - oHead.x) + (head.z - oHead.z) * (head.z - oHead.z);
-          if (headDistSq < minColDistSq) {
-            if (!s.hasPowerup('GHOST') && !other.hasPowerup('GHOST') && !s.isPhaseShielded && !other.isPhaseShielded) {
-              const shorter = s.length <= other.length ? s : other;
-              const victor  = s.length <= other.length ? other : s;
-              this._eliminate(shorter, now, victor);
-              collided = true;
-              break;
-            }
-          }
         }
       }
 
@@ -2004,7 +2128,9 @@
         ? this.player.headPos()
         : ZERO_VEC;
 
-      this._camTarget.lerp(target, CFG.CAMERA_LERP);
+      // Framerate-independent camera lerp
+      const lerpAlpha = 1 - Math.exp(-9.0 * (dt || 0.016));
+      this._camTarget.lerp(target, lerpAlpha);
 
       // 1. Logarithmic Altitude & Distance Scaling based on Mass / Length
       const playerLen = this.player.alive ? this.player.length : 5;
@@ -2023,7 +2149,7 @@
       this._camDesired.copy(this._camTarget).add(this._camOffset);
 
       // Smooth camera position interpolation
-      this._camPos.lerp(this._camDesired, CFG.CAMERA_LERP);
+      this._camPos.lerp(this._camDesired, lerpAlpha);
       this.camera.position.copy(this._camPos);
 
       // 2. Dynamic FOV Sprint Warp during Turbo Boost
@@ -2048,11 +2174,9 @@
 
     /* ── Input apply ─────────────────────────────────────────── */
     _applyInput() {
-      if (!this.player.alive || this._inputQueue.length === 0) return;
+      if (!this.player || !this.player.alive || this._inputQueue.length === 0) return;
       const d = this._inputQueue.shift();
-      if (d.dot(this.player.dir) >= 0) {
-        this.player.nextDir.copy(d);
-      }
+      this.player.nextDir.copy(d);
       if (this._inputVecPool.length < 8) {
         this._inputVecPool.push(d);
       }
@@ -2075,7 +2199,7 @@
     pause()  { this.paused = true; }
     resume() { this.paused = false; }
 
-    restart() {
+    restart(playerColor) {
       for (const s of this.snakes) {
         if (s.alive) s.eliminate(null);
       }
@@ -2097,7 +2221,7 @@
       this.killStreak = 0;
       this.cameraTrauma = 0;
 
-      this._spawnSnakes();
+      this._spawnSnakes(playerColor || (this.player ? this.player.color : null));
       this.startTime  = performance.now();
       this._lastTick  = this.startTime;
       this._lastFrame = this.startTime;
@@ -2109,11 +2233,12 @@
     revivePlayer() {
       const prevScore = this.player ? this.player.score : 0;
       const prevKills = this.playerKills;
+      const prevColor = this.player ? this.player.color : SNAKE_COLORS[0];
 
       // Respawn player in a safe zone near center
       const angle = Math.random() * Math.PI * 2;
       const startPos = new this.THREE.Vector3(Math.cos(angle) * 12, 0.6, Math.sin(angle) * 12);
-      const newSnake = new Snake(0, true, SNAKE_COLORS[0], startPos, this.scene, this.THREE, this);
+      const newSnake = new Snake(0, true, prevColor, startPos, this.scene, this.THREE, this);
       newSnake.score = Math.floor(prevScore * 0.5); // retain 50% score
       this.snakes[0] = newSnake;
       this.player = newSnake;

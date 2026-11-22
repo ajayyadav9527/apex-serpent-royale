@@ -2685,7 +2685,7 @@
     GRID:              1.5,         // snake segment spacing
     TICK_MS:           100,         // base move tick (ms)
     NUM_AI:            9,           // AI snakes (player = 1 → total 10)
-    FOOD_COUNT:        90,          // live food pellets (abundant .io arena feel)
+    FOOD_COUNT:        200,         // live food pellets (abundant .io arena feel)
     POWERUP_COUNT:     8,           // live power-ups
     STORM_START_DELAY: 8000,        // ms before storm begins shrinking
     STORM_SHRINK_RATE: 0.012,       // arena fraction lost per second
@@ -3206,6 +3206,25 @@
 
       // Attach Cyber Visor Eyes to head segment
       this._attachVisorEyes();
+
+      // Pre-allocated circular ring buffer for exact zero-GC path following
+      this._maxTrail = 4096;
+      this._trailX = new Float32Array(this._maxTrail);
+      this._trailZ = new Float32Array(this._maxTrail);
+      this._trailHead = 0;
+      this._trailCount = 0;
+
+      // Seed initial trail behind head along -dir so body segments immediately track
+      const seedDist = this.length * this.segmentSpacing * 2.5;
+      const seedStep = 0.12;
+      const seedCount = Math.ceil(seedDist / seedStep);
+      for (let i = seedCount; i >= 0; i--) {
+        const idx = this._trailCount % this._maxTrail;
+        this._trailX[idx] = startPos.x - i * seedStep * this.dir.x;
+        this._trailZ[idx] = startPos.z - i * seedStep * this.dir.z;
+        this._trailCount++;
+      }
+      this._trailHead = (this._trailCount - 1) % this._maxTrail;
     }
 
     // ── Cyber Visor Eyes ─────────────────────────────────────
@@ -3222,9 +3241,11 @@
       this._leftEye  = new this.THREE.Mesh(eyeGeo, eyeMat);
       this._rightEye = new this.THREE.Mesh(eyeGeo, eyeMat);
 
-      // Position on front edges of head segment
-      this._leftEye.position.set(0.42, 0.22, 0.38);
-      this._rightEye.position.set(0.42, 0.22, -0.38);
+      // Position prominently on brow surface of head sphere (r=0.82)
+      this._leftEye.position.set(0.72, 0.28, 0.36);
+      this._rightEye.position.set(0.72, 0.28, -0.36);
+      this._leftEye.rotation.y = 0.25;
+      this._rightEye.rotation.y = -0.25;
 
       this.segments[0].add(this._leftEye);
       this.segments[0].add(this._rightEye);
@@ -3329,12 +3350,12 @@
       this.scale = 1.0 + Math.log10(Math.max(1, this.length / 5)) * 0.22;
     }
 
-    // ── Movement step (Continuous & Zero-GC) ─────────────────
+    // ── Movement step (Continuous Trail-Following & Zero-GC) ──────
     step(dt) {
       if (!this.alive) return;
-      if (dt === undefined || dt <= 0) dt = 0.1;
+      if (dt === undefined || dt <= 0) dt = 0.016;
 
-      // 1. Butter-smooth angular turning interpolation
+      // 1. Butter-smooth continuous angular turning interpolation
       const curAngle = Math.atan2(this.dir.z, this.dir.x);
       const targetAngle = Math.atan2(this.nextDir.z, this.nextDir.x);
       let diff = targetAngle - curAngle;
@@ -3354,23 +3375,55 @@
       this.positions[0].x += this.dir.x * moveDist;
       this.positions[0].z += this.dir.z * moveDist;
 
-      // 3. Inverse Kinematics / Chaining distance constraint
-      const scale = this.scale || 1.0;
-      const spacing = (this.segmentSpacing || 1.05) * scale;
-      for (let i = 1; i < this.positions.length; i++) {
-        const prev = this.positions[i - 1];
-        const curr = this.positions[i];
-        const dx = curr.x - prev.x;
-        const dz = curr.z - prev.z;
-        const dist = Math.hypot(dx, dz);
-        if (dist > spacing) {
-          const f = spacing / dist;
-          curr.x = prev.x + dx * f;
-          curr.z = prev.z + dz * f;
-        }
+      // 3. Record head trajectory into circular path buffer (Zero-GC)
+      const lastX = this._trailX[this._trailHead];
+      const lastZ = this._trailZ[this._trailHead];
+      const dx = this.positions[0].x - lastX;
+      const dz = this.positions[0].z - lastZ;
+      const dFromLast = Math.hypot(dx, dz);
+
+      if (dFromLast >= 0.12) {
+        this._trailHead = (this._trailHead + 1) % this._maxTrail;
+        this._trailX[this._trailHead] = this.positions[0].x;
+        this._trailZ[this._trailHead] = this.positions[0].z;
+        if (this._trailCount < this._maxTrail) this._trailCount++;
       }
 
-      // 4. Update Three.js meshes with natural slither undulation
+      // 4. Exact path-following interpolation for all body segments (No corner cutting)
+      const scale = this.scale || 1.0;
+      const spacing = (this.segmentSpacing || 1.05) * scale;
+      let currIdx = this._trailHead;
+      let pNearX = this.positions[0].x;
+      let pNearZ = this.positions[0].z;
+      let pFarX = this._trailX[currIdx];
+      let pFarZ = this._trailZ[currIdx];
+      let segD = Math.hypot(pNearX - pFarX, pNearZ - pFarZ);
+      let distNear = 0;
+      let distFar = segD;
+      let targetD = spacing;
+
+      for (let seg = 1; seg < this.positions.length; seg++) {
+        while (distFar < targetD && this._trailCount > 2) {
+          distNear = distFar;
+          pNearX = pFarX;
+          pNearZ = pFarZ;
+          currIdx = (currIdx - 1 + this._maxTrail) % this._maxTrail;
+          pFarX = this._trailX[currIdx];
+          pFarZ = this._trailZ[currIdx];
+          const d = Math.hypot(pNearX - pFarX, pNearZ - pFarZ);
+          segD = d;
+          distFar += d;
+        }
+
+        const span = distFar - distNear;
+        const t = span > 0.0001 ? Math.max(0, Math.min(1, (targetD - distNear) / span)) : 0;
+        this.positions[seg].x = pNearX + (pFarX - pNearX) * t;
+        this.positions[seg].z = pNearZ + (pFarZ - pNearZ) * t;
+
+        targetD += spacing;
+      }
+
+      // 5. Update Three.js meshes with natural slither undulation
       this.slitherTime = (this.slitherTime || 0) + dt * this.speed * 8.0;
       for (let i = 0; i < this.segments.length; i++) {
         const m = this.segments[i];
@@ -3383,7 +3436,7 @@
           const segAngle = Math.atan2(prev.z - p.z, prev.x - p.x);
           m.rotation.y = -segAngle;
           // Fluid organic wave undulation
-          const wave = Math.sin(this.slitherTime + i * 0.42) * 0.12 * Math.min(1.0, i * 0.25);
+          const wave = Math.sin(this.slitherTime + i * 0.42) * 0.10 * Math.min(1.0, i * 0.25);
           m.position.set(
             p.x - Math.sin(segAngle) * wave,
             p.y,
@@ -3444,13 +3497,14 @@
       let best = null;
       let bestScore = -Infinity;
 
-      const lookAhead = 4.0 * (snake.scale || 1.0);
-      const A = CFG.ARENA_SIZE - 2;
+      const speedMult = (snake.speed > 1 || snake.isBoosting) ? 1.5 : 1.0;
+      const lookAhead = Math.max(7.0, (9.5 * speedMult) * (snake.scale || 1.0));
+      const A = CFG.ARENA_SIZE - 2.5;
       const dirs = SAMPLE_DIRECTIONS || CARDINAL_DIRECTIONS;
 
       for (let i = 0; i < dirs.length; i++) {
         const d = dirs[i];
-        if (d.dot(snake.dir) < -0.4) continue; // filter out suicidal >115° reverse
+        if (d.dot(snake.dir) < -0.72) continue; // Allow agile turns up to 136°
 
         const candX = head.x + d.x * lookAhead;
         const candZ = head.z + d.z * lookAhead;
@@ -3458,10 +3512,10 @@
 
         // 1. Arena boundary avoidance
         if (Math.abs(candX) > A || Math.abs(candZ) > A) {
-          score -= 4000;
+          score -= 8000;
         } else {
           const edgeDist = Math.min(A - Math.abs(candX), A - Math.abs(candZ));
-          if (edgeDist < 8) score -= (8 - edgeDist) * 120;
+          if (edgeDist < 12) score -= (12 - edgeDist) * 350;
         }
 
         // 2. Storm boundary avoidance
@@ -3469,9 +3523,9 @@
         const dzStorm = candZ - stormCenter.z;
         const distStorm = Math.hypot(dxStorm, dzStorm);
         if (distStorm > stormRadius - 2) {
-          score -= 3000;
+          score -= 5000;
         } else {
-          score += (stormRadius - distStorm) * 2.0;
+          score += (stormRadius - distStorm) * 3.0;
         }
 
         // 3. Enemy body avoidance & tactical combat
@@ -3485,24 +3539,24 @@
           const distToOHead = Math.hypot(candX - oHead.x, candZ - oHead.z);
           if (other.length >= snake.length) {
             // Flee larger snakes
-            if (distToOHead < 12) {
-              score -= (12 - distToOHead) * 350;
+            if (distToOHead < 15) {
+              score -= (15 - distToOHead) * 450;
               nearHazard = true;
             }
-          } else if (snake.aiMode === 'aggressive' && distToOHead < 18) {
+          } else if (snake.aiMode === 'aggressive' && distToOHead < 20) {
             // Cut off smaller snakes (aim slightly ahead)
-            const cutoffX = oHead.x + other.dir.x * 3.0;
-            const cutoffZ = oHead.z + other.dir.z * 3.0;
+            const cutoffX = oHead.x + other.dir.x * 4.0;
+            const cutoffZ = oHead.z + other.dir.z * 4.0;
             const distCutoff = Math.hypot(candX - cutoffX, candZ - cutoffZ);
-            score += (25 - distCutoff) * 15;
+            score += (25 - distCutoff) * 20;
           }
 
           // Check distance to other's body segments
           for (let k = 1; k < other.positions.length; k += 2) {
             const p = other.positions[k];
             const distToSeg = Math.hypot(candX - p.x, candZ - p.z);
-            if (distToSeg < 4.5 * (other.scale || 1.0)) {
-              score -= (4.5 - distToSeg) * 800;
+            if (distToSeg < 5.2 * (other.scale || 1.0)) {
+              score -= (5.2 - distToSeg) * 950;
               nearHazard = true;
             }
           }
@@ -3510,26 +3564,27 @@
 
         // 4. Food & Nutrient pellets attraction
         if (!nearHazard) {
-          const maxFoods = Math.min(25, foods.length);
+          const maxFoods = Math.min(30, foods.length);
           for (let f = 0; f < maxFoods; f++) {
             const fPos = foods[f].mesh.position;
             const distF = Math.hypot(candX - fPos.x, candZ - fPos.z);
-            if (distF < 30) {
-              score += (30 - distF) * 4.0;
+            if (distF < 32) {
+              const val = foods[f].isDeathPellet ? 12.0 : 4.5;
+              score += (32 - distF) * val;
             }
           }
           const maxPowerups = Math.min(6, powerups.length);
           for (let p = 0; p < maxPowerups; p++) {
             const pPos = powerups[p].mesh.position;
             const distP = Math.hypot(candX - pPos.x, candZ - pPos.z);
-            if (distP < 25) {
-              score += (25 - distP) * 5.0;
+            if (distP < 28) {
+              score += (28 - distP) * 8.0;
             }
           }
         }
 
         // Forward momentum bias
-        score += d.dot(snake.dir) * 15;
+        score += d.dot(snake.dir) * 20;
 
         if (score > bestScore) {
           bestScore = score;
@@ -3539,17 +3594,28 @@
 
       if (best) snake.nextDir.copy(best);
 
-      // Tactical boosting logic for AI
-      if (snake.aiMode === 'aggressive' && bestScore > 50) {
-        snake.isBoosting = true;
-        snake.speed = 2;
-      } else if (bestScore < -500) {
-        // Emergency escape boost
+      // Tactical boosting logic for AI (with burst duration & cooldown)
+      if (!snake.aiBoostCooldown) snake.aiBoostCooldown = 0;
+      if (!snake.aiBoostDuration) snake.aiBoostDuration = 0;
+
+      if (snake.aiBoostDuration > 0) {
+        snake.aiBoostDuration -= 0.05;
         snake.isBoosting = true;
         snake.speed = 2;
       } else {
-        snake.isBoosting = false;
-        snake.speed = 1;
+        if (snake.aiBoostCooldown > 0) {
+          snake.aiBoostCooldown -= 0.05;
+        }
+        if (snake.aiBoostCooldown <= 0 && ((snake.aiMode === 'aggressive' && bestScore > 60) || bestScore < -600)) {
+          // Trigger a 1.2-second tactical sprint
+          snake.aiBoostDuration = 1.2;
+          snake.aiBoostCooldown = 3.5;
+          snake.isBoosting = true;
+          snake.speed = 2;
+        } else {
+          snake.isBoosting = false;
+          snake.speed = 1;
+        }
       }
     }
   }
@@ -3783,23 +3849,71 @@
     const gridHelper = new THREE.GridHelper(CFG.ARENA_SIZE * 2, 40, 0x111144, 0x111144);
     scene.add(gridHelper);
 
-    // Walls (4 neon border lines)
+    // 3D Cyber Forcefield Perimeter Barrier Walls (Translucent Glowing Energy Fence)
     const wallColor = 0x0088ff;
     const A = CFG.ARENA_SIZE;
-    const corners = [
-      [[-A, 0, -A], [A, 0, -A]],
-      [[A, 0, -A],  [A, 0, A]],
-      [[A, 0, A],   [-A, 0, A]],
-      [[-A, 0, A],  [-A, 0, -A]],
-    ];
-    for (const [from, to] of corners) {
-      const pts = [new THREE.Vector3(...from), new THREE.Vector3(...to)];
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      const mat = new THREE.LineBasicMaterial({ color: wallColor, linewidth: 2 });
-      const line = new THREE.Line(geo, mat);
-      line.position.y = 0.05;
-      scene.add(line);
-    }
+    const wallHeight = 5.5;
+    const wallMat = new THREE.MeshBasicMaterial({
+      color: 0x0099ff,
+      transparent: true,
+      opacity: 0.16,
+      side: THREE.DoubleSide
+    });
+    const railMat = new THREE.MeshBasicMaterial({
+      color: 0x00f3ff,
+      transparent: true,
+      opacity: 0.8
+    });
+
+    const wallGeoH = new THREE.PlaneGeometry(A * 2, wallHeight);
+    const wallN = new THREE.Mesh(wallGeoH, wallMat);
+    wallN.position.set(0, wallHeight / 2, -A);
+    scene.add(wallN);
+    const wallS = new THREE.Mesh(wallGeoH, wallMat);
+    wallS.position.set(0, wallHeight / 2, A);
+    scene.add(wallS);
+    const wallE = new THREE.Mesh(wallGeoH, wallMat);
+    wallE.position.set(A, wallHeight / 2, 0);
+    wallE.rotation.y = Math.PI / 2;
+    scene.add(wallE);
+    const wallW = new THREE.Mesh(wallGeoH, wallMat);
+    wallW.position.set(-A, wallHeight / 2, 0);
+    wallW.rotation.y = Math.PI / 2;
+    scene.add(wallW);
+
+    // Glowing top laser rail along each wall
+    const railGeoH = new THREE.CylinderGeometry(0.12, 0.12, A * 2, 8);
+    const railN = new THREE.Mesh(railGeoH, railMat);
+    railN.rotation.z = Math.PI / 2;
+    railN.position.set(0, wallHeight, -A);
+    scene.add(railN);
+    const railS = new THREE.Mesh(railGeoH, railMat);
+    railS.rotation.z = Math.PI / 2;
+    railS.position.set(0, wallHeight, A);
+    scene.add(railS);
+    const railE = new THREE.Mesh(railGeoH, railMat);
+    railE.rotation.x = Math.PI / 2;
+    railE.position.set(A, wallHeight, 0);
+    scene.add(railE);
+    const railW = new THREE.Mesh(railGeoH, railMat);
+    railW.rotation.x = Math.PI / 2;
+    railW.position.set(-A, wallHeight, 0);
+    scene.add(railW);
+
+    // 4 Corner Cyber Energy Beacons
+    const beaconGeo = new THREE.CylinderGeometry(0.3, 0.45, wallHeight * 1.4, 8);
+    const beaconMat = new THREE.MeshStandardMaterial({
+      color: 0x00f3ff,
+      emissive: 0x0099ff,
+      emissiveIntensity: 1.6,
+      metalness: 0.8,
+      roughness: 0.2
+    });
+    [[-A, -A], [A, -A], [A, A], [-A, A]].forEach(([px, pz]) => {
+      const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+      beacon.position.set(px, (wallHeight * 1.4) / 2, pz);
+      scene.add(beacon);
+    });
 
     // Ambient + directional lights
     scene.add(new THREE.AmbientLight(0x111133, 0.8));
@@ -4132,7 +4246,8 @@
     }
 
     /* ── Spawn all snakes ────────────────────────────────────── */
-    _spawnSnakes() {
+    _spawnSnakes(playerColor) {
+      const pColor = playerColor || SNAKE_COLORS[0];
       for (let i = 0; i <= CFG.NUM_AI; i++) {
         const angle  = (i / (CFG.NUM_AI + 1)) * Math.PI * 2;
         const radius = 20 + Math.random() * 15;
@@ -4141,7 +4256,8 @@
           0.6,
           Math.sin(angle) * radius
         );
-        const snake = new Snake(i, i === 0, SNAKE_COLORS[i], startPos, this.scene, this.THREE, this);
+        const col = i === 0 ? pColor : SNAKE_COLORS[i];
+        const snake = new Snake(i, i === 0, col, startPos, this.scene, this.THREE, this);
         if (i > 0) {
           const a = Math.random() * Math.PI * 2;
           snake.dir.set(Math.cos(a), 0, Math.sin(a));
@@ -4189,7 +4305,6 @@
 
     _queueDirection(targetDir) {
       if (!this.player || !this.player.alive) return;
-      if (targetDir.dot(this.player.dir) < 0) return; // filter out 180 reverse
       this.player.nextDir.copy(targetDir);
       if (this._inputQueue.length > 0) {
         this._inputQueue[this._inputQueue.length - 1].copy(targetDir);
@@ -4436,8 +4551,30 @@
           const otherRadius = 0.72 * (other.scale || 1.0);
           const minColDistSq = (sRadius + otherRadius) * (sRadius + otherRadius);
 
-          // vs other's body vertebrae
-          for (let i = 1; i < other.positions.length; i++) {
+          // Head-on collision evaluated FIRST!
+          const oHead = other.headPos();
+          const headDistSq = (head.x - oHead.x) * (head.x - oHead.x) + (head.z - oHead.z) * (head.z - oHead.z);
+          if (headDistSq < minColDistSq * 1.1) {
+            if (!s.hasPowerup('GHOST') && !other.hasPowerup('GHOST') && !s.isPhaseShielded && !other.isPhaseShielded) {
+              if (s.length === other.length) {
+                this._eliminate(s, now, other);
+                this._eliminate(other, now, s);
+                collided = true;
+                break;
+              } else {
+                const shorter = s.length < other.length ? s : other;
+                const victor  = s.length < other.length ? other : s;
+                this._eliminate(shorter, now, victor);
+                if (shorter === s) {
+                  collided = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          // vs other's body vertebrae (i >= 2 to strictly check body, avoiding false clash on segment 0-1)
+          for (let i = 2; i < other.positions.length; i++) {
             const p1 = other.positions[i - 1];
             const p2 = other.positions[i];
             const segDistSq = distToSegmentSq(head.x, head.z, p1.x, p1.z, p2.x, p2.z);
@@ -4450,19 +4587,6 @@
             }
           }
           if (collided) break;
-
-          // Head-on collision
-          const oHead = other.headPos();
-          const headDistSq = (head.x - oHead.x) * (head.x - oHead.x) + (head.z - oHead.z) * (head.z - oHead.z);
-          if (headDistSq < minColDistSq) {
-            if (!s.hasPowerup('GHOST') && !other.hasPowerup('GHOST') && !s.isPhaseShielded && !other.isPhaseShielded) {
-              const shorter = s.length <= other.length ? s : other;
-              const victor  = s.length <= other.length ? other : s;
-              this._eliminate(shorter, now, victor);
-              collided = true;
-              break;
-            }
-          }
         }
       }
 
@@ -4664,7 +4788,9 @@
         ? this.player.headPos()
         : ZERO_VEC;
 
-      this._camTarget.lerp(target, CFG.CAMERA_LERP);
+      // Framerate-independent camera lerp
+      const lerpAlpha = 1 - Math.exp(-9.0 * (dt || 0.016));
+      this._camTarget.lerp(target, lerpAlpha);
 
       // 1. Logarithmic Altitude & Distance Scaling based on Mass / Length
       const playerLen = this.player.alive ? this.player.length : 5;
@@ -4683,7 +4809,7 @@
       this._camDesired.copy(this._camTarget).add(this._camOffset);
 
       // Smooth camera position interpolation
-      this._camPos.lerp(this._camDesired, CFG.CAMERA_LERP);
+      this._camPos.lerp(this._camDesired, lerpAlpha);
       this.camera.position.copy(this._camPos);
 
       // 2. Dynamic FOV Sprint Warp during Turbo Boost
@@ -4708,11 +4834,9 @@
 
     /* ── Input apply ─────────────────────────────────────────── */
     _applyInput() {
-      if (!this.player.alive || this._inputQueue.length === 0) return;
+      if (!this.player || !this.player.alive || this._inputQueue.length === 0) return;
       const d = this._inputQueue.shift();
-      if (d.dot(this.player.dir) >= 0) {
-        this.player.nextDir.copy(d);
-      }
+      this.player.nextDir.copy(d);
       if (this._inputVecPool.length < 8) {
         this._inputVecPool.push(d);
       }
@@ -4735,7 +4859,7 @@
     pause()  { this.paused = true; }
     resume() { this.paused = false; }
 
-    restart() {
+    restart(playerColor) {
       for (const s of this.snakes) {
         if (s.alive) s.eliminate(null);
       }
@@ -4757,7 +4881,7 @@
       this.killStreak = 0;
       this.cameraTrauma = 0;
 
-      this._spawnSnakes();
+      this._spawnSnakes(playerColor || (this.player ? this.player.color : null));
       this.startTime  = performance.now();
       this._lastTick  = this.startTime;
       this._lastFrame = this.startTime;
@@ -4769,11 +4893,12 @@
     revivePlayer() {
       const prevScore = this.player ? this.player.score : 0;
       const prevKills = this.playerKills;
+      const prevColor = this.player ? this.player.color : SNAKE_COLORS[0];
 
       // Respawn player in a safe zone near center
       const angle = Math.random() * Math.PI * 2;
       const startPos = new this.THREE.Vector3(Math.cos(angle) * 12, 0.6, Math.sin(angle) * 12);
-      const newSnake = new Snake(0, true, SNAKE_COLORS[0], startPos, this.scene, this.THREE, this);
+      const newSnake = new Snake(0, true, prevColor, startPos, this.scene, this.THREE, this);
       newSnake.score = Math.floor(prevScore * 0.5); // retain 50% score
       this.snakes[0] = newSnake;
       this.player = newSnake;
@@ -4812,8 +4937,7 @@
 
   <script type='text/javascript'>
   //<![CDATA[
-
-    'use strict';
+'use strict';
 
     /* =========================================================
      *  ADSTERRA & MULTI-NETWORK MONETIZATION MANAGER
@@ -4825,25 +4949,87 @@
 
       const defaultConfig = {
         adNetwork: 'hybrid', // 'hybrid' (Adsterra Banners + Monetag IPP/Vignette), 'adsterra', or 'monetag'
-        directLinkUrl: 'https://www.profitablecpmrate.com/example_directlink',
-        monetagSmartlink: 'https://alwingulla.com/example_monetag_smartlink',
-        monetagZone: 'MONETAG_ZONE_12345',
+        directLinkUrl: 'https://www.profitablecpmrate.com/fptf61s1k?key=c6c4c05ef1c8dfb208da70557431b997',
+        monetagSmartlink: 'https://uplcm.com/4/12310259',
+        monetagZone: '12310286',
+        monetagTmaZone: '12310837',
         cooldownSeconds: 60,
-        keySocialBar: 'ADSTERRA_SOCIAL_BAR_KEY',
+        keySocialBar: '8ff82ce2b79188cb7ecb54d761206915',
         key728: 'ADSTERRA_KEY_728x90',
         key300: 'ADSTERRA_KEY_300x250',
         key320: 'ADSTERRA_KEY_320x50',
-        mockMode: 'enabled',
+        mockMode: 'disabled',
         dragonSkinMatches: 0,
         magnetPackActive: false
       };
 
       let config = { ...defaultConfig };
 
+      function isTelegramApp() {
+        const tg = window.Telegram?.WebApp;
+        return !!((tg && (tg.initData || tg.initDataUnsafe?.user)) || typeof window.show_12310837 === 'function' || window.location.search.includes('tgWebAppPlatform'));
+      }
+
+      async function triggerTelegramRewarded() {
+        if (typeof window.show_12310837 === 'function') {
+          return window.show_12310837();
+        }
+        return false;
+      }
+
+      async function triggerTelegramPopup() {
+        if (typeof window.show_12310837 === 'function') {
+          return window.show_12310837('pop');
+        }
+        return false;
+      }
+
+      async function showRewardedAd(source = 'rewarded_flow') {
+        log(`[AdManager] showRewardedAd requested (${source})`);
+        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
+          log('[Monetag TMA] Triggering Telegram Mini App Rewarded Ad (Zone: 12310837)...');
+          try {
+            const res = await triggerTelegramRewarded();
+            log('[Monetag TMA] Telegram Rewarded Ad completed successfully.');
+            return res;
+          } catch (e) {
+            log('[Monetag TMA] Telegram Rewarded Ad closed or error: ' + (e.message || e));
+            return false;
+          }
+        }
+        return triggerSmartLink(source, true);
+      }
+
+      let inAppInterstitialInitialized = false;
+      function initTelegramInAppInterstitial() {
+        // Disabled: keep Monetag Telegram Mini App SDK strictly for user-requested rewarded actions
+        log('[Monetag TMA] Automatic in-app interstitial timer disabled (rewarded-only mode).');
+      }
+
+      function checkAndInitTelegramAds() {
+        if (isTelegramApp()) {
+          log('[Monetag TMA] Telegram Mini App environment active. Rewarded SDK standby (Zone: 12310837).');
+        }
+      }
+
       function loadConfig() {
         try {
           const saved = localStorage.getItem(STORAGE_KEY);
-          if (saved) config = { ...defaultConfig, ...JSON.parse(saved) };
+          if (saved) {
+            config = { ...defaultConfig, ...JSON.parse(saved) };
+            if (config.directLinkUrl === 'https://www.profitablecpmrate.com/example_directlink') {
+              config.directLinkUrl = defaultConfig.directLinkUrl;
+            }
+            if (config.monetagSmartlink === 'https://alwingulla.com/example_monetag_smartlink') {
+              config.monetagSmartlink = defaultConfig.monetagSmartlink;
+            }
+            if (config.monetagZone === 'MONETAG_ZONE_12345') {
+              config.monetagZone = defaultConfig.monetagZone;
+            }
+            if (config.keySocialBar === 'ADSTERRA_SOCIAL_BAR_KEY') {
+              config.keySocialBar = defaultConfig.keySocialBar;
+            }
+          }
         } catch (e) {
           console.warn('[AdManager] Storage access failed:', e);
         }
@@ -4877,6 +5063,9 @@
       }
 
       function triggerDirectLink(source, force = false) {
+        if (source === 'header_ad_rotation') {
+          force = true; // Header ad click reliably opens verified sponsor smartlink
+        }
         return triggerSmartLink(source, force);
       }
 
@@ -4888,11 +5077,11 @@
 
         markDirectLinkTriggered();
 
-        // Dual-network smart routing:
-        // Use Monetag Smartlink if network is 'monetag', or source is 'monetag_*',
-        // or in 'hybrid' mode when alternate trigger applies.
-        let targetUrl = config.directLinkUrl;
-        if (config.adNetwork === 'monetag' || source.startsWith('monetag_') || (config.adNetwork === 'hybrid' && (source.includes('rewarded') || Math.random() > 0.5))) {
+        // Target URL resolution (Header ad always opens verified smartlink)
+        let targetUrl = config.directLinkUrl || 'https://www.profitablecpmrate.com/fptf61s1k?key=c6c4c05ef1c8dfb208da70557431b997';
+        if (source === 'header_ad_rotation') {
+          targetUrl = config.directLinkUrl || 'https://www.profitablecpmrate.com/fptf61s1k?key=c6c4c05ef1c8dfb208da70557431b997';
+        } else if (config.adNetwork === 'monetag' || source.startsWith('monetag_') || (config.adNetwork === 'hybrid' && (source.includes('rewarded') || Math.random() > 0.5))) {
           targetUrl = config.monetagSmartlink || config.directLinkUrl;
         }
 
@@ -4911,33 +5100,19 @@
         return true;
       }
 
-      // Monetag Vignette Interstitial Hook (Game Over natural pause point only)
+      // Monetag Vignette Interstitial Hook (Disabled to eliminate unprompted popups during gameplay/game-over)
       function triggerVignette() {
-        if (config.adNetwork !== 'hybrid' && config.adNetwork !== 'monetag') {
-          log('[Monetag] Vignette skipped: adNetwork is ' + config.adNetwork);
-          return false;
-        }
-
-        if (!canTriggerDirectLink()) {
-          log(`[Monetag] Vignette skipped: frequency cooldown (${config.cooldownSeconds}s) active.`);
-          return false;
-        }
-
-        markDirectLinkTriggered();
-        log('[Monetag] Vignette interstitial activated at match conclusion pause point.');
-
-        // Live Monetag MultiTag vignette script execution if present
-        if (window.show_8923412) {
-          try { window.show_8923412(); } catch(e) {}
-        } else {
-          log('[Monetag] MultiTag simulated vignette overlay ready.');
-        }
-        return true;
+        log('[AdManager] Automatic vignette popups disabled (rewarded-only & header banner active).');
+        return false;
       }
 
       // Rewarded Gameplay Hook 1: Unlock VIP Dragon Skin for 3 matches
       function unlockDragonSkin() {
-        triggerSmartLink('rewarded_dragon_skin', true);
+        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
+          triggerTelegramRewarded();
+        } else {
+          triggerSmartLink('rewarded_dragon_skin', true);
+        }
         config.dragonSkinMatches = 3;
         saveConfig({ dragonSkinMatches: 3 });
         const swatch = document.getElementById('swatch-dragon-skin');
@@ -4948,7 +5123,11 @@
 
       // Rewarded Gameplay Hook 2: Magnet Starter Pack
       function activateMagnetPack() {
-        triggerSmartLink('rewarded_magnet_pack', true);
+        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
+          triggerTelegramRewarded();
+        } else {
+          triggerSmartLink('rewarded_magnet_pack', true);
+        }
         config.magnetPackActive = true;
         saveConfig({ magnetPackActive: true });
         const btn = document.getElementById('btn-magnet-pack');
@@ -4964,23 +5143,12 @@
       function refreshBanners() {
         log(`[AdManager] Refreshing inventory (Network: ${config.adNetwork.toUpperCase()})...`);
         const isAdsterraActive = config.adNetwork === 'hybrid' || config.adNetwork === 'adsterra';
-        const isMonetagActive = config.adNetwork === 'hybrid' || config.adNetwork === 'monetag';
 
         document.querySelectorAll('.adsterra-mock-banner').forEach(el => {
           el.style.display = isAdsterraActive ? 'block' : 'none';
           el.style.opacity = '0.5';
           setTimeout(() => { el.style.opacity = '1'; }, 200);
         });
-
-        const socialBar = document.getElementById('asr-ad-social-bar');
-        if (socialBar) {
-          socialBar.style.display = isAdsterraActive ? 'flex' : 'none';
-        }
-
-        const ippSlot = document.getElementById('monetag-ipp-slot');
-        if (ippSlot) {
-          ippSlot.style.display = isMonetagActive ? 'flex' : 'none';
-        }
       }
 
       // AdBlock Detection & Gaming Incentive
@@ -5015,6 +5183,7 @@
       }, 60000);
 
       loadConfig();
+      checkAndInitTelegramAds();
 
       return {
         getConfig: () => config,
@@ -5023,6 +5192,12 @@
         triggerDirectLink,
         triggerSmartLink,
         triggerVignette,
+        isTelegramApp,
+        triggerTelegramRewarded,
+        triggerTelegramPopup,
+        showRewardedAd,
+        initTelegramInAppInterstitial,
+        checkAndInitTelegramAds,
         unlockDragonSkin,
         activateMagnetPack,
         refreshBanners,
@@ -5073,10 +5248,14 @@
       const modalGameOver = document.getElementById('modal-gameover');
       const modalAdSettings = document.getElementById('modal-ad-settings');
 
-      // Touch controls
+      // Touch and cross-device controls
+      const touchControls = document.getElementById('touch-controls');
+      const touchLeftZone = document.getElementById('touch-left-zone');
       const joystickZone = document.getElementById('joystick-zone');
       const joystickThumb = document.getElementById('joystick-thumb');
+      const cyberDpad = document.getElementById('cyber-dpad');
       const mobileBoostBtn = document.getElementById('mobile-boost-btn');
+      const btnControlsMode = document.getElementById('btn-controls-mode');
 
       function initEngine() {
         if (engine) return;
@@ -5172,6 +5351,57 @@
 
         engine.hooks.onPowerupActivated = (type, remainingMs) => {
           renderPowerupPill(type, remainingMs);
+        };
+
+        
+        // Apex Orbit Progress & Records Tracking Hooks
+        const origScoreUpdate = engine.hooks.onScoreUpdate;
+        engine.hooks.onScoreUpdate = (score, rank) => {
+          if (origScoreUpdate) origScoreUpdate(score, rank);
+          const rec = ApexOrbit.getRecords();
+          if (score > rec.bestScore) {
+            rec.bestScore = score;
+            ApexOrbit.saveData();
+          }
+        };
+
+        const origLengthUpdate = engine.hooks.onLengthUpdate;
+        engine.hooks.onLengthUpdate = (length) => {
+          if (origLengthUpdate) origLengthUpdate(length);
+          const rec = ApexOrbit.getRecords();
+          if (length > rec.maxLength) {
+            rec.maxLength = length;
+            ApexOrbit.saveData();
+          }
+          ApexOrbit.reportProgress('length', length);
+        };
+
+        const origElimination = engine.hooks.onElimination;
+        engine.hooks.onElimination = (snakeId, wasPlayer) => {
+          if (origElimination) origElimination(snakeId, wasPlayer);
+          if (!wasPlayer) {
+            const rec = ApexOrbit.getRecords();
+            rec.totalKills += 1;
+            ApexOrbit.saveData();
+            ApexOrbit.reportProgress('kills', 1);
+          }
+        };
+
+        const origPowerup = engine.hooks.onPowerupActivated;
+        engine.hooks.onPowerupActivated = (type, remainingMs) => {
+          if (origPowerup) origPowerup(type, remainingMs);
+          ApexOrbit.reportProgress('powerups', 1);
+        };
+
+        const origVictory = engine.hooks.onVictory;
+        engine.hooks.onVictory = (finalScore, isPlayer) => {
+          if (origVictory) origVictory(finalScore, isPlayer);
+          if (isPlayer) {
+            const rec = ApexOrbit.getRecords();
+            rec.wins += 1;
+            ApexOrbit.saveData();
+            ApexOrbit.reportProgress('win', 1);
+          }
         };
 
         startBoostLoop();
@@ -5493,57 +5723,152 @@
         ApexAdManager.refreshBanners();
       }
 
-      /* ── Mobile Touch Virtual Joystick ───────────────────── */
+      /* ── Universal Multi-Device Control System (Mobile + Laptop + Desktop) ── */
       let joystickActive = false;
-      const MAX_JOY_DIST = 40;
+      const MAX_JOY_DIST = 45;
+      let joyOriginX = 0;
+      let joyOriginY = 0;
+      let currentControlMode = 'joystick'; // 'joystick', 'dpad', 'off'
 
-      function handleJoyTouch(e) {
+      // Auto-detect touch device & show touch controls
+      const isTouchCapable = ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 1024);
+      if (isTouchCapable && touchControls) {
+        touchControls.classList.add('force-show');
+      }
+
+      // Floating Dynamic Joystick handling
+      function handleJoyTouch(e, customOriginX, customOriginY) {
         e.preventDefault();
         const touch = e.targetTouches[0];
         const rect = joystickZone.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+        const centerX = customOriginX !== undefined ? customOriginX : (rect.left + rect.width / 2);
+        const centerY = customOriginY !== undefined ? customOriginY : (rect.top + rect.height / 2);
 
         let dx = touch.clientX - centerX;
         let dy = touch.clientY - centerY;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
+        let clampedX = dx;
+        let clampedY = dy;
         if (dist > MAX_JOY_DIST) {
-          dx = (dx / dist) * MAX_JOY_DIST;
-          dy = (dy / dist) * MAX_JOY_DIST;
+          clampedX = (dx / dist) * MAX_JOY_DIST;
+          clampedY = (dy / dist) * MAX_JOY_DIST;
         }
 
-        joystickThumb.style.transform = `translate(${dx}px, ${dy}px)`;
+        joystickThumb.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
 
-        if (engine && dist > 10) {
-          let targetX = 0;
-          let targetZ = 0;
-          if (Math.abs(dx) > Math.abs(dy)) {
-            targetX = dx > 0 ? 1 : -1;
-          } else {
-            targetZ = dy > 0 ? 1 : -1;
-          }
-          engine.setPlayerDirection(targetX, targetZ);
+        if (engine && dist > 8) {
+          engine.setPlayerDirection(dx, dy);
         }
       }
 
       function resetJoystick() {
         joystickActive = false;
         joystickThumb.style.transform = 'translate(0, 0)';
+        // Reset joystick back to standard bottom-left position
+        joystickZone.style.left = '35px';
+        joystickZone.style.bottom = '75px';
+        joystickZone.style.top = 'auto';
+        joystickZone.style.opacity = '0.88';
       }
 
+      // 1. Touch anywhere on the left 55% of screen to spawn / steer floating joystick
+      if (touchLeftZone) {
+        touchLeftZone.addEventListener('touchstart', (e) => {
+          if (currentControlMode !== 'joystick') return;
+          const touch = e.targetTouches[0];
+          joystickActive = true;
+          joyOriginX = Math.max(70, Math.min(window.innerWidth * 0.5, touch.clientX));
+          joyOriginY = Math.max(70, Math.min(window.innerHeight - 70, touch.clientY));
+
+          joystickZone.style.left = (joyOriginX - 65) + 'px';
+          joystickZone.style.top = (joyOriginY - 65) + 'px';
+          joystickZone.style.bottom = 'auto';
+          joystickZone.style.opacity = '1';
+
+          handleJoyTouch(e, joyOriginX, joyOriginY);
+        }, { passive: false });
+
+        touchLeftZone.addEventListener('touchmove', (e) => {
+          if (joystickActive) handleJoyTouch(e, joyOriginX, joyOriginY);
+        }, { passive: false });
+
+        touchLeftZone.addEventListener('touchend', resetJoystick, { passive: true });
+        touchLeftZone.addEventListener('touchcancel', resetJoystick, { passive: true });
+      }
+
+      // Also listen on joystickZone itself
       joystickZone.addEventListener('touchstart', (e) => {
         joystickActive = true;
-        handleJoyTouch(e);
+        const rect = joystickZone.getBoundingClientRect();
+        joyOriginX = rect.left + rect.width / 2;
+        joyOriginY = rect.top + rect.height / 2;
+        handleJoyTouch(e, joyOriginX, joyOriginY);
       }, { passive: false });
 
       joystickZone.addEventListener('touchmove', (e) => {
-        if (joystickActive) handleJoyTouch(e);
+        if (joystickActive) handleJoyTouch(e, joyOriginX, joyOriginY);
       }, { passive: false });
 
-      joystickZone.addEventListener('touchend', resetJoystick);
-      joystickZone.addEventListener('touchcancel', resetJoystick);
+      joystickZone.addEventListener('touchend', resetJoystick, { passive: true });
+      joystickZone.addEventListener('touchcancel', resetJoystick, { passive: true });
 
+      // 2. Tactile Cyber D-Pad buttons
+      const dpadMap = {
+        'dpad-up':    [0, -1],
+        'dpad-down':  [0, 1],
+        'dpad-left':  [-1, 0],
+        'dpad-right': [1, 0]
+      };
+      Object.keys(dpadMap).forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          const pressDpad = (e) => {
+            e.preventDefault();
+            btn.classList.add('active');
+            if (engine) engine.setPlayerDirection(dpadMap[btnId][0], dpadMap[btnId][1]);
+          };
+          const releaseDpad = (e) => {
+            e.preventDefault();
+            btn.classList.remove('active');
+          };
+          btn.addEventListener('touchstart', pressDpad, { passive: false });
+          btn.addEventListener('touchend', releaseDpad, { passive: false });
+          btn.addEventListener('mousedown', pressDpad);
+          btn.addEventListener('mouseup', releaseDpad);
+        }
+      });
+
+      // 3. Control Mode Toggle Button in HUD (Joystick -> D-Pad -> Hidden -> Joystick)
+      if (btnControlsMode) {
+        btnControlsMode.addEventListener('click', () => {
+          if (currentControlMode === 'joystick') {
+            currentControlMode = 'dpad';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">🎮</span><span class="hud-btn-label"> D-PAD</span>';
+            joystickZone.style.display = 'none';
+            if (touchLeftZone) touchLeftZone.style.display = 'none';
+            if (cyberDpad) cyberDpad.style.display = 'flex';
+            touchControls.classList.add('force-show');
+            touchControls.classList.remove('force-hide');
+          } else if (currentControlMode === 'dpad') {
+            currentControlMode = 'off';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">📱</span><span class="hud-btn-label"> TOUCH OFF</span>';
+            if (cyberDpad) cyberDpad.style.display = 'none';
+            touchControls.classList.remove('force-show');
+            touchControls.classList.add('force-hide');
+          } else {
+            currentControlMode = 'joystick';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">🕹️</span><span class="hud-btn-label"> JOYSTICK</span>';
+            joystickZone.style.display = 'block';
+            if (touchLeftZone) touchLeftZone.style.display = 'block';
+            if (cyberDpad) cyberDpad.style.display = 'none';
+            touchControls.classList.add('force-show');
+            touchControls.classList.remove('force-hide');
+          }
+        });
+      }
+
+      // 4. Large Mobile Turbo Boost Button & Full Right-Half Tap/Hold-to-Boost
       mobileBoostBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         mobileBoostBtn.classList.add('active');
@@ -5554,9 +5879,77 @@
         e.preventDefault();
         mobileBoostBtn.classList.remove('active');
         setBoost(false);
-      });
+      }, { passive: false });
 
-      // Laptop / PC Mouse & Trackpad Steering (Butter-Smooth 3D Cursor Tracking)
+      // Touch anywhere on right half of screen to boost smoothly
+      let boostTouchId = null;
+      window.addEventListener('touchstart', (e) => {
+        if (!engine || !engine.running || engine.paused || modalLobby.style.display !== 'none') return;
+        if (e.target.closest('#mobile-boost-btn, #joystick-zone, .dpad-btn, .hud-btn, button, input, .modal-backdrop')) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const t = e.changedTouches[i];
+          if (t.clientX > window.innerWidth * 0.52) {
+            boostTouchId = t.identifier;
+            mobileBoostBtn.classList.add('active');
+            setBoost(true);
+            break;
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        if (boostTouchId !== null) {
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === boostTouchId) {
+              boostTouchId = null;
+              mobileBoostBtn.classList.remove('active');
+              setBoost(false);
+              break;
+            }
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchcancel', (e) => {
+        if (boostTouchId !== null) {
+          boostTouchId = null;
+          mobileBoostBtn.classList.remove('active');
+          setBoost(false);
+        }
+      }, { passive: true });
+
+      // 5. Full-Screen Swipe Gestures (Turn with quick finger flick anywhere)
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartTime = 0;
+
+      window.addEventListener('touchstart', (e) => {
+        if (e.target.closest('#mobile-boost-btn, #joystick-zone, .dpad-btn, .hud-btn, button, input, .modal-backdrop')) return;
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTime = Date.now();
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        if (!engine || !engine.running || engine.paused || modalLobby.style.display !== 'none') return;
+        if (e.target.closest('#mobile-boost-btn, #joystick-zone, .dpad-btn, .hud-btn, button, input, .modal-backdrop')) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+        const dt = Date.now() - touchStartTime;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 25 && dt < 450) {
+          if (Math.abs(dx) > Math.abs(dy)) {
+            engine.setPlayerDirection(dx > 0 ? 1 : -1, 0);
+          } else {
+            engine.setPlayerDirection(0, dy > 0 ? 1 : -1);
+          }
+        }
+      }, { passive: true });
+
+      // 6. Laptop / PC Mouse & Trackpad Steering (Butter-Smooth 3D Screen Projection Tracking)
       let mouseScreenX = window.innerWidth / 2;
       let mouseScreenY = window.innerHeight / 2;
       let isMouseActive = false;
@@ -5566,15 +5959,16 @@
         const head = engine.player.headPos();
         if (!head || !engine.camera) return;
 
-        // Project player's 3D head position onto 2D screen coordinates
-        const pVec = head.clone().project(engine.camera);
+        // Zero-allocation screen space projection
+        if (!window._headScratch && window.THREE) window._headScratch = new window.THREE.Vector3();
+        const pVec = (window._headScratch || head).copy(head).project(engine.camera);
         const headScreenX = (pVec.x * 0.5 + 0.5) * window.innerWidth;
         const headScreenY = (-pVec.y * 0.5 + 0.5) * window.innerHeight;
 
         const dx = mouseScreenX - headScreenX;
         const dz = mouseScreenY - headScreenY;
         const dist = Math.hypot(dx, dz);
-        if (dist > 15) {
+        if (dist > 18) {
           engine.setPlayerDirection(dx, dz);
         }
       }
@@ -5588,13 +5982,6 @@
         }
       }, { passive: true });
 
-      // Continuous cursor steering update in game loop
-      setInterval(() => {
-        if (isMouseActive && engine && engine.running && !engine.paused) {
-          updateMouseSteer();
-        }
-      }, 50);
-
       // Mouse left/right click or hold to boost
       window.addEventListener('mousedown', (e) => {
         if (e.target.closest('button, input, select, .modal-backdrop, .hud-btn, .orbit-nav-btn, .dpad-btn, #mobile-boost-btn')) return;
@@ -5602,8 +5989,8 @@
           setBoost(true);
         }
       });
-      window.addEventListener('mouseup', (e) => {
-        if (engine && engine.running && !engine.paused) {
+      window.addEventListener('mouseup', () => {
+        if (engine && engine.running) {
           setBoost(false);
         }
       });
@@ -5613,34 +6000,52 @@
         canvas.addEventListener('contextmenu', (e) => e.preventDefault());
       }
 
-      // Desktop Keyboard Controls (WASD / Arrows to steer smoothly, Space to boost)
+      // 7. Desktop Keyboard Controls (Full 8-Way WASD & Arrow Key State Tracking)
+      const keysDown = {};
+      function updateKeyboardSteer() {
+        if (!engine || !engine.running || engine.paused || !engine.player || !engine.player.alive) return;
+        let kx = 0;
+        let kz = 0;
+        if (keysDown['KeyW'] || keysDown['ArrowUp']) kz -= 1;
+        if (keysDown['KeyS'] || keysDown['ArrowDown']) kz += 1;
+        if (keysDown['KeyA'] || keysDown['ArrowLeft']) kx -= 1;
+        if (keysDown['KeyD'] || keysDown['ArrowRight']) kx += 1;
+
+        if (kx !== 0 || kz !== 0) {
+          isMouseActive = false; // keyboard takes immediate control
+          engine.setPlayerDirection(kx, kz);
+        }
+      }
+
       window.addEventListener('keydown', (e) => {
         if (e.target.closest('input, textarea, select')) return;
+        keysDown[e.code] = true;
         if (e.code === 'Space') {
           e.preventDefault();
           setBoost(true);
         }
-        if (e.code === 'KeyW' || e.code === 'ArrowUp') {
-          if (engine) engine.setPlayerDirection(0, -1);
-        }
-        if (e.code === 'KeyS' || e.code === 'ArrowDown') {
-          if (engine) engine.setPlayerDirection(0, 1);
-        }
-        if (e.code === 'KeyA' || e.code === 'ArrowLeft') {
-          if (engine) engine.setPlayerDirection(-1, 0);
-        }
-        if (e.code === 'KeyD' || e.code === 'ArrowRight') {
-          if (engine) engine.setPlayerDirection(1, 0);
-        }
         if (e.code === 'KeyP') {
           togglePause();
         }
+        updateKeyboardSteer();
       });
+
       window.addEventListener('keyup', (e) => {
+        delete keysDown[e.code];
         if (e.code === 'Space') {
           setBoost(false);
         }
+        updateKeyboardSteer();
       });
+
+      // Frame-rate aligned continuous input steering loop (16ms / 60-120fps)
+      setInterval(() => {
+        if (!engine || !engine.running || engine.paused) return;
+        updateKeyboardSteer();
+        if (isMouseActive) {
+          updateMouseSteer();
+        }
+      }, 16);
 
       /* ── Skin Selector ───────────────────────────────────── */
       document.querySelectorAll('.skin-swatch').forEach(swatch => {
@@ -5676,14 +6081,13 @@
           ApexAdManager.log(`[Skin] VIP Dragon skin active! (${cfg.dragonSkinMatches - 1} matches remaining)`);
         }
 
-        // Apply skin color
+        // Restart engine with chosen color
+        engine.restart(chosenColor);
         if (engine.player) {
           engine.player.color = chosenColor;
           if (engine.player._headMat) engine.player._headMat.color.setHex(chosenColor);
           if (engine.player._mat) engine.player._mat.color.setHex(chosenColor);
         }
-
-        engine.restart();
 
         // Check if Magnet Starter Pack is active
         if (cfg.magnetPackActive) {
@@ -5731,9 +6135,17 @@
         btn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
       });
 
-      document.getElementById('btn-revive-player').addEventListener('click', () => {
+      document.getElementById('btn-revive-player').addEventListener('click', async () => {
         ApexAdManager.log('[RewardedAd] Revive ad requested. Showing sponsor video...');
-        ApexAdManager.triggerDirectLink('rewarded_revive', true);
+        if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
+          try {
+            await ApexAdManager.showRewardedAd('rewarded_revive_tma');
+          } catch (e) {
+            ApexAdManager.log('[RewardedAd] TMA ad error: ' + (e.message || e));
+          }
+        } else {
+          ApexAdManager.triggerDirectLink('rewarded_revive', true);
+        }
         setTimeout(() => {
           modalGameOver.style.display = 'none';
           if (engine) engine.revivePlayer();
@@ -5758,13 +6170,13 @@
         document.getElementById('cfg-ad-network').value = cfg.adNetwork || 'hybrid';
         document.getElementById('cfg-directlink').value = cfg.directLinkUrl;
         const smartLinkInput = document.getElementById('cfg-monetag-smartlink');
-        if (smartLinkInput) smartLinkInput.value = cfg.monetagSmartlink || 'https://alwingulla.com/example_monetag_smartlink';
+        if (smartLinkInput) smartLinkInput.value = cfg.monetagSmartlink || 'https://uplcm.com/4/12310259';
         document.getElementById('cfg-cooldown').value = cfg.cooldownSeconds;
-        document.getElementById('cfg-key-socialbar').value = cfg.keySocialBar || 'ADSTERRA_SOCIAL_BAR_KEY';
+        document.getElementById('cfg-key-socialbar').value = cfg.keySocialBar || '8ff82ce2b79188cb7ecb54d761206915';
         document.getElementById('cfg-key-728').value = cfg.key728;
         document.getElementById('cfg-key-300').value = cfg.key300;
         document.getElementById('cfg-key-320').value = cfg.key320;
-        document.getElementById('cfg-monetag-zone').value = cfg.monetagZone || 'MONETAG_ZONE_12345';
+        document.getElementById('cfg-monetag-zone').value = cfg.monetagZone || '12310286';
         document.getElementById('cfg-mock-toggle').value = cfg.mockMode;
         modalAdSettings.style.display = 'flex';
       });
@@ -5778,7 +6190,7 @@
         ApexAdManager.saveConfig({
           adNetwork: document.getElementById('cfg-ad-network').value,
           directLinkUrl: document.getElementById('cfg-directlink').value.trim(),
-          monetagSmartlink: smartLinkInput ? smartLinkInput.value.trim() : 'https://alwingulla.com/example_monetag_smartlink',
+          monetagSmartlink: smartLinkInput ? smartLinkInput.value.trim() : 'https://uplcm.com/4/12310259',
           cooldownSeconds: parseInt(document.getElementById('cfg-cooldown').value, 10) || 60,
           keySocialBar: document.getElementById('cfg-key-socialbar').value.trim(),
           key728: document.getElementById('cfg-key-728').value.trim(),
@@ -5795,13 +6207,13 @@
         ApexAdManager.triggerDirectLink('test_modal_btn', true);
       });
 
-      document.getElementById('btn-test-socialbar').addEventListener('click', () => {
-        const sb = document.getElementById('asr-ad-social-bar');
-        if (sb) {
-          sb.style.display = 'flex';
-          ApexAdManager.log('[AdManager] Social Bar preview displayed.');
-        }
-      });
+      const btnTestHeader = document.getElementById('btn-test-header-ad') || document.getElementById('btn-test-socialbar');
+      if (btnTestHeader) {
+        btnTestHeader.addEventListener('click', () => {
+          ApexAdManager.triggerDirectLink('header_ad_rotation');
+          ApexAdManager.log('[AdManager] Header ad rotation tested -> smartlink triggered.');
+        });
+      }
 
             const btnTestVignette = document.getElementById('btn-test-vignette');
       if (btnTestVignette) {
@@ -5832,7 +6244,7 @@
           engine.camera.updateProjectionMatrix();
           engine.renderer.setSize(window.innerWidth, window.innerHeight);
         }
-      });
+      }, { passive: true });
 
       
       /* ── Emoji Taunt Quick Bar ───────────────────────────── */
@@ -5860,13 +6272,21 @@
       /* ── 5-Second Revive Countdown Buttons ───────────────── */
       const btnCountdownRevive = document.getElementById('btn-countdown-revive');
       if (btnCountdownRevive) {
-        btnCountdownRevive.addEventListener('click', () => {
+        btnCountdownRevive.addEventListener('click', async () => {
           if (deathCountdownInterval) {
             clearInterval(deathCountdownInterval);
             deathCountdownInterval = null;
           }
           document.getElementById('modal-death-countdown').style.display = 'none';
-          ApexAdManager.triggerSmartLink('countdown_revive', true);
+          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
+            try {
+              await ApexAdManager.showRewardedAd('countdown_revive_tma');
+            } catch (e) {
+              ApexAdManager.log('[Revive] TMA ad error: ' + (e.message || e));
+            }
+          } else {
+            ApexAdManager.triggerSmartLink('countdown_revive', true);
+          }
           if (engine) engine.revivePlayer();
           ApexAdManager.log('[Revive] Player revived via 5s countdown with 50% mass + Phase Shield!');
         });
@@ -6122,6 +6542,10 @@
       if (btnOpenWheel) {
         btnOpenWheel.addEventListener('click', () => {
           document.getElementById('modal-spin-wheel').style.display = 'flex';
+          if (ApexAdManager.isTelegramApp()) {
+            const spinBtn = document.getElementById('btn-spin-wheel');
+            if (spinBtn) spinBtn.innerText = '📺 WATCH AD TO SPIN';
+          }
           drawWheel();
         });
       }
@@ -6135,13 +6559,455 @@
 
       const btnSpinWheel = document.getElementById('btn-spin-wheel');
       if (btnSpinWheel) {
-        btnSpinWheel.addEventListener('click', () => {
+        btnSpinWheel.addEventListener('click', async () => {
+          if (isSpinning) return;
+          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
+            btnSpinWheel.disabled = true;
+            const originalText = btnSpinWheel.innerText;
+            btnSpinWheel.innerText = '⏳ WATCHING SPONSOR AD...';
+            try {
+              ApexAdManager.log('[LuckyWheel] Showing Monetag TMA rewarded ad to spin wheel...');
+              await ApexAdManager.triggerTelegramRewarded();
+            } catch (err) {
+              ApexAdManager.log('[LuckyWheel] Monetag TMA ad exception: ' + (err.message || err));
+            } finally {
+              btnSpinWheel.disabled = false;
+              btnSpinWheel.innerText = originalText;
+            }
+          }
           spinWheel();
         });
       }
 
+      
+    /* =========================================================
+     *  ORBIT EXTENSION: MISSIONS, DAILY SUPPLY, BOOSTER ARMORY,
+     *  TELEGRAM WEBAPP & DISCORD ACTIVITY INTEGRATION
+     * ========================================================= */
+    const ApexOrbit = (function() {
+      const KEY_MISSIONS = 'apex_missions_v2';
+      const KEY_DAILY_TS = 'apex_daily_supply_ts';
+      const KEY_INV = 'apex_inventory_v1';
+      const KEY_RECORDS = 'apex_pilot_records_v1';
+
+      // Default inventory
+      let inventory = {
+        credits: 500,
+        revives: 1,
+        magnets: 1,
+        overdriveMatches: 0
+      };
+
+      // Default records
+      let records = {
+        bestScore: 0,
+        maxLength: 5,
+        totalKills: 0,
+        matchesPlayed: 0,
+        wins: 0
+      };
+
+      // Orbit Missions Definition
+      const MISSION_DEFS = [
+        { id: 1, title: 'Length Pioneer', desc: 'Grow your serpent to length 25', target: 25, rewardText: '+100 Credits', type: 'length', reward: { credits: 100 } },
+        { id: 2, title: 'Apex Predator', desc: 'Eliminate 2 rival serpents in battle', target: 2, rewardText: '1 Revive Token', type: 'kills', reward: { revives: 1 } },
+        { id: 3, title: 'Storm Survivor', desc: 'Survive 90 seconds in electric storm', target: 90, rewardText: '1 Magnet Pack', type: 'time', reward: { magnets: 1 } },
+        { id: 4, title: 'Quantum Harvester', desc: 'Collect 10 energy orbs & capsules', target: 10, rewardText: '+200 Credits', type: 'powerups', reward: { credits: 200 } },
+        { id: 5, title: 'Victory Royale', desc: 'Survive the final collapse & claim Rank #1', target: 1, rewardText: 'VIP Dragon Skin Unlock', type: 'win', reward: { dragonSkin: 3 } }
+      ];
+
+      let missionStates = [
+        { id: 1, current: 5, completed: false, claimed: false },
+        { id: 2, current: 0, completed: false, claimed: false },
+        { id: 3, current: 0, completed: false, claimed: false },
+        { id: 4, current: 0, completed: false, claimed: false },
+        { id: 5, current: 0, completed: false, claimed: false }
+      ];
+
+      function loadData() {
+        try {
+          const invRaw = localStorage.getItem(KEY_INV);
+          if (invRaw) inventory = { ...inventory, ...JSON.parse(invRaw) };
+          const recRaw = localStorage.getItem(KEY_RECORDS);
+          if (recRaw) records = { ...records, ...JSON.parse(recRaw) };
+          const misRaw = localStorage.getItem(KEY_MISSIONS);
+          if (misRaw) missionStates = JSON.parse(misRaw);
+        } catch(e) {}
+      }
+
+      function saveData() {
+        try {
+          localStorage.setItem(KEY_INV, JSON.stringify(inventory));
+          localStorage.setItem(KEY_RECORDS, JSON.stringify(records));
+          localStorage.setItem(KEY_MISSIONS, JSON.stringify(missionStates));
+        } catch(e) {}
+      }
+
+      loadData();
+
+      // Procedural Audio Tone Synth
+      function playTone(freq, type = 'sine', duration = 0.15) {
+        try {
+          const ctx = window.AudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          g.gain.setValueAtTime(0.2, ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        } catch(e) {}
+      }
+
+      function updateInventoryUI() {
+        const credEl = document.getElementById('inv-credits');
+        const revEl = document.getElementById('inv-revives');
+        const magEl = document.getElementById('inv-magnets');
+        if (credEl) credEl.innerText = inventory.credits;
+        if (revEl) revEl.innerText = inventory.revives;
+        if (magEl) magEl.innerText = inventory.magnets;
+      }
+
+      function updateRecordsUI() {
+        const b = document.getElementById('rec-best-score');
+        const l = document.getElementById('rec-max-length');
+        const k = document.getElementById('rec-total-kills');
+        const w = document.getElementById('rec-wins');
+        if (b) b.innerText = records.bestScore;
+        if (l) l.innerText = records.maxLength;
+        if (k) k.innerText = records.totalKills;
+        if (w) w.innerText = records.wins;
+      }
+
+      function renderMissionsUI() {
+        const container = document.getElementById('missions-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        let readyCount = 0;
+        MISSION_DEFS.forEach((def, i) => {
+          const state = missionStates[i] || { current: 0, completed: false, claimed: false };
+          const pct = Math.min(100, Math.round((state.current / def.target) * 100));
+          if (state.completed && !state.claimed) readyCount++;
+
+          const card = document.createElement('div');
+          card.className = 'mission-card';
+
+          let btnHtml = '';
+          if (state.claimed) {
+            btnHtml = '<span style="font-size:11px; color:#64748b; font-family:var(--font-mono);">CLAIMED ✓</span>';
+          } else if (state.completed) {
+            btnHtml = `<button class="cyber-btn cyber-btn-primary" onclick="ApexOrbit.claimMission(${def.id})" style="font-size:11px; padding:6px 12px; background:linear-gradient(135deg, #00f3ff, #00ff66); color:#000; font-weight:700;">CLAIM</button>`;
+          } else {
+            btnHtml = `<span style="font-size:11px; color:var(--cyan); font-family:var(--font-mono);">${state.current}/${def.target}</span>`;
+          }
+
+          card.innerHTML = `
+            <div class="mission-info" style="flex:1;">
+              <h4>${def.title}</h4>
+              <p>${def.desc}</p>
+              <span class="reward-tag">${def.rewardText}</span>
+              <div class="mission-progress-bar">
+                <div class="mission-progress-fill" style="width:${pct}%;"></div>
+              </div>
+            </div>
+            <div style="min-width:70px; text-align:right;">
+              ${btnHtml}
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        const badge = document.getElementById('missions-badge');
+        if (badge) {
+          const totalCompleted = missionStates.filter(m => m.completed).length;
+          badge.innerText = `${totalCompleted}/${MISSION_DEFS.length}`;
+          badge.className = readyCount > 0 ? 'orbit-badge ready' : 'orbit-badge';
+        }
+      }
+
+      function claimMission(id) {
+        const def = MISSION_DEFS.find(d => d.id === id);
+        const state = missionStates.find(m => m.id === id);
+        if (!def || !state || !state.completed || state.claimed) return;
+
+        state.claimed = true;
+        if (def.reward.credits) inventory.credits += def.reward.credits;
+        if (def.reward.revives) inventory.revives += def.reward.revives;
+        if (def.reward.magnets) inventory.magnets += def.reward.magnets;
+        if (def.reward.dragonSkin) {
+          if (window.ApexAdManager) window.ApexAdManager.unlockDragonSkin();
+        }
+
+        playTone(660, 'triangle', 0.25);
+        setTimeout(() => playTone(880, 'sine', 0.3), 150);
+
+        saveData();
+        updateInventoryUI();
+        renderMissionsUI();
+        alert(`🎉 Claimed Reward: ${def.rewardText}!`);
+      }
+
+      function reportProgress(type, val) {
+        let changed = false;
+        MISSION_DEFS.forEach((def, i) => {
+          if (def.type === type) {
+            const state = missionStates[i];
+            if (!state.completed) {
+              if (type === 'length' || type === 'time') {
+                if (val > state.current) state.current = val;
+              } else {
+                state.current += val;
+              }
+              if (state.current >= def.target) {
+                state.completed = true;
+                changed = true;
+                playTone(784, 'sine', 0.3);
+                console.log(`[Orbit] Mission completed: ${def.title}!`);
+              }
+            }
+          }
+        });
+        if (changed) {
+          saveData();
+          renderMissionsUI();
+        }
+      }
+
+      // Daily Supply Check
+      function checkDailySupply() {
+        const lastClaim = parseInt(localStorage.getItem(KEY_DAILY_TS) || '0', 10);
+        const now = Date.now();
+        const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+        const diff = now - lastClaim;
+        const btn = document.getElementById('btn-claim-daily-supply');
+        const countdown = document.getElementById('daily-countdown-text');
+        const timerVal = document.getElementById('daily-timer-val');
+        const badge = document.getElementById('daily-supply-badge');
+
+        if (diff >= TWENTY_FOUR_HOURS) {
+          if (btn) { btn.disabled = false; btn.innerText = '🎁 CLAIM FREE SUPPLY'; }
+          if (countdown) countdown.style.display = 'none';
+          if (badge) { badge.className = 'orbit-badge ready'; badge.innerText = 'READY'; }
+        } else {
+          const remaining = TWENTY_FOUR_HOURS - diff;
+          const h = Math.floor(remaining / (1000 * 60 * 60));
+          const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+          const s = Math.floor((remaining % (1000 * 60)) / 1000);
+          const timeStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+          if (btn) { btn.disabled = true; btn.innerText = 'SUPPLY CLAIMED TODAY ✓'; }
+          if (countdown && timerVal) { countdown.style.display = 'block'; timerVal.innerText = timeStr; }
+          if (badge) { badge.className = 'orbit-badge'; badge.innerText = timeStr; }
+        }
+      }
+
+      function claimDailySupply() {
+        const lastClaim = parseInt(localStorage.getItem(KEY_DAILY_TS) || '0', 10);
+        const now = Date.now();
+        if (now - lastClaim < 24 * 60 * 60 * 1000) return;
+
+        localStorage.setItem(KEY_DAILY_TS, now.toString());
+        inventory.revives += 1;
+        inventory.magnets += 1;
+        inventory.credits += 250;
+        saveData();
+        updateInventoryUI();
+        checkDailySupply();
+
+        playTone(523, 'sine', 0.2);
+        setTimeout(() => playTone(659, 'sine', 0.2), 120);
+        setTimeout(() => playTone(784, 'triangle', 0.35), 240);
+
+        alert('🎉 Daily Supply Delivered: +1 Free Revive Token, +1 Magnet Starter Pack, +250 Quantum Credits!');
+      }
+
+      // Initialize Telegram & Discord Environment Detection
+      function initPlatformIntegration() {
+        const pill = document.getElementById('platform-pill');
+        const tg = window.Telegram?.WebApp;
+
+        if (tg && (tg.initData || tg.initDataUnsafe?.user)) {
+          tg.ready();
+          tg.expand();
+          if (pill) {
+            pill.innerText = '💬 TELEGRAM MINI APP';
+            pill.className = 'platform-pill tg';
+          }
+          const user = tg.initDataUnsafe?.user;
+          if (user) {
+            const input = document.getElementById('player-callsign');
+            if (input) {
+              input.value = (user.username || user.first_name || 'VIPER').toUpperCase().slice(0, 15);
+            }
+          }
+          if (window.ApexAdManager) {
+            window.ApexAdManager.checkAndInitTelegramAds();
+          }
+        } else if (window.location.search.includes('frame_id') || window.name.includes('discord')) {
+          if (pill) {
+            pill.innerText = '🎮 DISCORD ACTIVITY';
+            pill.className = 'platform-pill discord';
+          }
+        }
+      }
+
+      setInterval(checkDailySupply, 1000);
+
+      return {
+        getInventory: () => inventory,
+        getRecords: () => records,
+        saveData,
+        updateInventoryUI,
+        updateRecordsUI,
+        renderMissionsUI,
+        claimMission,
+        reportProgress,
+        claimDailySupply,
+        checkDailySupply,
+        initPlatformIntegration,
+        playTone
+      };
+    })();
+
+    window.ApexOrbit = ApexOrbit;
+
       // Initialize AdBlock check & initial skin
+      
+      // Orbit Feature Modal Openers & Closers
+      document.getElementById('btn-open-daily-supply').addEventListener('click', () => {
+        document.getElementById('modal-daily-supply').style.display = 'flex';
+        ApexOrbit.checkDailySupply();
+      });
+      document.getElementById('btn-close-daily-supply').addEventListener('click', () => {
+        document.getElementById('modal-daily-supply').style.display = 'none';
+      });
+      document.getElementById('btn-claim-daily-supply').addEventListener('click', () => {
+        ApexOrbit.claimDailySupply();
+      });
+
+      document.getElementById('btn-open-missions').addEventListener('click', () => {
+        document.getElementById('modal-missions').style.display = 'flex';
+        ApexOrbit.renderMissionsUI();
+      });
+      document.getElementById('btn-close-missions').addEventListener('click', () => {
+        document.getElementById('modal-missions').style.display = 'none';
+      });
+
+      document.getElementById('btn-open-boosters').addEventListener('click', () => {
+        document.getElementById('modal-boosters').style.display = 'flex';
+        ApexOrbit.updateInventoryUI();
+      });
+      document.getElementById('btn-close-boosters').addEventListener('click', () => {
+        document.getElementById('modal-boosters').style.display = 'none';
+      });
+
+      document.getElementById('btn-open-records').addEventListener('click', () => {
+        document.getElementById('modal-records').style.display = 'flex';
+        ApexOrbit.updateRecordsUI();
+      });
+      document.getElementById('btn-close-records').addEventListener('click', () => {
+        document.getElementById('modal-records').style.display = 'none';
+      });
+
+      // Synchronize Lobby Audio Button
+      const lobbyAudioBtn = document.getElementById('btn-lobby-audio');
+      if (lobbyAudioBtn) {
+        lobbyAudioBtn.addEventListener('click', () => {
+          document.getElementById('btn-audio-toggle').click();
+          lobbyAudioBtn.innerText = isAudioMuted ? '🔇 SFX OFF' : '🔊 SFX ON';
+          lobbyAudioBtn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
+        });
+      }
+
+      // Shop Booster Purchasing
+      document.getElementById('btn-buy-revive').addEventListener('click', async () => {
+        const inv = ApexOrbit.getInventory();
+        if (inv.credits >= 200) {
+          inv.credits -= 200;
+          inv.revives += 1;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          ApexOrbit.playTone(660, 'sine', 0.2);
+          alert('⚡ Purchased 1 Quantum Revive Token!');
+        } else {
+          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
+            await ApexAdManager.showRewardedAd('shop_revive_free');
+          } else {
+            ApexAdManager.triggerDirectLink('shop_revive_free', true);
+          }
+          inv.revives += 1;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          alert('⚡ Free Sponsor Revive Token Added!');
+        }
+      });
+
+      document.getElementById('btn-buy-magnet').addEventListener('click', () => {
+        const inv = ApexOrbit.getInventory();
+        if (inv.credits >= 150) {
+          inv.credits -= 150;
+          inv.magnets += 1;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          ApexOrbit.playTone(660, 'sine', 0.2);
+          alert('🧲 Purchased 1 Quantum Magnet Pack!');
+        } else {
+          ApexAdManager.triggerDirectLink('shop_magnet_free', true);
+          inv.magnets += 1;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          alert('🧲 Free Sponsor Magnet Pack Added!');
+        }
+      });
+
+      document.getElementById('btn-buy-overdrive').addEventListener('click', () => {
+        const inv = ApexOrbit.getInventory();
+        if (inv.credits >= 100) {
+          inv.credits -= 100;
+          inv.overdriveMatches += 3;
+          window.apexMaxStamina = 150;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          ApexOrbit.playTone(660, 'sine', 0.2);
+          alert('⚡ Turbo Overdrive Activated (+50% Stamina for 3 matches)!');
+        } else {
+          ApexAdManager.triggerDirectLink('shop_overdrive_free', true);
+          inv.overdriveMatches += 3;
+          window.apexMaxStamina = 150;
+          ApexOrbit.saveData();
+          ApexOrbit.updateInventoryUI();
+          alert('⚡ Free Sponsor Turbo Overdrive Activated!');
+        }
+      });
+
+      // Share Dossier / Records Brag Button
+      document.getElementById('btn-share-records').addEventListener('click', () => {
+        const rec = ApexOrbit.getRecords();
+        const msg = `🐍 APEX SERPENT PILOT DOSSIER: Best Score: ${rec.bestScore} PTS | Eliminations: ${rec.totalKills} | Wins: ${rec.wins} Royale! Can you beat my record? Play free: https://ajayyadav9527.github.io/apex-serpent-royale/`;
+        if (window.Telegram?.WebApp) {
+          window.open(`https://t.me/share/url?url=${encodeURIComponent('https://ajayyadav9527.github.io/apex-serpent-royale/')}&text=${encodeURIComponent(msg)}`, '_blank');
+        } else if (navigator.share) {
+          navigator.share({ title: 'Apex Serpent 3D Royale Dossier', text: msg, url: 'https://ajayyadav9527.github.io/apex-serpent-royale/' }).catch(()=>{});
+        } else {
+          navigator.clipboard.writeText(msg).then(() => alert('📋 Pilot Dossier copied to clipboard!'));
+        }
+      });
+
+      // Initialize Platform and UI on load
+      ApexOrbit.initPlatformIntegration();
+      ApexOrbit.updateInventoryUI();
+      ApexOrbit.updateRecordsUI();
+      ApexOrbit.renderMissionsUI();
+      ApexOrbit.checkDailySupply();
+
       ApexAdManager.checkAdBlock();
+
+      // Initialize 3D game engine on load so lobby features live vibrant 3D backdrop
+      initEngine();
 
       const initialCfg = ApexAdManager.getConfig();
       if (initialCfg.dragonSkinMatches > 0) {
@@ -6149,9 +7015,38 @@
         if (swatch) swatch.style.display = 'flex';
       }
 
+      
+      // Callsign Randomizer (Cyberpunk Callout Generator)
+      const btnRandomCallsign = document.getElementById('btn-random-callsign');
+      if (btnRandomCallsign) {
+        const CYBER_PREFIXES = ['CYBER', 'QUANTUM', 'NEON', 'VOID', 'APEX', 'SYNTH', 'HYPER', 'CHRONO', 'VIPER', 'SHADOW'];
+        const CYBER_SUFFIXES = ['VIPER', 'DRAKE', 'NEXUS', 'COBRA', 'SPECTRE', 'TITAN', 'STRIKER', 'ZERO', 'MATRIX', 'GHOST'];
+        btnRandomCallsign.addEventListener('click', () => {
+          const pre = CYBER_PREFIXES[Math.floor(Math.random() * CYBER_PREFIXES.length)];
+          const suf = CYBER_SUFFIXES[Math.floor(Math.random() * CYBER_SUFFIXES.length)];
+          const num = Math.floor(Math.random() * 90) + 10;
+          const input = document.getElementById('player-callsign');
+          if (input) {
+            input.value = `${pre}_${suf}_${num}`.slice(0, 15);
+            playerName = input.value;
+          }
+        });
+      }
+
+      // Sleek Fixed Rotating Header Ad Banner (8s CSS opacity crossfade)
+      (function initHeaderAdRotation() {
+        const slides = document.querySelectorAll('#fixed-header-ad-bar .header-ad-slide');
+        if (!slides || slides.length === 0) return;
+        let activeIdx = 0;
+        setInterval(() => {
+          slides[activeIdx].classList.remove('active');
+          activeIdx = (activeIdx + 1) % slides.length;
+          slides[activeIdx].classList.add('active');
+        }, 8000);
+      })();
+
     })();
-  
-  //]]>
+//]]>
   </script>
 </body>
 </html>

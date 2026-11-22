@@ -4047,7 +4047,7 @@
         });
       }
 
-      // 4. Large Mobile Turbo Boost Button
+      // 4. Large Mobile Turbo Boost Button & Full Right-Half Tap/Hold-to-Boost
       mobileBoostBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         mobileBoostBtn.classList.add('active');
@@ -4059,6 +4059,43 @@
         mobileBoostBtn.classList.remove('active');
         setBoost(false);
       }, { passive: false });
+
+      // Touch anywhere on right half of screen to boost smoothly
+      let boostTouchId = null;
+      window.addEventListener('touchstart', (e) => {
+        if (!engine || !engine.running || engine.paused || modalLobby.style.display !== 'none') return;
+        if (e.target.closest('#mobile-boost-btn, #joystick-zone, .dpad-btn, .hud-btn, button, input, .modal-backdrop')) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const t = e.changedTouches[i];
+          if (t.clientX > window.innerWidth * 0.52) {
+            boostTouchId = t.identifier;
+            mobileBoostBtn.classList.add('active');
+            setBoost(true);
+            break;
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        if (boostTouchId !== null) {
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === boostTouchId) {
+              boostTouchId = null;
+              mobileBoostBtn.classList.remove('active');
+              setBoost(false);
+              break;
+            }
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchcancel', (e) => {
+        if (boostTouchId !== null) {
+          boostTouchId = null;
+          mobileBoostBtn.classList.remove('active');
+          setBoost(false);
+        }
+      }, { passive: true });
 
       // 5. Full-Screen Swipe Gestures (Turn with quick finger flick anywhere)
       let touchStartX = 0;
@@ -4074,7 +4111,7 @@
       }, { passive: true });
 
       window.addEventListener('touchend', (e) => {
-        if (!engine || !engine.running || engine.paused) return;
+        if (!engine || !engine.running || engine.paused || modalLobby.style.display !== 'none') return;
         if (e.target.closest('#mobile-boost-btn, #joystick-zone, .dpad-btn, .hud-btn, button, input, .modal-backdrop')) return;
         const t = e.changedTouches[0];
         const dx = t.clientX - touchStartX;
@@ -4091,7 +4128,7 @@
         }
       }, { passive: true });
 
-      // 6. Laptop / PC Mouse & Trackpad Steering (Butter-Smooth 3D Cursor Tracking)
+      // 6. Laptop / PC Mouse & Trackpad Steering (Butter-Smooth 3D Screen Projection Tracking)
       let mouseScreenX = window.innerWidth / 2;
       let mouseScreenY = window.innerHeight / 2;
       let isMouseActive = false;
@@ -4101,15 +4138,16 @@
         const head = engine.player.headPos();
         if (!head || !engine.camera) return;
 
-        // Project player's 3D head position onto 2D screen coordinates
-        const pVec = head.clone().project(engine.camera);
+        // Zero-allocation screen space projection
+        if (!window._headScratch && window.THREE) window._headScratch = new window.THREE.Vector3();
+        const pVec = (window._headScratch || head).copy(head).project(engine.camera);
         const headScreenX = (pVec.x * 0.5 + 0.5) * window.innerWidth;
         const headScreenY = (-pVec.y * 0.5 + 0.5) * window.innerHeight;
 
         const dx = mouseScreenX - headScreenX;
         const dz = mouseScreenY - headScreenY;
         const dist = Math.hypot(dx, dz);
-        if (dist > 15) {
+        if (dist > 18) {
           engine.setPlayerDirection(dx, dz);
         }
       }
@@ -4122,13 +4160,6 @@
           updateMouseSteer();
         }
       }, { passive: true });
-
-      // Continuous cursor steering update in game loop
-      setInterval(() => {
-        if (isMouseActive && engine && engine.running && !engine.paused) {
-          updateMouseSteer();
-        }
-      }, 50);
 
       // Mouse left/right click or hold to boost
       window.addEventListener('mousedown', (e) => {
@@ -4148,34 +4179,52 @@
         canvas.addEventListener('contextmenu', (e) => e.preventDefault());
       }
 
-      // 7. Desktop Keyboard Controls (WASD / Arrows to steer smoothly, Space to boost)
+      // 7. Desktop Keyboard Controls (Full 8-Way WASD & Arrow Key State Tracking)
+      const keysDown = {};
+      function updateKeyboardSteer() {
+        if (!engine || !engine.running || engine.paused || !engine.player || !engine.player.alive) return;
+        let kx = 0;
+        let kz = 0;
+        if (keysDown['KeyW'] || keysDown['ArrowUp']) kz -= 1;
+        if (keysDown['KeyS'] || keysDown['ArrowDown']) kz += 1;
+        if (keysDown['KeyA'] || keysDown['ArrowLeft']) kx -= 1;
+        if (keysDown['KeyD'] || keysDown['ArrowRight']) kx += 1;
+
+        if (kx !== 0 || kz !== 0) {
+          isMouseActive = false; // keyboard takes immediate control
+          engine.setPlayerDirection(kx, kz);
+        }
+      }
+
       window.addEventListener('keydown', (e) => {
         if (e.target.closest('input, textarea, select')) return;
+        keysDown[e.code] = true;
         if (e.code === 'Space') {
           e.preventDefault();
           setBoost(true);
         }
-        if (e.code === 'KeyW' || e.code === 'ArrowUp') {
-          if (engine) engine.setPlayerDirection(0, -1);
-        }
-        if (e.code === 'KeyS' || e.code === 'ArrowDown') {
-          if (engine) engine.setPlayerDirection(0, 1);
-        }
-        if (e.code === 'KeyA' || e.code === 'ArrowLeft') {
-          if (engine) engine.setPlayerDirection(-1, 0);
-        }
-        if (e.code === 'KeyD' || e.code === 'ArrowRight') {
-          if (engine) engine.setPlayerDirection(1, 0);
-        }
         if (e.code === 'KeyP') {
           togglePause();
         }
+        updateKeyboardSteer();
       });
+
       window.addEventListener('keyup', (e) => {
+        delete keysDown[e.code];
         if (e.code === 'Space') {
           setBoost(false);
         }
+        updateKeyboardSteer();
       });
+
+      // Frame-rate aligned continuous input steering loop (16ms / 60-120fps)
+      setInterval(() => {
+        if (!engine || !engine.running || engine.paused) return;
+        updateKeyboardSteer();
+        if (isMouseActive) {
+          updateMouseSteer();
+        }
+      }, 16);
 
       /* ── Skin Selector ───────────────────────────────────── */
       document.querySelectorAll('.skin-swatch').forEach(swatch => {
@@ -4211,14 +4260,13 @@
           ApexAdManager.log(`[Skin] VIP Dragon skin active! (${cfg.dragonSkinMatches - 1} matches remaining)`);
         }
 
-        // Apply skin color
+        // Restart engine with chosen color
+        engine.restart(chosenColor);
         if (engine.player) {
           engine.player.color = chosenColor;
           if (engine.player._headMat) engine.player._headMat.color.setHex(chosenColor);
           if (engine.player._mat) engine.player._mat.color.setHex(chosenColor);
         }
-
-        engine.restart();
 
         // Check if Magnet Starter Pack is active
         if (cfg.magnetPackActive) {
@@ -5136,6 +5184,9 @@
       ApexOrbit.checkDailySupply();
 
       ApexAdManager.checkAdBlock();
+
+      // Initialize 3D game engine on load so lobby features live vibrant 3D backdrop
+      initEngine();
 
       const initialCfg = ApexAdManager.getConfig();
       if (initialCfg.dragonSkinMatches > 0) {
