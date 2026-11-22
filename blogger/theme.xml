@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html b:css='false' b:defaultwidgetversion='2' b:layoutsversion='3' expr:dir='data:blog.languageDirection' expr:lang='data:blog.locale' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
 <head>
@@ -26,14 +26,14 @@
   <!-- SEO & Open Graph Tags -->
   <meta content='game' property='og:type'/>
   <meta expr:content='data:blog.canonicalUrl' property='og:url'/>
-  <meta content='Apex Serpent Royale â€” Free 3D Snake Battle Royale IO Game Online' property='og:title'/>
+  <meta content='Apex Serpent Royale — Free 3D Snake Battle Royale IO Game Online' property='og:title'/>
   <meta content='Battle 10 neon serpents, collect quantum powerups, outrun the electric storm, and claim #1 Victory Royale in this high-octane 3D snake battle royale.' property='og:description'/>
   <meta content='https://apex-serpent-royale.web.app/assets/og-image.jpg' property='og:image'/>
   <meta content='Apex Serpent Royale' property='og:site_name'/>
 
   <!-- Twitter Card -->
   <meta content='summary_large_image' name='twitter:card'/>
-  <meta content='Apex Serpent Royale â€” 3D Cyberpunk Snake IO Battle Royale' name='twitter:title'/>
+  <meta content='Apex Serpent Royale — 3D Cyberpunk Snake IO Battle Royale' name='twitter:title'/>
   <meta content='Survive the collapsing electric storm, devour glowing food pellets, and dominate the 3D snake arena!' name='twitter:description'/>
   <meta content='https://apex-serpent-royale.web.app/assets/twitter-card.jpg' name='twitter:image'/>
 
@@ -190,17 +190,17 @@
     .scanlines {
       position: fixed;
       inset: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
-                  linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
+                  linear-gradient(90deg, rgba(0, 243, 255, 0.01), transparent, rgba(255, 0, 128, 0.01));
       background-size: 100% 4px, 6px 100%;
       pointer-events: none;
       z-index: 50;
-      opacity: 0.55;
+      opacity: 0.10;
     }
     .vignette {
       position: fixed;
       inset: 0;
-      box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.85);
+      box-shadow: inset 0 0 80px rgba(6, 13, 36, 0.35);
       pointer-events: none;
       z-index: 45;
     }
@@ -1893,14 +1893,15 @@
         top: calc(76px + env(safe-area-inset-top, 0px));
         left: 50%;
         transform: translateX(-50%);
-        max-width: 140px;
+        max-width: 135px;
         padding: 2px 8px;
         font-size: 8.5px;
         z-index: 38;
+        overflow: hidden;
       }
       .king-compass-icon { font-size: 12px; }
       .king-label { font-size: 8px; }
-      .king-target { font-size: 9px; }
+      .king-target { font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .king-dist-badge { font-size: 8px; padding: 1px 4px; }
 
       .storm-badge {
@@ -2320,10 +2321,10 @@
 
         <!-- In-Game Neon Emoji Taunt Quick Bar -->
     <div id='hud-taunt-bar'>
-      <button class='taunt-btn' data-emoji='ðŸ‘‘' title='King Taunt'>&#128081;</button>
-      <button class='taunt-btn' data-emoji='âš¡' title='Lightning Taunt'>&#9889;</button>
-      <button class='taunt-btn' data-emoji='ðŸ’€' title='Skull Taunt'>&#128128;</button>
-      <button class='taunt-btn' data-emoji='ðŸ”¥' title='Fire Taunt'>&#128293;</button>
+      <button class='taunt-btn' data-emoji='👑' title='King Taunt'>&#128081;</button>
+      <button class='taunt-btn' data-emoji='⚡' title='Lightning Taunt'>&#9889;</button>
+      <button class='taunt-btn' data-emoji='💀' title='Skull Taunt'>&#128128;</button>
+      <button class='taunt-btn' data-emoji='🔥' title='Fire Taunt'>&#128293;</button>
     </div>
 
     <div class='hud-boost-container'>
@@ -2575,7 +2576,7 @@
   <div class='modal-backdrop' id='modal-ad-settings' style='display:none;'>
     <div class='cyber-modal' style='max-width:580px;'>
       <h2 class='modal-title' style='font-size:22px; color:var(--cyan);'>AD SETTINGS &amp; TEST SUITE</h2>
-      <p class='modal-subtitle'>MULTI-NETWORK MONETIZATION (ADSTERRA â€¢ MONETAG â€¢ ADSENSE)</p>
+      <p class='modal-subtitle'>MULTI-NETWORK MONETIZATION (ADSTERRA • MONETAG • ADSENSE)</p>
 
       <table class='settings-table'>
         <tr>
@@ -3118,17 +3119,17 @@
       });
       const sprite = new this.THREE.Sprite(mat);
       sprite.position.copy(pos);
-      sprite.position.y += 1.2;
+      sprite.position.y += 1.4 + Math.random() * 0.3;
       sprite.position.x += (Math.random() - 0.5) * 0.8;
       sprite.position.z += (Math.random() - 0.5) * 0.8;
-      sprite.scale.set(3.5, 1.75, 1.0);
+      sprite.scale.set(3.2, 1.6, 1.0);
 
       this.scene.add(sprite);
       this.activePops.push({
         sprite,
-        life: 1.0,
-        maxLife: 1.0,
-        vy: 2.8,
+        life: 0.65,
+        maxLife: 0.65,
+        vy: 4.5,
       });
     }
 
@@ -3142,11 +3143,11 @@
         const progress = 1 - p.life / p.maxLife;
         // Elastic bounce scale on spawn
         if (progress < 0.25) {
-          const sc = 2.5 + (progress / 0.25) * 1.5;
-          p.sprite.scale.set(sc * 1.2, sc * 0.6, 1.0);
+          const sc = 2.0 + (progress / 0.25) * 1.0;
+          p.sprite.scale.set(sc * 1.1, sc * 0.55, 1.0);
         }
 
-        p.sprite.material.opacity = Math.max(0, p.life);
+        p.sprite.material.opacity = Math.max(0, p.life / p.maxLife);
 
         if (p.life <= 0) {
           this.scene.remove(p.sprite);
@@ -3208,16 +3209,16 @@
       this._mat  = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 0.95,
+        emissiveIntensity: 0.75,
         roughness: 0.2,
-        metalness: 0.35,
+        metalness: 0.25,
       });
       this._headMat = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 1.5,
+        emissiveIntensity: 1.15,
         roughness: 0.1,
-        metalness: 0.5,
+        metalness: 0.35,
       });
 
       // Visor Eyes (Cyber Visor)
@@ -3268,7 +3269,7 @@
       const eyeMat = new this.THREE.MeshStandardMaterial({
         color: this.isPlayer ? 0x00ffff : 0xff3300,
         emissive: this.isPlayer ? 0x00ffff : 0xff2200,
-        emissiveIntensity: 2.5,
+        emissiveIntensity: 2.0,
         roughness: 0.1,
         metalness: 0.9,
       });
@@ -3295,7 +3296,7 @@
       // Squint mode on sprint / boost
       const boosting = this.speed > 1 || this.isBoosting || this.hasPowerup('LIGHTNING_BOOST');
       const targetSquintY = boosting ? 0.35 : 1.0;
-      const targetIntensity = boosting ? 3.8 : 2.5;
+      const targetIntensity = boosting ? 2.8 : 2.0;
 
       this._leftEye.scale.y  += (targetSquintY - this._leftEye.scale.y) * 0.2;
       this._rightEye.scale.y += (targetSquintY - this._rightEye.scale.y) * 0.2;
@@ -3730,7 +3731,7 @@
       const mat = new this.THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 2.6,
+        emissiveIntensity: 2.4,
         roughness: 0.05,
         metalness: 0.85,
       });
@@ -3758,7 +3759,7 @@
         const mat = new this.THREE.MeshStandardMaterial({
           color: col,
           emissive: col,
-          emissiveIntensity: 2.6,
+          emissiveIntensity: 2.4,
           roughness: 0.1,
           metalness: 0.2,
         });
@@ -3812,8 +3813,13 @@
         f.t += 0.03;
         f.mesh.position.y = 0.6 + Math.sin(f.t) * 0.2;
         f.mesh.rotation.y += 0.02;
-        f.mesh.material.emissiveIntensity = 1.8 + Math.sin(f.t * 1.5) * 0.5;
-        f.halo.material.opacity = 0.22 + Math.sin(f.t * 2) * 0.12;
+        if (f.isDeathPellet) {
+          f.mesh.material.emissiveIntensity = 2.4 + Math.sin(f.t * 2) * 0.4;
+          f.halo.material.opacity = 0.35 + Math.sin(f.t * 2) * 0.15;
+        } else {
+          f.mesh.material.emissiveIntensity = 1.9 + Math.sin(f.t * 1.5) * 0.4;
+          f.halo.material.opacity = 0.25 + Math.sin(f.t * 2) * 0.10;
+        }
       }
       for (const p of this.powerups) {
         p.t += 0.025;
@@ -3887,23 +3893,23 @@
    *  ARENA BUILDER
    * ========================================================= */
   function buildArena(scene, THREE, isMobile = false) {
-    // Ground
-    const groundGeo = new THREE.PlaneGeometry(CFG.ARENA_SIZE * 2, CFG.ARENA_SIZE * 2, 40, 40);
+    // Ground - extended to 4x arena size so camera never clips into empty void
+    const groundGeo = new THREE.PlaneGeometry(CFG.ARENA_SIZE * 4, CFG.ARENA_SIZE * 4, 60, 60);
     const groundMat = new THREE.MeshStandardMaterial({
       color: 0x070e28,
       roughness: 0.85,
       metalness: 0.15,
       emissive: 0x050a1e,
-      emissiveIntensity: 0.3,
+      emissiveIntensity: 0.25,
     });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Grid lines - crisp glowing cyber grid lifted 0.02 to avoid z-fighting
-    const gridHelper = new THREE.GridHelper(CFG.ARENA_SIZE * 2, 60, 0x00d4ff, 0x1d3678);
-    gridHelper.position.y = 0.02;
+    // Grid lines - crisp glowing cyber grid lifted 0.025 to avoid z-fighting
+    const gridHelper = new THREE.GridHelper(CFG.ARENA_SIZE * 2, 60, 0x00f3ff, 0x224a8c);
+    gridHelper.position.y = 0.025;
     scene.add(gridHelper);
 
     // 3D Cyber Forcefield Perimeter Barrier Walls (Translucent Glowing Energy Fence)
@@ -3913,13 +3919,13 @@
     const wallMat = new THREE.MeshBasicMaterial({
       color: 0x0099ff,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.25,
       side: THREE.DoubleSide
     });
     const railMat = new THREE.MeshBasicMaterial({
       color: 0x00f3ff,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.90
     });
 
     const wallGeoH = new THREE.PlaneGeometry(A * 2, wallHeight);
@@ -3962,7 +3968,7 @@
     const beaconMat = new THREE.MeshStandardMaterial({
       color: 0x00f3ff,
       emissive: 0x00aaff,
-      emissiveIntensity: 2.6,
+      emissiveIntensity: 2.4,
       metalness: 0.8,
       roughness: 0.2
     });
@@ -3973,8 +3979,8 @@
     });
 
     // Ambient + directional lights
-    scene.add(new THREE.AmbientLight(0x283a66, 0.95));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+    scene.add(new THREE.AmbientLight(0x2c4070, 0.90));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.25);
     sun.position.set(30, 60, 20);
     sun.castShadow = true;
     const initialShadowSize = isMobile ? 1024 : 2048;
@@ -3985,7 +3991,7 @@
     // Neon point lights (4 corners)
     const ptColors = [0x00f3ff, 0xff00aa, 0x00ff88, 0xffaa00];
     for (let i = 0; i < 4; i++) {
-      const pt = new THREE.PointLight(ptColors[i], 2.2, 55);
+      const pt = new THREE.PointLight(ptColors[i], 2.0, 55);
       const ang = (i / 4) * Math.PI * 2;
       pt.position.set(Math.cos(ang) * A * 0.9, 8, Math.sin(ang) * A * 0.9);
       scene.add(pt);
@@ -4133,7 +4139,10 @@
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type    = this.THREE.PCFSoftShadowMap;
       this.renderer.toneMapping       = this.THREE.ACESFilmicToneMapping;
-      this.renderer.toneMappingExposure = 1.3;
+      this.renderer.toneMappingExposure = 1.05;
+      if (typeof this.renderer.setClearColor === 'function') {
+        this.renderer.setClearColor(0x060d24, 1.0);
+      }
 
       // Scene
       this.scene = new this.THREE.Scene();
@@ -4268,7 +4277,7 @@
       const goldMat = new this.THREE.MeshStandardMaterial({
         color: 0xffd700,
         emissive: 0xff9900,
-        emissiveIntensity: 1.6,
+        emissiveIntensity: 1.5,
         roughness: 0.2,
         metalness: 0.95,
       });
@@ -4544,7 +4553,7 @@
           position: { x: head.x, y: head.y, z: head.z },
           score: king.score,
           length: king.length,
-          distanceToPlayer: dist,
+          distanceToPlayer: Math.round(dist),
           bearingAngleDeg,
         });
       }
@@ -4996,7 +5005,6 @@
   global.ApexSerpentEngine = ApexSerpentEngine;
 
 })(typeof window !== 'undefined' ? window : global);
-
 //]]>
 </script>
 
@@ -5182,7 +5190,7 @@
         saveConfig({ dragonSkinMatches: 3 });
         const swatch = document.getElementById('swatch-dragon-skin');
         if (swatch) swatch.style.display = 'flex';
-        alert('ðŸ‰ VIP Cyber Dragon Skin UNLOCKED for 3 matches!');
+        alert('🐉 VIP Cyber Dragon Skin UNLOCKED for 3 matches!');
         log('[Rewarded] VIP Dragon skin awarded for 3 matches.');
       }
 
@@ -5197,11 +5205,11 @@
         saveConfig({ magnetPackActive: true });
         const btn = document.getElementById('btn-magnet-pack');
         if (btn) {
-          btn.innerText = 'âœ“ BUFF ACTIVE (+30s)';
+          btn.innerText = '✓ BUFF ACTIVE (+30s)';
           btn.style.color = 'var(--green)';
           btn.style.borderColor = 'var(--green)';
         }
-        alert('ðŸ§² Magnet Starter Pack ACTIVATED! You will start your next match with a 30s Magnet aura.');
+        alert('🧲 Magnet Starter Pack ACTIVATED! You will start your next match with a 30s Magnet aura.');
         log('[Rewarded] Magnet Starter Pack activated.');
       }
 
@@ -5225,19 +5233,19 @@
         const hasBuff = localStorage.getItem(BUFF_KEY) === 'true';
         if (hasBuff) {
           badge.classList.add('buff-active');
-          badgeText.innerText = 'âš¡ +20% Boost Stamina Active!';
+          badgeText.innerText = '⚡ +20% Boost Stamina Active!';
           window.apexMaxStamina = 120;
           return;
         }
 
-        badgeText.innerText = 'ðŸ›¡ï¸ AdBlock Detected: Click for +20% Boost Stamina!';
+        badgeText.innerText = '🛡️ AdBlock Detected: Click for +20% Boost Stamina!';
         badge.onclick = () => {
           triggerSmartLink('adblock_support_whitelist', true);
           localStorage.setItem(BUFF_KEY, 'true');
           badge.classList.add('buff-active');
-          badgeText.innerText = 'âš¡ +20% Boost Stamina Unlocked!';
+          badgeText.innerText = '⚡ +20% Boost Stamina Unlocked!';
           window.apexMaxStamina = 120;
-          alert('âš¡ Gaming Buff Granted: Turbo Boost stamina boosted to 120%!');
+          alert('⚡ Gaming Buff Granted: Turbo Boost stamina boosted to 120%!');
         };
       }
 
@@ -5366,13 +5374,13 @@
           compassEl.style.display = 'flex';
           if (kingData.isPlayer) {
             nameEl.innerText = 'YOU ARE THE KING!';
-            distEl.innerText = 'ðŸ‘‘ DEFEND';
+            distEl.innerText = '👑 DEFEND';
             distEl.style.background = 'rgba(255, 215, 0, 0.35)';
             distEl.style.borderColor = '#ffd700';
             pointerEl.style.transform = 'rotate(0deg)';
           } else {
             nameEl.innerText = `KING: ${kingData.name || 'CYBER_VIPER'}`;
-            distEl.innerText = `${kingData.distanceToPlayer || 0}m`;
+            distEl.innerText = `${Math.round(kingData.distanceToPlayer || 0)}m`;
             distEl.style.background = 'rgba(0, 243, 255, 0.2)';
             distEl.style.borderColor = 'var(--cyan)';
             pointerEl.style.transform = `rotate(${kingData.bearingAngleDeg || 0}deg)`;
@@ -5380,10 +5388,10 @@
         };
 
         engine.hooks.onKillStreak = ({ title, streak, totalKills }) => {
-          addKillFeedEntry('ðŸ”¥ STREAK', title, `(${totalKills} kills)`);
+          addKillFeedEntry('🔥 STREAK', title, `(${totalKills} kills)`);
           const callout = document.createElement('div');
           callout.className = 'killstreak-banner';
-          callout.innerHTML = `<span>âš¡</span> ${title} <span>âš¡</span>`;
+          callout.innerHTML = `<span>⚡</span> ${title} <span>⚡</span>`;
           document.body.appendChild(callout);
           setTimeout(() => { if (callout.parentNode) callout.parentNode.removeChild(callout); }, 2200);
           ApexAdManager.log(`[Combat] Killstreak achieved: ${title} (${totalKills} kills)`);
@@ -5405,7 +5413,7 @@
         };
 
         engine.hooks.onStormWarning = () => {
-          stormStatusText.innerText = 'âš ï¸ STORM COLLAPSING!';
+          stormStatusText.innerText = '⚠️ STORM COLLAPSING!';
           hudStormBadge.style.borderColor = 'var(--yellow)';
           ApexAdManager.log('[Engine] Electric storm warning triggered.');
         };
@@ -5483,7 +5491,7 @@
         startBoostLoop();
       }
 
-      /* â”€â”€ Boost Mechanics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Boost Mechanics ─────────────────────────────────── */
       function setBoost(active) {
         if (!engine || !engine.player || !engine.player.alive) return;
         isBoosting = !!(active && boostStamina > 5);
@@ -5524,7 +5532,7 @@
       }
 
       
-      /* â”€â”€ King Bounty Compass (Direction & Distance to #1 Snake) â”€â”€ */
+      /* ── King Bounty Compass (Direction & Distance to #1 Snake) ── */
       function updateKingCompass() {
         if (!engine || !engine.player || !engine.player.alive) {
           const el = document.getElementById('hud-king-bounty');
@@ -5562,7 +5570,7 @@
 
         if (king.isPlayer || king === engine.player) {
           nameEl.innerText = 'YOU ARE THE KING!';
-          distEl.innerText = 'ðŸ‘‘ DEFEND';
+          distEl.innerText = '👑 DEFEND';
           distEl.style.background = 'rgba(255, 215, 0, 0.35)';
           distEl.style.borderColor = '#ffd700';
           pointerEl.style.transform = 'rotate(0deg)';
@@ -5590,7 +5598,7 @@
         pointerEl.style.transform = `rotate(${angleDeg}deg)`;
       }
 
-      /* â”€â”€ Minimap Radar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Minimap Radar ───────────────────────────────────── */
       function drawMinimap() {
         if (!engine || !engine.player) return;
         const w = minimapCanvas.width;
@@ -5653,7 +5661,7 @@
         }
       }
 
-      /* â”€â”€ Real-time Leaderboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Real-time Leaderboard ───────────────────────────── */
       function updateLeaderboard() {
         if (!engine || !engine.snakes) return;
         const sorted = [...engine.snakes].sort((a, b) => b.score - a.score);
@@ -5697,7 +5705,7 @@
         }
       }
 
-      /* â”€â”€ Kill Feed Alerts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Kill Feed Alerts ────────────────────────────────── */
       function addKillFeedEntry(killer, victim, cause) {
         const item = document.createElement('div');
         item.className = 'killfeed-entry';
@@ -5708,7 +5716,7 @@
         }, 4000);
       }
 
-      /* â”€â”€ Power-Up HUD Pill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Power-Up HUD Pill ───────────────────────────────── */
       function renderPowerupPill(type, remainingMs) {
         const id = `pu-pill-${type}`;
         let pill = document.getElementById(id);
@@ -5720,7 +5728,7 @@
         }
 
         const sec = Math.ceil(remainingMs / 1000);
-        pill.innerHTML = `<span>âš¡ ${type}</span> <strong>${sec}s</strong>`;
+        pill.innerHTML = `<span>⚡ ${type}</span> <strong>${sec}s</strong>`;
 
         setTimeout(() => {
           if (pill.parentNode) pill.parentNode.removeChild(pill);
@@ -5728,7 +5736,7 @@
       }
 
       
-      /* â”€â”€ 5-Second Circular Revive Countdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── 5-Second Circular Revive Countdown ──────────────── */
       let deathCountdownInterval = null;
       let pendingDeathScore = 0;
       let pendingDeathRank = 1;
@@ -5771,7 +5779,7 @@
         }, 50);
       }
 
-      /* â”€â”€ Game Over & Victory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Game Over & Victory ─────────────────────────────── */
       function showGameOver(isVictory, finalScore, rank) {
         lastGameScore = finalScore;
         document.getElementById('stat-final-score').innerText = finalScore;
@@ -5782,13 +5790,13 @@
         const subtitle = document.getElementById('gameover-subtitle');
 
         if (isVictory) {
-          title.innerText = 'ðŸ† VICTORY ROYALE!';
+          title.innerText = '🏆 VICTORY ROYALE!';
           title.style.color = 'var(--yellow)';
           title.style.textShadow = '0 0 20px var(--yellow)';
           subtitle.innerText = 'APEX PREDATOR SURVIVED THE ELECTRIC STORM';
           document.getElementById('revive-offer-box').style.display = 'none';
         } else {
-          title.innerText = 'ðŸ’€ ELIMINATED';
+          title.innerText = '💀 ELIMINATED';
           title.style.color = 'var(--magenta)';
           title.style.textShadow = '0 0 20px var(--magenta)';
           subtitle.innerText = `CIRCUIT DESTROYED // MATCH RANK #${rank}`;
@@ -5800,7 +5808,7 @@
         ApexAdManager.refreshBanners();
       }
 
-      /* â”€â”€ Universal Multi-Device Control System (Mobile + Laptop + Desktop) â”€â”€ */
+      /* ── Universal Multi-Device Control System (Mobile + Laptop + Desktop) ── */
       let joystickActive = false;
       const MAX_JOY_DIST = 45;
       let joyOriginX = 0;
@@ -5921,7 +5929,7 @@
         btnControlsMode.addEventListener('click', () => {
           if (currentControlMode === 'joystick') {
             currentControlMode = 'dpad';
-            btnControlsMode.innerHTML = '<span class="hud-btn-icon">ðŸŽ®</span><span class="hud-btn-label"> D-PAD</span>';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">🎮</span><span class="hud-btn-label"> D-PAD</span>';
             joystickZone.style.display = 'none';
             if (touchLeftZone) touchLeftZone.style.display = 'none';
             if (cyberDpad) cyberDpad.style.display = 'flex';
@@ -5929,13 +5937,13 @@
             touchControls.classList.remove('force-hide');
           } else if (currentControlMode === 'dpad') {
             currentControlMode = 'off';
-            btnControlsMode.innerHTML = '<span class="hud-btn-icon">ðŸ“±</span><span class="hud-btn-label"> TOUCH OFF</span>';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">📱</span><span class="hud-btn-label"> TOUCH OFF</span>';
             if (cyberDpad) cyberDpad.style.display = 'none';
             touchControls.classList.remove('force-show');
             touchControls.classList.add('force-hide');
           } else {
             currentControlMode = 'joystick';
-            btnControlsMode.innerHTML = '<span class="hud-btn-icon">ðŸ•¹ï¸</span><span class="hud-btn-label"> JOYSTICK</span>';
+            btnControlsMode.innerHTML = '<span class="hud-btn-icon">🕹️</span><span class="hud-btn-label"> JOYSTICK</span>';
             joystickZone.style.display = 'block';
             if (touchLeftZone) touchLeftZone.style.display = 'block';
             if (cyberDpad) cyberDpad.style.display = 'none';
@@ -6124,7 +6132,7 @@
         }
       }, 16);
 
-      /* â”€â”€ Skin Selector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Skin Selector ───────────────────────────────────── */
       document.querySelectorAll('.skin-swatch').forEach(swatch => {
         swatch.addEventListener('click', () => {
           document.querySelectorAll('.skin-swatch').forEach(s => s.classList.remove('active'));
@@ -6133,7 +6141,7 @@
         });
       });
 
-      /* â”€â”€ Rewarded Hooks Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Rewarded Hooks Buttons ──────────────────────────── */
       document.getElementById('btn-unlock-dragon-skin').addEventListener('click', () => {
         ApexAdManager.unlockDragonSkin();
       });
@@ -6142,7 +6150,7 @@
         ApexAdManager.activateMagnetPack();
       });
 
-      /* â”€â”€ Button Action Listeners â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Button Action Listeners ─────────────────────────── */
       document.getElementById('btn-start-game').addEventListener('click', () => {
         playerName = document.getElementById('player-callsign').value.trim() || 'CYBER_VIPER_01';
         modalLobby.style.display = 'none';
@@ -6208,7 +6216,7 @@
         if (engine && engine.audio && engine.audio.masterGain) {
           engine.audio.masterGain.gain.value = isAudioMuted ? 0 : 0.6;
         }
-        btn.innerHTML = `<span class="hud-btn-icon">${isAudioMuted ? 'ðŸ”‡' : 'ðŸ”Š'}</span><span class="hud-btn-label">${isAudioMuted ? ' SFX OFF' : ' SFX ON'}</span>`;
+        btn.innerHTML = `<span class="hud-btn-icon">${isAudioMuted ? '🔇' : '🔊'}</span><span class="hud-btn-label">${isAudioMuted ? ' SFX OFF' : ' SFX ON'}</span>`;
         btn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
       });
 
@@ -6324,7 +6332,7 @@
       }, { passive: true });
 
       
-      /* â”€â”€ Emoji Taunt Quick Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Emoji Taunt Quick Bar ───────────────────────────── */
       function triggerTaunt(emoji) {
         addKillFeedEntry(playerName, 'broadcasted emote', emoji);
         const bubble = document.createElement('div');
@@ -6341,12 +6349,12 @@
       document.querySelectorAll('#hud-taunt-bar .taunt-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          const emoji = btn.getAttribute('data-emoji') || 'ðŸ‘‘';
+          const emoji = btn.getAttribute('data-emoji') || '👑';
           triggerTaunt(emoji);
         });
       });
 
-      /* â”€â”€ 5-Second Revive Countdown Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── 5-Second Revive Countdown Buttons ───────────────── */
       const btnCountdownRevive = document.getElementById('btn-countdown-revive');
       if (btnCountdownRevive) {
         btnCountdownRevive.addEventListener('click', async () => {
@@ -6381,7 +6389,7 @@
         });
       }
 
-      /* â”€â”€ Lucky Cyber Spin Wheel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Lucky Cyber Spin Wheel ──────────────────────────── */
       const wheelCanvas = document.getElementById('spin-wheel-canvas');
       const wheelCtx = wheelCanvas ? wheelCanvas.getContext('2d') : null;
       const wheelSlices = [
@@ -6491,7 +6499,7 @@
         const resultBanner = document.getElementById('spin-result-banner');
         if (resultBanner) {
           resultBanner.style.display = 'block';
-          resultBanner.innerText = `ðŸŽ‰ WON: ${prize.label}!`;
+          resultBanner.innerText = `🎉 WON: ${prize.label}!`;
         }
         ApexAdManager.log(`[LuckyWheel] Won reward: ${prize.label}`);
 
@@ -6501,14 +6509,14 @@
           ApexAdManager.activateMagnetPack();
         } else if (prize.reward === 'boost_buff') {
           window.apexMaxStamina = 120;
-          alert('âš¡ Granted +20% Boost Stamina (Max: 120)!');
+          alert('⚡ Granted +20% Boost Stamina (Max: 120)!');
         } else {
-          alert(`ðŸŽ Quantum Reward: ${prize.label}!`);
+          alert(`🎁 Quantum Reward: ${prize.label}!`);
         }
       }
 
       
-      /* â”€â”€ PWA Native Installation Engine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── PWA Native Installation Engine ───────────────────── */
       let deferredPrompt = null;
       const btnInstallPwa = document.getElementById('btn-install-pwa');
 
@@ -6528,19 +6536,19 @@
             ApexAdManager.log(`[PWA] Install prompt outcome: ${outcome}`);
             deferredPrompt = null;
           } else {
-            alert('ðŸ“± Install Apex Serpent Royale on your Home Screen:\n\nâ€¢ On iOS (Safari): Tap Share icon âž” \'Add to Home Screen\'.\nâ€¢ On Android (Chrome): Tap three dots âž” \'Install app\'.\nâ€¢ On Desktop (Chrome/Edge): Click Install button in address bar.');
+            alert('📱 Install Apex Serpent Royale on your Home Screen:\n\n• On iOS (Safari): Tap Share icon ➔ \'Add to Home Screen\'.\n• On Android (Chrome): Tap three dots ➔ \'Install app\'.\n• On Desktop (Chrome/Edge): Click Install button in address bar.');
           }
         });
       }
 
-      /* â”€â”€ Viral High-Score Challenge & Social Sharing â”€â”€â”€â”€â”€â”€â”€ */
+      /* ── Viral High-Score Challenge & Social Sharing ─────── */
       let lastGameScore = 0;
 
       function getChallengeSharePayload() {
         const score = lastGameScore || 1200;
         const name = playerName || 'VIPER';
         const challengeUrl = `https://apexserpentroyale.blogspot.com/?challenger=${encodeURIComponent(name)}&target=${score}`;
-        const shareText = `ðŸ I just scored ${score} in Apex Serpent Royale 3D! Can you survive the shrinking electric storm and beat my high score? Play free unblocked: ${challengeUrl}`;
+        const shareText = `🐍 I just scored ${score} in Apex Serpent Royale 3D! Can you survive the shrinking electric storm and beat my high score? Play free unblocked: ${challengeUrl}`;
         return { score, name, challengeUrl, shareText };
       }
 
@@ -6606,10 +6614,10 @@
           if (banner && bannerText) {
             if (challenger && target) {
               banner.style.display = 'flex';
-              bannerText.innerHTML = `âš¡ <strong>CHALLENGE FROM ${challenger.toUpperCase()}:</strong> BEAT <strong>${target} PTS</strong> TO CLAIM RANK #1!`;
+              bannerText.innerHTML = `⚡ <strong>CHALLENGE FROM ${challenger.toUpperCase()}:</strong> BEAT <strong>${target} PTS</strong> TO CLAIM RANK #1!`;
             } else {
               banner.style.display = 'flex';
-              bannerText.innerHTML = `âš¡ <strong>DAILY ARENA BOUNTY:</strong> SURVIVE THE COLLAPSE & BEAT 10,000 PTS FOR VIP STATUS!`;
+              bannerText.innerHTML = `⚡ <strong>DAILY ARENA BOUNTY:</strong> SURVIVE THE COLLAPSE & BEAT 10,000 PTS FOR VIP STATUS!`;
             }
           }
         } catch(e) {}
@@ -6621,7 +6629,7 @@
           document.getElementById('modal-spin-wheel').style.display = 'flex';
           if (ApexAdManager.isTelegramApp()) {
             const spinBtn = document.getElementById('btn-spin-wheel');
-            if (spinBtn) spinBtn.innerText = 'ðŸ“º WATCH AD TO SPIN';
+            if (spinBtn) spinBtn.innerText = '📺 WATCH AD TO SPIN';
           }
           drawWheel();
         });
@@ -6641,7 +6649,7 @@
           if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
             btnSpinWheel.disabled = true;
             const originalText = btnSpinWheel.innerText;
-            btnSpinWheel.innerText = 'â³ WATCHING SPONSOR AD...';
+            btnSpinWheel.innerText = '⏳ WATCHING SPONSOR AD...';
             try {
               ApexAdManager.log('[LuckyWheel] Showing Monetag TMA rewarded ad to spin wheel...');
               await ApexAdManager.triggerTelegramRewarded();
@@ -6776,7 +6784,7 @@
 
           let btnHtml = '';
           if (state.claimed) {
-            btnHtml = '<span style="font-size:11px; color:#64748b; font-family:var(--font-mono);">CLAIMED âœ“</span>';
+            btnHtml = '<span style="font-size:11px; color:#64748b; font-family:var(--font-mono);">CLAIMED ✓</span>';
           } else if (state.completed) {
             btnHtml = `<button class="cyber-btn cyber-btn-primary" onclick="ApexOrbit.claimMission(${def.id})" style="font-size:11px; padding:6px 12px; background:linear-gradient(135deg, #00f3ff, #00ff66); color:#000; font-weight:700;">CLAIM</button>`;
           } else {
@@ -6826,7 +6834,7 @@
         saveData();
         updateInventoryUI();
         renderMissionsUI();
-        alert(`ðŸŽ‰ Claimed Reward: ${def.rewardText}!`);
+        alert(`🎉 Claimed Reward: ${def.rewardText}!`);
       }
 
       function reportProgress(type, val) {
@@ -6867,7 +6875,7 @@
         const badge = document.getElementById('daily-supply-badge');
 
         if (diff >= TWENTY_FOUR_HOURS) {
-          if (btn) { btn.disabled = false; btn.innerText = 'ðŸŽ CLAIM FREE SUPPLY'; }
+          if (btn) { btn.disabled = false; btn.innerText = '🎁 CLAIM FREE SUPPLY'; }
           if (countdown) countdown.style.display = 'none';
           if (badge) { badge.className = 'orbit-badge ready'; badge.innerText = 'READY'; }
         } else {
@@ -6876,7 +6884,7 @@
           const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
           const s = Math.floor((remaining % (1000 * 60)) / 1000);
           const timeStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-          if (btn) { btn.disabled = true; btn.innerText = 'SUPPLY CLAIMED TODAY âœ“'; }
+          if (btn) { btn.disabled = true; btn.innerText = 'SUPPLY CLAIMED TODAY ✓'; }
           if (countdown && timerVal) { countdown.style.display = 'block'; timerVal.innerText = timeStr; }
           if (badge) { badge.className = 'orbit-badge'; badge.innerText = timeStr; }
         }
@@ -6899,7 +6907,7 @@
         setTimeout(() => playTone(659, 'sine', 0.2), 120);
         setTimeout(() => playTone(784, 'triangle', 0.35), 240);
 
-        alert('ðŸŽ‰ Daily Supply Delivered: +1 Free Revive Token, +1 Magnet Starter Pack, +250 Quantum Credits!');
+        alert('🎉 Daily Supply Delivered: +1 Free Revive Token, +1 Magnet Starter Pack, +250 Quantum Credits!');
       }
 
       // Initialize Telegram & Discord Environment Detection
@@ -6911,7 +6919,7 @@
           tg.ready();
           tg.expand();
           if (pill) {
-            pill.innerText = 'ðŸ’¬ TELEGRAM MINI APP';
+            pill.innerText = '💬 TELEGRAM MINI APP';
             pill.className = 'platform-pill tg';
           }
           const user = tg.initDataUnsafe?.user;
@@ -6926,7 +6934,7 @@
           }
         } else if (window.location.search.includes('frame_id') || window.name.includes('discord')) {
           if (pill) {
-            pill.innerText = 'ðŸŽ® DISCORD ACTIVITY';
+            pill.innerText = '🎮 DISCORD ACTIVITY';
             pill.className = 'platform-pill discord';
           }
         }
@@ -6995,7 +7003,7 @@
       if (lobbyAudioBtn) {
         lobbyAudioBtn.addEventListener('click', () => {
           document.getElementById('btn-audio-toggle').click();
-          lobbyAudioBtn.innerText = isAudioMuted ? 'ðŸ”‡ SFX OFF' : 'ðŸ”Š SFX ON';
+          lobbyAudioBtn.innerText = isAudioMuted ? '🔇 SFX OFF' : '🔊 SFX ON';
           lobbyAudioBtn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
         });
       }
@@ -7009,7 +7017,7 @@
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
           ApexOrbit.playTone(660, 'sine', 0.2);
-          alert('âš¡ Purchased 1 Quantum Revive Token!');
+          alert('⚡ Purchased 1 Quantum Revive Token!');
         } else {
           if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
             await ApexAdManager.showRewardedAd('shop_revive_free');
@@ -7019,7 +7027,7 @@
           inv.revives += 1;
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
-          alert('âš¡ Free Sponsor Revive Token Added!');
+          alert('⚡ Free Sponsor Revive Token Added!');
         }
       });
 
@@ -7031,13 +7039,13 @@
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
           ApexOrbit.playTone(660, 'sine', 0.2);
-          alert('ðŸ§² Purchased 1 Quantum Magnet Pack!');
+          alert('🧲 Purchased 1 Quantum Magnet Pack!');
         } else {
           ApexAdManager.triggerDirectLink('shop_magnet_free', true);
           inv.magnets += 1;
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
-          alert('ðŸ§² Free Sponsor Magnet Pack Added!');
+          alert('🧲 Free Sponsor Magnet Pack Added!');
         }
       });
 
@@ -7050,27 +7058,27 @@
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
           ApexOrbit.playTone(660, 'sine', 0.2);
-          alert('âš¡ Turbo Overdrive Activated (+50% Stamina for 3 matches)!');
+          alert('⚡ Turbo Overdrive Activated (+50% Stamina for 3 matches)!');
         } else {
           ApexAdManager.triggerDirectLink('shop_overdrive_free', true);
           inv.overdriveMatches += 3;
           window.apexMaxStamina = 150;
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
-          alert('âš¡ Free Sponsor Turbo Overdrive Activated!');
+          alert('⚡ Free Sponsor Turbo Overdrive Activated!');
         }
       });
 
       // Share Dossier / Records Brag Button
       document.getElementById('btn-share-records').addEventListener('click', () => {
         const rec = ApexOrbit.getRecords();
-        const msg = `ðŸ APEX SERPENT PILOT DOSSIER: Best Score: ${rec.bestScore} PTS | Eliminations: ${rec.totalKills} | Wins: ${rec.wins} Royale! Can you beat my record? Play free: https://ajayyadav9527.github.io/apex-serpent-royale/`;
+        const msg = `🐍 APEX SERPENT PILOT DOSSIER: Best Score: ${rec.bestScore} PTS | Eliminations: ${rec.totalKills} | Wins: ${rec.wins} Royale! Can you beat my record? Play free: https://ajayyadav9527.github.io/apex-serpent-royale/`;
         if (window.Telegram?.WebApp) {
           window.open(`https://t.me/share/url?url=${encodeURIComponent('https://ajayyadav9527.github.io/apex-serpent-royale/')}&text=${encodeURIComponent(msg)}`, '_blank');
         } else if (navigator.share) {
           navigator.share({ title: 'Apex Serpent 3D Royale Dossier', text: msg, url: 'https://ajayyadav9527.github.io/apex-serpent-royale/' }).catch(()=>{});
         } else {
-          navigator.clipboard.writeText(msg).then(() => alert('ðŸ“‹ Pilot Dossier copied to clipboard!'));
+          navigator.clipboard.writeText(msg).then(() => alert('📋 Pilot Dossier copied to clipboard!'));
         }
       });
 

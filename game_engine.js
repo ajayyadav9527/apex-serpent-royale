@@ -431,17 +431,17 @@
       });
       const sprite = new this.THREE.Sprite(mat);
       sprite.position.copy(pos);
-      sprite.position.y += 1.2;
+      sprite.position.y += 1.4 + Math.random() * 0.3;
       sprite.position.x += (Math.random() - 0.5) * 0.8;
       sprite.position.z += (Math.random() - 0.5) * 0.8;
-      sprite.scale.set(3.5, 1.75, 1.0);
+      sprite.scale.set(3.2, 1.6, 1.0);
 
       this.scene.add(sprite);
       this.activePops.push({
         sprite,
-        life: 1.0,
-        maxLife: 1.0,
-        vy: 2.8,
+        life: 0.65,
+        maxLife: 0.65,
+        vy: 4.5,
       });
     }
 
@@ -455,11 +455,11 @@
         const progress = 1 - p.life / p.maxLife;
         // Elastic bounce scale on spawn
         if (progress < 0.25) {
-          const sc = 2.5 + (progress / 0.25) * 1.5;
-          p.sprite.scale.set(sc * 1.2, sc * 0.6, 1.0);
+          const sc = 2.0 + (progress / 0.25) * 1.0;
+          p.sprite.scale.set(sc * 1.1, sc * 0.55, 1.0);
         }
 
-        p.sprite.material.opacity = Math.max(0, p.life);
+        p.sprite.material.opacity = Math.max(0, p.life / p.maxLife);
 
         if (p.life <= 0) {
           this.scene.remove(p.sprite);
@@ -521,16 +521,16 @@
       this._mat  = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 0.95,
+        emissiveIntensity: 0.75,
         roughness: 0.2,
-        metalness: 0.35,
+        metalness: 0.25,
       });
       this._headMat = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 1.5,
+        emissiveIntensity: 1.15,
         roughness: 0.1,
-        metalness: 0.5,
+        metalness: 0.35,
       });
 
       // Visor Eyes (Cyber Visor)
@@ -581,7 +581,7 @@
       const eyeMat = new this.THREE.MeshStandardMaterial({
         color: this.isPlayer ? 0x00ffff : 0xff3300,
         emissive: this.isPlayer ? 0x00ffff : 0xff2200,
-        emissiveIntensity: 2.5,
+        emissiveIntensity: 2.0,
         roughness: 0.1,
         metalness: 0.9,
       });
@@ -608,7 +608,7 @@
       // Squint mode on sprint / boost
       const boosting = this.speed > 1 || this.isBoosting || this.hasPowerup('LIGHTNING_BOOST');
       const targetSquintY = boosting ? 0.35 : 1.0;
-      const targetIntensity = boosting ? 3.8 : 2.5;
+      const targetIntensity = boosting ? 2.8 : 2.0;
 
       this._leftEye.scale.y  += (targetSquintY - this._leftEye.scale.y) * 0.2;
       this._rightEye.scale.y += (targetSquintY - this._rightEye.scale.y) * 0.2;
@@ -1043,7 +1043,7 @@
       const mat = new this.THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 2.6,
+        emissiveIntensity: 2.4,
         roughness: 0.05,
         metalness: 0.85,
       });
@@ -1071,7 +1071,7 @@
         const mat = new this.THREE.MeshStandardMaterial({
           color: col,
           emissive: col,
-          emissiveIntensity: 2.6,
+          emissiveIntensity: 2.4,
           roughness: 0.1,
           metalness: 0.2,
         });
@@ -1125,8 +1125,13 @@
         f.t += 0.03;
         f.mesh.position.y = 0.6 + Math.sin(f.t) * 0.2;
         f.mesh.rotation.y += 0.02;
-        f.mesh.material.emissiveIntensity = 1.8 + Math.sin(f.t * 1.5) * 0.5;
-        f.halo.material.opacity = 0.22 + Math.sin(f.t * 2) * 0.12;
+        if (f.isDeathPellet) {
+          f.mesh.material.emissiveIntensity = 2.4 + Math.sin(f.t * 2) * 0.4;
+          f.halo.material.opacity = 0.35 + Math.sin(f.t * 2) * 0.15;
+        } else {
+          f.mesh.material.emissiveIntensity = 1.9 + Math.sin(f.t * 1.5) * 0.4;
+          f.halo.material.opacity = 0.25 + Math.sin(f.t * 2) * 0.10;
+        }
       }
       for (const p of this.powerups) {
         p.t += 0.025;
@@ -1200,23 +1205,23 @@
    *  ARENA BUILDER
    * ========================================================= */
   function buildArena(scene, THREE, isMobile = false) {
-    // Ground
-    const groundGeo = new THREE.PlaneGeometry(CFG.ARENA_SIZE * 2, CFG.ARENA_SIZE * 2, 40, 40);
+    // Ground - extended to 4x arena size so camera never clips into empty void
+    const groundGeo = new THREE.PlaneGeometry(CFG.ARENA_SIZE * 4, CFG.ARENA_SIZE * 4, 60, 60);
     const groundMat = new THREE.MeshStandardMaterial({
       color: 0x070e28,
       roughness: 0.85,
       metalness: 0.15,
       emissive: 0x050a1e,
-      emissiveIntensity: 0.3,
+      emissiveIntensity: 0.25,
     });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Grid lines - crisp glowing cyber grid lifted 0.02 to avoid z-fighting
-    const gridHelper = new THREE.GridHelper(CFG.ARENA_SIZE * 2, 60, 0x00d4ff, 0x1d3678);
-    gridHelper.position.y = 0.02;
+    // Grid lines - crisp glowing cyber grid lifted 0.025 to avoid z-fighting
+    const gridHelper = new THREE.GridHelper(CFG.ARENA_SIZE * 2, 60, 0x00f3ff, 0x224a8c);
+    gridHelper.position.y = 0.025;
     scene.add(gridHelper);
 
     // 3D Cyber Forcefield Perimeter Barrier Walls (Translucent Glowing Energy Fence)
@@ -1226,13 +1231,13 @@
     const wallMat = new THREE.MeshBasicMaterial({
       color: 0x0099ff,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.25,
       side: THREE.DoubleSide
     });
     const railMat = new THREE.MeshBasicMaterial({
       color: 0x00f3ff,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.90
     });
 
     const wallGeoH = new THREE.PlaneGeometry(A * 2, wallHeight);
@@ -1275,7 +1280,7 @@
     const beaconMat = new THREE.MeshStandardMaterial({
       color: 0x00f3ff,
       emissive: 0x00aaff,
-      emissiveIntensity: 2.6,
+      emissiveIntensity: 2.4,
       metalness: 0.8,
       roughness: 0.2
     });
@@ -1286,8 +1291,8 @@
     });
 
     // Ambient + directional lights
-    scene.add(new THREE.AmbientLight(0x283a66, 0.95));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+    scene.add(new THREE.AmbientLight(0x2c4070, 0.90));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.25);
     sun.position.set(30, 60, 20);
     sun.castShadow = true;
     const initialShadowSize = isMobile ? 1024 : 2048;
@@ -1298,7 +1303,7 @@
     // Neon point lights (4 corners)
     const ptColors = [0x00f3ff, 0xff00aa, 0x00ff88, 0xffaa00];
     for (let i = 0; i < 4; i++) {
-      const pt = new THREE.PointLight(ptColors[i], 2.2, 55);
+      const pt = new THREE.PointLight(ptColors[i], 2.0, 55);
       const ang = (i / 4) * Math.PI * 2;
       pt.position.set(Math.cos(ang) * A * 0.9, 8, Math.sin(ang) * A * 0.9);
       scene.add(pt);
@@ -1446,7 +1451,10 @@
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type    = this.THREE.PCFSoftShadowMap;
       this.renderer.toneMapping       = this.THREE.ACESFilmicToneMapping;
-      this.renderer.toneMappingExposure = 1.3;
+      this.renderer.toneMappingExposure = 1.05;
+      if (typeof this.renderer.setClearColor === 'function') {
+        this.renderer.setClearColor(0x060d24, 1.0);
+      }
 
       // Scene
       this.scene = new this.THREE.Scene();
@@ -1581,7 +1589,7 @@
       const goldMat = new this.THREE.MeshStandardMaterial({
         color: 0xffd700,
         emissive: 0xff9900,
-        emissiveIntensity: 1.6,
+        emissiveIntensity: 1.5,
         roughness: 0.2,
         metalness: 0.95,
       });
@@ -1857,7 +1865,7 @@
           position: { x: head.x, y: head.y, z: head.z },
           score: king.score,
           length: king.length,
-          distanceToPlayer: dist,
+          distanceToPlayer: Math.round(dist),
           bearingAngleDeg,
         });
       }
