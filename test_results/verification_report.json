@@ -1,9 +1,9 @@
 {
   "suite": "Apex Serpent Royale E2E Verification",
-  "timestamp": "2026-11-22T13:56:45Z",
+  "timestamp": "2026-11-22T15:25:52Z",
   "server_url": "http://127.0.0.1:8089",
-  "total": 96,
-  "passed": 96,
+  "total": 106,
+  "passed": 106,
   "failed": 0,
   "checks": [
     {
@@ -422,9 +422,21 @@
     },
     {
       "category": "Layout & Bounds",
+      "name": "Desktop Header vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above telemetry on 1920x1080"
+    },
+    {
+      "category": "Layout & Bounds",
       "name": "Desktop Header vs Controls Clearance",
       "status": "PASS",
       "details": "Header banner cleanly above controls on 1920x1080"
+    },
+    {
+      "category": "Layout & Bounds",
+      "name": "Desktop Header vs Modal Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above lobby modal on 1920x1080"
     },
     {
       "category": "Mobile Viewport",
@@ -476,9 +488,21 @@
     },
     {
       "category": "Mobile Layout",
+      "name": "Mobile Header Banner vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Top Banner does not clip Telemetry"
+    },
+    {
+      "category": "Mobile Layout",
       "name": "Mobile Header Banner vs Controls Clearance",
       "status": "PASS",
       "details": "Top Banner does not clip Controls"
+    },
+    {
+      "category": "Mobile Layout",
+      "name": "Mobile Header Banner vs Modal Clearance",
+      "status": "PASS",
+      "details": "Top Banner does not clip Lobby Modal"
     },
     {
       "category": "Visual Output",
@@ -494,9 +518,21 @@
     },
     {
       "category": "Landscape Layout",
+      "name": "Landscape Header vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Banner does not clip telemetry in landscape"
+    },
+    {
+      "category": "Landscape Layout",
       "name": "Landscape Header vs Controls Clearance",
       "status": "PASS",
       "details": "Banner does not clip controls in landscape"
+    },
+    {
+      "category": "Landscape Layout",
+      "name": "Landscape Header vs Modal Clearance",
+      "status": "PASS",
+      "details": "Banner does not clip lobby modal in landscape"
     },
     {
       "category": "Landscape Layout",
@@ -542,9 +578,21 @@
     },
     {
       "category": "Tablet Layout",
+      "name": "Tablet Header vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above telemetry on tablet"
+    },
+    {
+      "category": "Tablet Layout",
       "name": "Tablet Header vs Controls Clearance",
       "status": "PASS",
       "details": "Header banner cleanly above controls on tablet"
+    },
+    {
+      "category": "Tablet Layout",
+      "name": "Tablet Header vs Modal Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above lobby modal on tablet"
     },
     {
       "category": "Visual Output",
@@ -572,9 +620,21 @@
     },
     {
       "category": "Compact Mobile Layout",
+      "name": "320px Header vs Telemetry Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above telemetry on 320px"
+    },
+    {
+      "category": "Compact Mobile Layout",
       "name": "320px Header vs Controls Clearance",
       "status": "PASS",
       "details": "Header banner cleanly above controls on 320px"
+    },
+    {
+      "category": "Compact Mobile Layout",
+      "name": "320px Header vs Modal Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above lobby modal on 320px"
     },
     {
       "category": "Visual Output",

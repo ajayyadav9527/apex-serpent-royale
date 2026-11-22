@@ -64,23 +64,21 @@ class QuietHTTPHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
 def start_background_server():
-    # Check if port is already listening
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        sock.connect(('127.0.0.1', PORT))
-        sock.close()
-        print(f"[Server] Port {PORT} is already open, using existing server.")
-        return None
-    except OSError:
-        sock.close()
-
-    print(f"[Server] Starting background HTTP server on port {PORT}...")
-    server = http.server.ThreadingHTTPServer(('127.0.0.1', PORT), QuietHTTPHandler)
-    server_thread = threading.Thread(target=server.serve_forever, daemon=True)
-    server_thread.start()
-    time.sleep(1)
-    print(f"[Server] Background HTTP server online at {SERVER_URL}")
-    return server
+    global SERVER_URL, PORT
+    for try_port in [8089, 8093, 8094, 8095, 0]:
+        try:
+            server = http.server.ThreadingHTTPServer(('127.0.0.1', try_port), QuietHTTPHandler)
+            PORT = server.server_address[1]
+            SERVER_URL = f"http://127.0.0.1:{PORT}"
+            test_results["server_url"] = SERVER_URL
+            server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+            server_thread.start()
+            time.sleep(0.5)
+            print(f"[Server] Background HTTP server online at {SERVER_URL}")
+            return server
+        except OSError:
+            continue
+    raise RuntimeError("Could not bind HTTP server to any port")
 
 def verify_blogger_xml():
     print("\n" + "=" * 60)
@@ -182,6 +180,17 @@ def run_playwright_e2e():
         
         # Wait for scripts and scene initialization
         time.sleep(2)
+        
+        # Check Desktop Lobby Modal Clearance before starting game
+        desktop_modal_eval = page.evaluate("""() => {
+            const header = document.getElementById('fixed-header-ad-bar');
+            const modal = document.querySelector('#modal-lobby .cyber-modal');
+            const hBox = header ? header.getBoundingClientRect() : null;
+            const mBox = modal ? modal.getBoundingClientRect() : null;
+            return {
+                header_modal_overlap: (hBox && mBox) ? (hBox.bottom > mBox.top) : false
+            };
+        }""")
         
         # Click "Start Game" to bootstrap engine and launch active game loop
         page.evaluate("""() => {
@@ -477,6 +486,7 @@ def run_playwright_e2e():
                 telem_ctrl: (telem && ctrl) ? overlaps(telem, ctrl) : false,
                 king_lb: (king && lb) ? overlaps(king, lb) : false,
                 header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_telem_overlap: (header && telem) ? (header.bottom > telem.top) : false,
                 header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false
             };
         }""")
@@ -484,7 +494,9 @@ def run_playwright_e2e():
         record_check("Layout & Bounds", "Desktop Telemetry vs Controls Clearance", not desktop_layout.get("telem_ctrl", True), "Telemetry and Controls clear on 1920x1080")
         record_check("Layout & Bounds", "Desktop King Bounty vs Leaderboard Clearance", not desktop_layout.get("king_lb", True), "King Bounty and Leaderboard clear on 1920x1080")
         record_check("Layout & Bounds", "Desktop Header vs Radar Clearance", not desktop_layout.get("header_radar_overlap", True), "Header banner cleanly above radar on 1920x1080")
+        record_check("Layout & Bounds", "Desktop Header vs Telemetry Clearance", not desktop_layout.get("header_telem_overlap", True), "Header banner cleanly above telemetry on 1920x1080")
         record_check("Layout & Bounds", "Desktop Header vs Controls Clearance", not desktop_layout.get("header_ctrl_overlap", True), "Header banner cleanly above controls on 1920x1080")
+        record_check("Layout & Bounds", "Desktop Header vs Modal Clearance", not desktop_modal_eval.get("header_modal_overlap", True), "Header banner cleanly above lobby modal on 1920x1080")
 
         desktop_ctx.close()
         
@@ -500,6 +512,17 @@ def run_playwright_e2e():
         m_page.goto(target_url, wait_until="domcontentloaded")
         time.sleep(2)
         
+        # Check Mobile Lobby Modal Clearance before starting game
+        mobile_modal_eval = m_page.evaluate("""() => {
+            const header = document.getElementById('fixed-header-ad-bar');
+            const modal = document.querySelector('#modal-lobby .cyber-modal');
+            const hBox = header ? header.getBoundingClientRect() : null;
+            const mBox = modal ? modal.getBoundingClientRect() : null;
+            return {
+                header_modal_overlap: (hBox && mBox) ? (hBox.bottom > mBox.top) : false
+            };
+        }""")
+
         # Start game on mobile to reveal HUD and controls
         m_page.evaluate("""() => {
             const startBtn = document.getElementById('btn-start-game');
@@ -550,6 +573,7 @@ def run_playwright_e2e():
                 telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false,
                 king_lb_overlap: (king && lb) ? (king.right > lb.left && king.bottom > lb.top) : false,
                 header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_telem_overlap: (header && telem) ? (header.bottom > telem.top) : false,
                 header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false,
                 radarRight: radar ? radar.right : 0,
                 telemLeft: telem ? telem.left : 0,
@@ -566,7 +590,9 @@ def run_playwright_e2e():
         record_check("Mobile Layout", "Mobile Telemetry vs Controls Clearance", not mobile_eval.get("telem_ctrl_overlap", True), f"Telem right ({mobile_eval.get('telemRight')}) <= Controls left ({mobile_eval.get('ctrlLeft')})")
         record_check("Mobile Layout", "Mobile King Bounty vs Leaderboard Clearance", not mobile_eval.get("king_lb_overlap", True), "King Bounty and Leaderboard zero overlap")
         record_check("Mobile Layout", "Mobile Header Banner vs Radar Clearance", not mobile_eval.get("header_radar_overlap", True), "Top Banner does not clip Radar")
+        record_check("Mobile Layout", "Mobile Header Banner vs Telemetry Clearance", not mobile_eval.get("header_telem_overlap", True), "Top Banner does not clip Telemetry")
         record_check("Mobile Layout", "Mobile Header Banner vs Controls Clearance", not mobile_eval.get("header_ctrl_overlap", True), "Top Banner does not clip Controls")
+        record_check("Mobile Layout", "Mobile Header Banner vs Modal Clearance", not mobile_modal_eval.get("header_modal_overlap", True), "Top Banner does not clip Lobby Modal")
         
         mobile_img = SCREENSHOT_DIR / "mobile_390x844.png"
         m_page.screenshot(path=str(mobile_img))
@@ -583,6 +609,18 @@ def run_playwright_e2e():
         l_page = landscape_ctx.new_page()
         l_page.goto(target_url, wait_until="domcontentloaded")
         time.sleep(2)
+        
+        # Check Landscape Lobby Modal Clearance before starting game
+        ls_modal_eval = l_page.evaluate("""() => {
+            const header = document.getElementById('fixed-header-ad-bar');
+            const modal = document.querySelector('#modal-lobby .cyber-modal');
+            const hBox = header ? header.getBoundingClientRect() : null;
+            const mBox = modal ? modal.getBoundingClientRect() : null;
+            return {
+                header_modal_overlap: (hBox && mBox) ? (hBox.bottom > mBox.top) : false
+            };
+        }""")
+
         l_page.evaluate("() => { const b = document.getElementById('btn-start-game'); if (b) b.click(); }")
         time.sleep(1)
 
@@ -594,6 +632,7 @@ def run_playwright_e2e():
                 return (r.width > 0 && r.height > 0) ? { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom) } : null;
             };
             const radar = getBox('.hud-radar-box');
+            const telem = getBox('.hud-telemetry');
             const ctrl = getBox('.hud-controls-bar');
             const lb = getBox('.hud-leaderboard-box');
             const header = getBox('#fixed-header-ad-bar');
@@ -601,12 +640,15 @@ def run_playwright_e2e():
 
             return {
                 header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_telem_overlap: (header && telem) ? (header.bottom > telem.top) : false,
                 header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false,
                 ctrl_lb_overlap: (ctrl && lb) ? overlaps(ctrl, lb) : false
             };
         }""")
         record_check("Landscape Layout", "Landscape Header vs Radar Clearance", not ls_eval.get("header_radar_overlap", True), "Banner does not clip radar in landscape")
+        record_check("Landscape Layout", "Landscape Header vs Telemetry Clearance", not ls_eval.get("header_telem_overlap", True), "Banner does not clip telemetry in landscape")
         record_check("Landscape Layout", "Landscape Header vs Controls Clearance", not ls_eval.get("header_ctrl_overlap", True), "Banner does not clip controls in landscape")
+        record_check("Landscape Layout", "Landscape Header vs Modal Clearance", not ls_modal_eval.get("header_modal_overlap", True), "Banner does not clip lobby modal in landscape")
         record_check("Landscape Layout", "Landscape Controls vs Leaderboard Clearance", not ls_eval.get("ctrl_lb_overlap", True), "Controls bar cleanly above leaderboard")
         
         landscape_img = SCREENSHOT_DIR / "landscape_844x390.png"
@@ -625,6 +667,17 @@ def run_playwright_e2e():
         t_page.goto(target_url, wait_until="domcontentloaded")
         time.sleep(2)
         
+        # Check Tablet Lobby Modal Clearance before starting game
+        tablet_modal_eval = t_page.evaluate("""() => {
+            const header = document.getElementById('fixed-header-ad-bar');
+            const modal = document.querySelector('#modal-lobby .cyber-modal');
+            const hBox = header ? header.getBoundingClientRect() : null;
+            const mBox = modal ? modal.getBoundingClientRect() : null;
+            return {
+                header_modal_overlap: (hBox && mBox) ? (hBox.bottom > mBox.top) : false
+            };
+        }""")
+
         t_page.evaluate("""() => {
             const startBtn = document.getElementById('btn-start-game');
             if (startBtn) startBtn.click();
@@ -651,6 +704,7 @@ def run_playwright_e2e():
                 radar_telem_overlap: (radar && telem) ? (radar.right > telem.left) : false,
                 telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false,
                 header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_telem_overlap: (header && telem) ? (header.bottom > telem.top) : false,
                 header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false
             };
         }""")
@@ -660,7 +714,9 @@ def run_playwright_e2e():
         record_check("Tablet Layout", "Tablet Radar vs Telemetry Clearance", not tablet_eval.get("radar_telem_overlap", True), "Zero overlap between radar and telemetry on tablet")
         record_check("Tablet Layout", "Tablet Telemetry vs Controls Clearance", not tablet_eval.get("telem_ctrl_overlap", True), "Zero overlap between telemetry and controls on tablet")
         record_check("Tablet Layout", "Tablet Header vs Radar Clearance", not tablet_eval.get("header_radar_overlap", True), "Header banner cleanly above radar on tablet")
+        record_check("Tablet Layout", "Tablet Header vs Telemetry Clearance", not tablet_eval.get("header_telem_overlap", True), "Header banner cleanly above telemetry on tablet")
         record_check("Tablet Layout", "Tablet Header vs Controls Clearance", not tablet_eval.get("header_ctrl_overlap", True), "Header banner cleanly above controls on tablet")
+        record_check("Tablet Layout", "Tablet Header vs Modal Clearance", not tablet_modal_eval.get("header_modal_overlap", True), "Header banner cleanly above lobby modal on tablet")
         
         tablet_img = SCREENSHOT_DIR / "tablet_768x1024.png"
         t_page.screenshot(path=str(tablet_img))
@@ -677,6 +733,18 @@ def run_playwright_e2e():
         c_page = compact_ctx.new_page()
         c_page.goto(target_url, wait_until="domcontentloaded")
         time.sleep(2)
+        
+        # Check Compact Mobile Lobby Modal Clearance before starting game
+        compact_modal_eval = c_page.evaluate("""() => {
+            const header = document.getElementById('fixed-header-ad-bar');
+            const modal = document.querySelector('#modal-lobby .cyber-modal');
+            const hBox = header ? header.getBoundingClientRect() : null;
+            const mBox = modal ? modal.getBoundingClientRect() : null;
+            return {
+                header_modal_overlap: (hBox && mBox) ? (hBox.bottom > mBox.top) : false
+            };
+        }""")
+
         c_page.evaluate("() => { const b = document.getElementById('btn-start-game'); if (b) b.click(); }")
         time.sleep(1)
 
@@ -695,6 +763,7 @@ def run_playwright_e2e():
                 radar_telem_overlap: (radar && telem) ? (radar.right > telem.left) : false,
                 telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false,
                 header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_telem_overlap: (header && telem) ? (header.bottom > telem.top) : false,
                 header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false,
                 radarRight: radar ? radar.right : 0,
                 telemLeft: telem ? telem.left : 0,
@@ -705,7 +774,9 @@ def run_playwright_e2e():
         record_check("Compact Mobile Layout", "320px Radar vs Telemetry Clearance", not compact_eval.get("radar_telem_overlap", True), f"Radar right ({compact_eval.get('radarRight')}) <= Telem left ({compact_eval.get('telemLeft')})")
         record_check("Compact Mobile Layout", "320px Telemetry vs Controls Clearance", not compact_eval.get("telem_ctrl_overlap", True), f"Telem right ({compact_eval.get('telemRight')}) <= Controls left ({compact_eval.get('ctrlLeft')})")
         record_check("Compact Mobile Layout", "320px Header vs Radar Clearance", not compact_eval.get("header_radar_overlap", True), "Header banner cleanly above radar on 320px")
+        record_check("Compact Mobile Layout", "320px Header vs Telemetry Clearance", not compact_eval.get("header_telem_overlap", True), "Header banner cleanly above telemetry on 320px")
         record_check("Compact Mobile Layout", "320px Header vs Controls Clearance", not compact_eval.get("header_ctrl_overlap", True), "Header banner cleanly above controls on 320px")
+        record_check("Compact Mobile Layout", "320px Header vs Modal Clearance", not compact_modal_eval.get("header_modal_overlap", True), "Header banner cleanly above lobby modal on 320px")
 
         compact_img = SCREENSHOT_DIR / "compact_320x568.png"
         c_page.screenshot(path=str(compact_img))
