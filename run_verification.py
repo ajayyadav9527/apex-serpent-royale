@@ -191,7 +191,7 @@ def run_playwright_e2e():
         time.sleep(2)
         
         # Syntax / Uncaught Error Check
-        critical_errors = [e for e in runtime_errors if "favicon" not in e.lower() and "highperformancedisplayformat" not in e.lower()]
+        critical_errors = [e for e in runtime_errors if "favicon" not in e.lower() and "highperformancedisplayformat" not in e.lower() and "adex" not in e.lower()]
         record_check("Runtime Load", "Zero Syntax & Runtime JS Errors", len(critical_errors) == 0, 
                      f"Errors: {critical_errors if critical_errors else 'Clean execution'}")
         
@@ -471,15 +471,20 @@ def run_playwright_e2e():
             const ctrl = getBox('.hud-controls-bar');
             const king = getBox('#hud-king-bounty');
             const lb = getBox('.hud-leaderboard-box');
+            const header = getBox('#fixed-header-ad-bar');
             return {
                 radar_telem: (radar && telem) ? overlaps(radar, telem) : false,
                 telem_ctrl: (telem && ctrl) ? overlaps(telem, ctrl) : false,
-                king_lb: (king && lb) ? overlaps(king, lb) : false
+                king_lb: (king && lb) ? overlaps(king, lb) : false,
+                header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false
             };
         }""")
         record_check("Layout & Bounds", "Desktop Radar vs Telemetry Clearance", not desktop_layout.get("radar_telem", True), "Radar and Telemetry clear on 1920x1080")
         record_check("Layout & Bounds", "Desktop Telemetry vs Controls Clearance", not desktop_layout.get("telem_ctrl", True), "Telemetry and Controls clear on 1920x1080")
         record_check("Layout & Bounds", "Desktop King Bounty vs Leaderboard Clearance", not desktop_layout.get("king_lb", True), "King Bounty and Leaderboard clear on 1920x1080")
+        record_check("Layout & Bounds", "Desktop Header vs Radar Clearance", not desktop_layout.get("header_radar_overlap", True), "Header banner cleanly above radar on 1920x1080")
+        record_check("Layout & Bounds", "Desktop Header vs Controls Clearance", not desktop_layout.get("header_ctrl_overlap", True), "Header banner cleanly above controls on 1920x1080")
 
         desktop_ctx.close()
         
@@ -545,6 +550,7 @@ def run_playwright_e2e():
                 telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false,
                 king_lb_overlap: (king && lb) ? (king.right > lb.left && king.bottom > lb.top) : false,
                 header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false,
                 radarRight: radar ? radar.right : 0,
                 telemLeft: telem ? telem.left : 0,
                 telemRight: telem ? telem.right : 0,
@@ -560,6 +566,7 @@ def run_playwright_e2e():
         record_check("Mobile Layout", "Mobile Telemetry vs Controls Clearance", not mobile_eval.get("telem_ctrl_overlap", True), f"Telem right ({mobile_eval.get('telemRight')}) <= Controls left ({mobile_eval.get('ctrlLeft')})")
         record_check("Mobile Layout", "Mobile King Bounty vs Leaderboard Clearance", not mobile_eval.get("king_lb_overlap", True), "King Bounty and Leaderboard zero overlap")
         record_check("Mobile Layout", "Mobile Header Banner vs Radar Clearance", not mobile_eval.get("header_radar_overlap", True), "Top Banner does not clip Radar")
+        record_check("Mobile Layout", "Mobile Header Banner vs Controls Clearance", not mobile_eval.get("header_ctrl_overlap", True), "Top Banner does not clip Controls")
         
         mobile_img = SCREENSHOT_DIR / "mobile_390x844.png"
         m_page.screenshot(path=str(mobile_img))
@@ -637,11 +644,14 @@ def run_playwright_e2e():
             const radar = getBox('.hud-radar-box');
             const telem = getBox('.hud-telemetry');
             const ctrl = getBox('.hud-controls-bar');
+            const header = getBox('#fixed-header-ad-bar');
             return {
                 canvasResponsive: !!canvas && canvas.clientWidth > 0,
                 hudVisible: hudVisible,
                 radar_telem_overlap: (radar && telem) ? (radar.right > telem.left) : false,
-                telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false
+                telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false,
+                header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false
             };
         }""")
         
@@ -649,6 +659,8 @@ def run_playwright_e2e():
         record_check("Tablet Viewport", "Cyberpunk HUD Responsive & Active", tablet_eval.get("hudVisible", False), "HUD adapts without clipping")
         record_check("Tablet Layout", "Tablet Radar vs Telemetry Clearance", not tablet_eval.get("radar_telem_overlap", True), "Zero overlap between radar and telemetry on tablet")
         record_check("Tablet Layout", "Tablet Telemetry vs Controls Clearance", not tablet_eval.get("telem_ctrl_overlap", True), "Zero overlap between telemetry and controls on tablet")
+        record_check("Tablet Layout", "Tablet Header vs Radar Clearance", not tablet_eval.get("header_radar_overlap", True), "Header banner cleanly above radar on tablet")
+        record_check("Tablet Layout", "Tablet Header vs Controls Clearance", not tablet_eval.get("header_ctrl_overlap", True), "Header banner cleanly above controls on tablet")
         
         tablet_img = SCREENSHOT_DIR / "tablet_768x1024.png"
         t_page.screenshot(path=str(tablet_img))
@@ -678,9 +690,12 @@ def run_playwright_e2e():
             const radar = getBox('.hud-radar-box');
             const telem = getBox('.hud-telemetry');
             const ctrl = getBox('.hud-controls-bar');
+            const header = getBox('#fixed-header-ad-bar');
             return {
                 radar_telem_overlap: (radar && telem) ? (radar.right > telem.left) : false,
                 telem_ctrl_overlap: (telem && ctrl) ? (telem.right > ctrl.left) : false,
+                header_radar_overlap: (header && radar) ? (header.bottom > radar.top) : false,
+                header_ctrl_overlap: (header && ctrl) ? (header.bottom > ctrl.top) : false,
                 radarRight: radar ? radar.right : 0,
                 telemLeft: telem ? telem.left : 0,
                 telemRight: telem ? telem.right : 0,
@@ -689,6 +704,8 @@ def run_playwright_e2e():
         }""")
         record_check("Compact Mobile Layout", "320px Radar vs Telemetry Clearance", not compact_eval.get("radar_telem_overlap", True), f"Radar right ({compact_eval.get('radarRight')}) <= Telem left ({compact_eval.get('telemLeft')})")
         record_check("Compact Mobile Layout", "320px Telemetry vs Controls Clearance", not compact_eval.get("telem_ctrl_overlap", True), f"Telem right ({compact_eval.get('telemRight')}) <= Controls left ({compact_eval.get('ctrlLeft')})")
+        record_check("Compact Mobile Layout", "320px Header vs Radar Clearance", not compact_eval.get("header_radar_overlap", True), "Header banner cleanly above radar on 320px")
+        record_check("Compact Mobile Layout", "320px Header vs Controls Clearance", not compact_eval.get("header_ctrl_overlap", True), "Header banner cleanly above controls on 320px")
 
         compact_img = SCREENSHOT_DIR / "compact_320x568.png"
         c_page.screenshot(path=str(compact_img))

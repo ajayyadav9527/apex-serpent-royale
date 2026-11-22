@@ -1,9 +1,9 @@
 {
   "suite": "Apex Serpent Royale E2E Verification",
-  "timestamp": "2026-11-22T11:34:04Z",
+  "timestamp": "2026-11-22T13:56:45Z",
   "server_url": "http://127.0.0.1:8089",
-  "total": 89,
-  "passed": 89,
+  "total": 96,
+  "passed": 96,
   "failed": 0,
   "checks": [
     {
@@ -415,6 +415,18 @@
       "details": "King Bounty and Leaderboard clear on 1920x1080"
     },
     {
+      "category": "Layout & Bounds",
+      "name": "Desktop Header vs Radar Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above radar on 1920x1080"
+    },
+    {
+      "category": "Layout & Bounds",
+      "name": "Desktop Header vs Controls Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above controls on 1920x1080"
+    },
+    {
       "category": "Mobile Viewport",
       "name": "Virtual Touch Joystick Zone (#joystick-zone)",
       "status": "PASS",
@@ -461,6 +473,12 @@
       "name": "Mobile Header Banner vs Radar Clearance",
       "status": "PASS",
       "details": "Top Banner does not clip Radar"
+    },
+    {
+      "category": "Mobile Layout",
+      "name": "Mobile Header Banner vs Controls Clearance",
+      "status": "PASS",
+      "details": "Top Banner does not clip Controls"
     },
     {
       "category": "Visual Output",
@@ -517,6 +535,18 @@
       "details": "Zero overlap between telemetry and controls on tablet"
     },
     {
+      "category": "Tablet Layout",
+      "name": "Tablet Header vs Radar Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above radar on tablet"
+    },
+    {
+      "category": "Tablet Layout",
+      "name": "Tablet Header vs Controls Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above controls on tablet"
+    },
+    {
       "category": "Visual Output",
       "name": "Tablet Screenshot Captured",
       "status": "PASS",
@@ -533,6 +563,18 @@
       "name": "320px Telemetry vs Controls Clearance",
       "status": "PASS",
       "details": "Telem right (206) <= Controls left (210)"
+    },
+    {
+      "category": "Compact Mobile Layout",
+      "name": "320px Header vs Radar Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above radar on 320px"
+    },
+    {
+      "category": "Compact Mobile Layout",
+      "name": "320px Header vs Controls Clearance",
+      "status": "PASS",
+      "details": "Header banner cleanly above controls on 320px"
     },
     {
       "category": "Visual Output",

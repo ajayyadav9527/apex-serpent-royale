@@ -225,7 +225,7 @@
       left: 0;
       right: 0;
       width: 100%;
-      height: calc(36px + env(safe-area-inset-top, 0px));
+      height: calc(46px + env(safe-area-inset-top, 0px));
       padding-top: env(safe-area-inset-top, 0px);
       z-index: 99;
       display: flex;
@@ -237,13 +237,13 @@
       -webkit-backdrop-filter: blur(10px);
       overflow: hidden;
       cursor: pointer;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
       transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
     #fixed-header-ad-bar:hover {
       background: rgba(12, 18, 36, 0.98);
       border-bottom-color: var(--cyan);
-      box-shadow: 0 2px 16px rgba(0, 243, 255, 0.22);
+      box-shadow: 0 2px 18px rgba(0, 243, 255, 0.25);
     }
     .header-ad-slide {
       position: absolute;
@@ -252,8 +252,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 0 16px;
+      gap: 10px;
+      padding: 0 18px;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -264,10 +264,10 @@
     }
     .header-ad-tag {
       font-family: var(--font-cyber);
-      font-size: 10.5px;
+      font-size: 11.5px;
       font-weight: 800;
       letter-spacing: 0.8px;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: var(--radius-sm);
       text-transform: uppercase;
       flex-shrink: 0;
@@ -298,7 +298,7 @@
     }
     .header-ad-text {
       font-family: var(--font-cyber);
-      font-size: 11px;
+      font-size: 12.5px;
       font-weight: 600;
       color: #cbd5e1;
       letter-spacing: 0.4px;
@@ -315,7 +315,7 @@
     /* Polite AdBlock Detector Badge */
     #adblock-detector-badge {
       position: fixed;
-      top: calc(44px + env(safe-area-inset-top, 0px));
+      top: calc(54px + env(safe-area-inset-top, 0px));
       right: calc(180px + env(safe-area-inset-right, 0px));
       z-index: 52;
       background: rgba(15, 23, 42, 0.90);
@@ -453,7 +453,7 @@
     /* Top Left: 3D Radar Minimap */
     .hud-radar-box {
       position: absolute;
-      top: calc(44px + env(safe-area-inset-top, 0px));
+      top: calc(54px + env(safe-area-inset-top, 0px));
       left: calc(14px + env(safe-area-inset-left, 0px));
       width: 115px;
       background: var(--bg-panel);
@@ -488,7 +488,7 @@
     /* Top Center: Main Combat Telemetry (Score, Length, Alive) */
     .hud-telemetry {
       position: absolute;
-      top: calc(44px + env(safe-area-inset-top, 0px));
+      top: calc(54px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -547,7 +547,7 @@
     /* Top Right: Quick Action Controls Bar */
     .hud-controls-bar {
       position: absolute;
-      top: calc(44px + env(safe-area-inset-top, 0px));
+      top: calc(54px + env(safe-area-inset-top, 0px));
       right: calc(14px + env(safe-area-inset-right, 0px));
       display: flex;
       gap: 6px;
@@ -595,7 +595,7 @@
     /* Event Notifications Tier (Properly Stacked, Zero Overlaps) */
     #hud-king-bounty {
       position: absolute;
-      top: calc(92px + env(safe-area-inset-top, 0px));
+      top: calc(100px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -649,7 +649,7 @@
     /* Storm Warning Badge (Cleanly Positioned BELOW King Bounty) */
     .storm-badge {
       position: absolute;
-      top: calc(130px + env(safe-area-inset-top, 0px));
+      top: calc(138px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       background: rgba(18, 12, 28, 0.92);
@@ -677,7 +677,7 @@
     /* Active Power-up Tray (Cleanly Positioned BELOW Storm Badge) */
     .hud-powerup-tray {
       position: absolute;
-      top: calc(168px + env(safe-area-inset-top, 0px));
+      top: calc(176px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -709,7 +709,7 @@
     /* Top Right: Real-time Leaderboard Box */
     .hud-leaderboard-box {
       position: absolute;
-      top: calc(88px + env(safe-area-inset-top, 0px));
+      top: calc(96px + env(safe-area-inset-top, 0px));
       right: calc(14px + env(safe-area-inset-right, 0px));
       width: 175px;
       background: var(--bg-panel);
@@ -1067,7 +1067,7 @@
       align-items: center;
       justify-content: center;
       z-index: 60;
-      padding: calc(40px + env(safe-area-inset-top, 0px)) 12px 12px 12px;
+      padding: calc(52px + env(safe-area-inset-top, 0px)) 12px 12px 12px;
       overflow-y: auto;
     }
 
@@ -1079,7 +1079,7 @@
       border-radius: var(--radius-lg);
       width: 100%;
       max-width: 530px;
-      max-height: calc(100dvh - 56px);
+      max-height: calc(100dvh - 68px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 20px 22px;
@@ -1780,13 +1780,13 @@
      * ========================================================= */
     @media (max-width: 1024px) {
       .hud-radar-box {
-        top: calc(40px + env(safe-area-inset-top, 0px));
+        top: calc(54px + env(safe-area-inset-top, 0px));
         left: calc(10px + env(safe-area-inset-left, 0px));
         width: 95px;
       }
       #minimap-canvas { height: 80px; }
       .hud-controls-bar {
-        top: calc(40px + env(safe-area-inset-top, 0px));
+        top: calc(54px + env(safe-area-inset-top, 0px));
         right: calc(10px + env(safe-area-inset-right, 0px));
         gap: 4px;
       }
@@ -1805,10 +1805,10 @@
 
       /* Top Header */
       #fixed-header-ad-bar {
-        height: calc(32px + env(safe-area-inset-top, 0px));
+        height: calc(40px + env(safe-area-inset-top, 0px));
       }
-      .header-ad-tag { font-size: 9px; padding: 1px 4px; }
-      .header-ad-text { font-size: 9.5px; }
+      .header-ad-tag { font-size: 10px; padding: 2px 6px; }
+      .header-ad-text { font-size: 11px; }
 
       /* AdBlock badge docked safely on mobile */
       #adblock-detector-badge {
@@ -1817,7 +1817,7 @@
 
       /* Radar Minimap - Pinned Top Left */
       .hud-radar-box {
-        top: calc(36px + env(safe-area-inset-top, 0px));
+        top: calc(44px + env(safe-area-inset-top, 0px));
         left: calc(8px + env(safe-area-inset-left, 0px));
         width: 78px;
         padding: 3px;
@@ -1834,7 +1834,7 @@
 
       /* Controls Bar - Pinned Top Right with compact icon-only buttons */
       .hud-controls-bar {
-        top: calc(36px + env(safe-area-inset-top, 0px));
+        top: calc(44px + env(safe-area-inset-top, 0px));
         right: calc(8px + env(safe-area-inset-right, 0px));
         gap: 4px;
         z-index: 55;
@@ -1861,7 +1861,7 @@
       /* Telemetry Center - Strictly constrained between Radar and Controls */
       .hud-telemetry {
         position: absolute;
-        top: calc(36px + env(safe-area-inset-top, 0px));
+        top: calc(44px + env(safe-area-inset-top, 0px));
         left: calc(88px + env(safe-area-inset-left, 0px));
         right: calc(136px + env(safe-area-inset-right, 0px));
         transform: none !important;
@@ -1890,7 +1890,7 @@
 
       /* Stacking Events - Cleanly Tiered & Centered */
       #hud-king-bounty {
-        top: calc(70px + env(safe-area-inset-top, 0px));
+        top: calc(76px + env(safe-area-inset-top, 0px));
         left: 50%;
         transform: translateX(-50%);
         max-width: 140px;
@@ -1904,7 +1904,7 @@
       .king-dist-badge { font-size: 8px; padding: 1px 4px; }
 
       .storm-badge {
-        top: calc(96px + env(safe-area-inset-top, 0px));
+        top: calc(102px + env(safe-area-inset-top, 0px));
         left: 50%;
         transform: translateX(-50%);
         max-width: 155px;
@@ -1914,7 +1914,7 @@
       }
 
       .hud-powerup-tray {
-        top: calc(122px + env(safe-area-inset-top, 0px));
+        top: calc(128px + env(safe-area-inset-top, 0px));
         left: 50%;
         transform: translateX(-50%);
         max-width: 170px;
@@ -1923,7 +1923,7 @@
 
       /* Leaderboard Box Top Right - Compact & Non-Colliding */
       .hud-leaderboard-box {
-        top: calc(68px + env(safe-area-inset-top, 0px));
+        top: calc(76px + env(safe-area-inset-top, 0px));
         right: calc(8px + env(safe-area-inset-right, 0px));
         width: 90px;
         padding: 3px 5px;
@@ -1981,8 +1981,12 @@
       }
 
       /* Modals */
+      .modal-backdrop {
+        padding: calc(44px + env(safe-area-inset-top, 0px)) 10px 10px 10px;
+      }
       .cyber-modal {
         padding: 14px 16px;
+        max-height: calc(100dvh - 54px);
       }
       .modal-title { font-size: 20px; }
       .modal-subtitle { font-size: 10px; margin-bottom: 10px; }
@@ -2045,19 +2049,19 @@
      * ========================================================= */
     @media (max-height: 520px) {
       #fixed-header-ad-bar {
-        height: calc(24px + env(safe-area-inset-top, 0px)) !important;
+        height: calc(30px + env(safe-area-inset-top, 0px)) !important;
       }
       .header-ad-tag {
-        font-size: 8px !important;
-        padding: 1px 4px !important;
+        font-size: 9px !important;
+        padding: 1px 5px !important;
       }
       .header-ad-text {
-        font-size: 9px !important;
+        font-size: 10px !important;
       }
 
       /* Radar Minimap safely below header */
       .hud-radar-box {
-        top: calc(27px + env(safe-area-inset-top, 0px)) !important;
+        top: calc(33px + env(safe-area-inset-top, 0px)) !important;
         left: calc(8px + env(safe-area-inset-left, 0px)) !important;
         width: 68px !important;
         padding: 2px !important;
@@ -2073,7 +2077,7 @@
 
       /* Controls Bar safely below header */
       .hud-controls-bar {
-        top: calc(27px + env(safe-area-inset-top, 0px)) !important;
+        top: calc(33px + env(safe-area-inset-top, 0px)) !important;
         right: calc(8px + env(safe-area-inset-right, 0px)) !important;
         gap: 3px !important;
         z-index: 55 !important;
@@ -2092,7 +2096,7 @@
 
       /* Telemetry safely below header */
       .hud-telemetry {
-        top: calc(27px + env(safe-area-inset-top, 0px)) !important;
+        top: calc(33px + env(safe-area-inset-top, 0px)) !important;
         left: calc(80px + env(safe-area-inset-left, 0px)) !important;
         right: calc(110px + env(safe-area-inset-right, 0px)) !important;
         transform: none !important;
@@ -2112,7 +2116,7 @@
 
       /* Leaderboard Box positioned cleanly BELOW Controls in landscape */
       .hud-leaderboard-box {
-        top: calc(52px + env(safe-area-inset-top, 0px)) !important;
+        top: calc(58px + env(safe-area-inset-top, 0px)) !important;
         right: calc(8px + env(safe-area-inset-right, 0px)) !important;
         width: 84px !important;
         padding: 2px 4px !important;
@@ -2121,7 +2125,7 @@
 
       /* Stacking Events in Landscape */
       #hud-king-bounty {
-        top: calc(27px + env(safe-area-inset-top, 0px)) !important;
+        top: calc(33px + env(safe-area-inset-top, 0px)) !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         padding: 1px 6px !important;
@@ -2129,7 +2133,7 @@
         z-index: 38 !important;
       }
       .storm-badge {
-        top: calc(48px + env(safe-area-inset-top, 0px)) !important;
+        top: calc(54px + env(safe-area-inset-top, 0px)) !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         font-size: 7.5px !important;
@@ -2137,7 +2141,7 @@
         z-index: 37 !important;
       }
       .hud-powerup-tray {
-        top: calc(68px + env(safe-area-inset-top, 0px)) !important;
+        top: calc(74px + env(safe-area-inset-top, 0px)) !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         z-index: 36 !important;
@@ -2162,8 +2166,11 @@
         bottom: calc(4px + env(safe-area-inset-bottom, 0px)) !important;
         width: 120px !important;
       }
+      .modal-backdrop {
+        padding: calc(34px + env(safe-area-inset-top, 0px)) 8px 8px 8px !important;
+      }
       .cyber-modal {
-        max-height: calc(100dvh - 30px) !important;
+        max-height: calc(100dvh - 38px) !important;
         padding: 10px 14px !important;
       }
     }
@@ -2171,6 +2178,26 @@
   ]]></b:skin>
 </head>
 <body>
+
+  <!-- Sleek Fixed Rotating Header Ad Banner (#fixed-header-ad-bar) -->
+  <div id='fixed-header-ad-bar' onclick='ApexAdManager.triggerDirectLink("header_ad_rotation")' title='Click sponsor offer'>
+    <div class='header-ad-slide active' data-index='0'>
+      <span class='header-ad-tag sponsor'>[SPONSOR]</span>
+      <span class='header-ad-text'>&#128640; Claim 500 Quantum Credits &amp; VIP Boosters! &#187; Tap to Claim</span>
+    </div>
+    <div class='header-ad-slide' data-index='1'>
+      <span class='header-ad-tag featured'>[FEATURED]</span>
+      <span class='header-ad-text'>&#9889; Turbo Plasma Skin &amp; 120% Boost Stamina &#187; Unlock Now</span>
+    </div>
+    <div class='header-ad-slide' data-index='2'>
+      <span class='header-ad-tag hot'>[HOT]</span>
+      <span class='header-ad-text'>&#127918; Top Trending Web3 &amp; Telegram Mini Games &#187; Play &amp; Win</span>
+    </div>
+    <div class='header-ad-slide' data-index='3'>
+      <span class='header-ad-tag reward'>[REWARD]</span>
+      <span class='header-ad-text'>&#127873; Daily Arena Airdrop &amp; Rare Cyber Aura &#187; Claim Shards</span>
+    </div>
+  </div>
 
   <div class='scanlines'></div>
   <div class='vignette'></div>
