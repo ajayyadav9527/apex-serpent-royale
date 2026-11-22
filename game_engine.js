@@ -397,7 +397,7 @@
       canvas.width = 256;
       canvas.height = 128;
       const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, 256, 128);
+      if (typeof ctx.clearRect === 'function') ctx.clearRect(0, 0, 256, 128);
 
       // Glow outline
       ctx.font = '900 48px sans-serif';
@@ -407,11 +407,11 @@
       ctx.shadowBlur = 16;
       ctx.lineWidth = 6;
       ctx.strokeStyle = '#000000';
-      ctx.strokeText(text, 128, 64);
+      if (typeof ctx.strokeText === 'function') ctx.strokeText(text, 128, 64);
 
       // Solid text
       ctx.fillStyle = colorStr;
-      ctx.fillText(text, 128, 64);
+      if (typeof ctx.fillText === 'function') ctx.fillText(text, 128, 64);
 
       const texture = new this.THREE.CanvasTexture(canvas);
       texture.minFilter = this.THREE.LinearFilter;
@@ -521,16 +521,16 @@
       this._mat  = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 0.5,
-        roughness: 0.25,
-        metalness: 0.5,
+        emissiveIntensity: 0.95,
+        roughness: 0.2,
+        metalness: 0.35,
       });
       this._headMat = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 1.1,
+        emissiveIntensity: 1.5,
         roughness: 0.1,
-        metalness: 0.8,
+        metalness: 0.5,
       });
 
       // Visor Eyes (Cyber Visor)
@@ -579,9 +579,9 @@
     _attachVisorEyes() {
       const eyeGeo = new this.THREE.BoxGeometry(0.24, 0.18, 0.24);
       const eyeMat = new this.THREE.MeshStandardMaterial({
-        color: this.isPlayer ? 0x00ffff : 0xff2200,
-        emissive: this.isPlayer ? 0x00ffff : 0xff3300,
-        emissiveIntensity: 2.2,
+        color: this.isPlayer ? 0x00ffff : 0xff3300,
+        emissive: this.isPlayer ? 0x00ffff : 0xff2200,
+        emissiveIntensity: 2.5,
         roughness: 0.1,
         metalness: 0.9,
       });
@@ -608,7 +608,7 @@
       // Squint mode on sprint / boost
       const boosting = this.speed > 1 || this.isBoosting || this.hasPowerup('LIGHTNING_BOOST');
       const targetSquintY = boosting ? 0.35 : 1.0;
-      const targetIntensity = boosting ? 4.0 : 2.2;
+      const targetIntensity = boosting ? 3.8 : 2.5;
 
       this._leftEye.scale.y  += (targetSquintY - this._leftEye.scale.y) * 0.2;
       this._rightEye.scale.y += (targetSquintY - this._rightEye.scale.y) * 0.2;
@@ -626,9 +626,9 @@
         const shieldMat = new this.THREE.MeshStandardMaterial({
           color: 0x00ffff,
           emissive: 0x00aaff,
-          emissiveIntensity: 1.5,
+          emissiveIntensity: 2.8,
           transparent: true,
-          opacity: 0.42,
+          opacity: 0.50,
           wireframe: true,
           roughness: 0.1,
           metalness: 0.8,
@@ -1021,15 +1021,15 @@
       const mat = new this.THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 1.5,
+        emissiveIntensity: 2.0,
         roughness: 0.1,
-        metalness: 0.1,
+        metalness: 0.15,
       });
       const mesh = new this.THREE.Mesh(geo, mat);
       mesh.position.copy(this._rndPos());
       // Glow halo
       const haloGeo = new this.THREE.SphereGeometry(0.75, 8, 8);
-      const haloMat = new this.THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.25, side: this.THREE.BackSide });
+      const haloMat = new this.THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.30, side: this.THREE.BackSide });
       const halo = new this.THREE.Mesh(haloGeo, haloMat);
       mesh.add(halo);
       this.scene.add(mesh);
@@ -1043,15 +1043,15 @@
       const mat = new this.THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 2,
+        emissiveIntensity: 2.6,
         roughness: 0.05,
-        metalness: 0.9,
+        metalness: 0.85,
       });
       const mesh = new this.THREE.Mesh(geo, mat);
       mesh.position.copy(this._rndPos());
       // Ring
       const ringGeo = new this.THREE.TorusGeometry(1.0, 0.07, 8, 32);
-      const ringMat = new this.THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.6 });
+      const ringMat = new this.THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.75 });
       const ring = new this.THREE.Mesh(ringGeo, ringMat);
       mesh.add(ring);
       this.scene.add(mesh);
@@ -1071,7 +1071,7 @@
         const mat = new this.THREE.MeshStandardMaterial({
           color: col,
           emissive: col,
-          emissiveIntensity: 2.2,
+          emissiveIntensity: 2.6,
           roughness: 0.1,
           metalness: 0.2,
         });
@@ -1125,8 +1125,8 @@
         f.t += 0.03;
         f.mesh.position.y = 0.6 + Math.sin(f.t) * 0.2;
         f.mesh.rotation.y += 0.02;
-        f.mesh.material.emissiveIntensity = 1.2 + Math.sin(f.t * 1.5) * 0.5;
-        f.halo.material.opacity = 0.15 + Math.sin(f.t * 2) * 0.1;
+        f.mesh.material.emissiveIntensity = 1.8 + Math.sin(f.t * 1.5) * 0.5;
+        f.halo.material.opacity = 0.22 + Math.sin(f.t * 2) * 0.12;
       }
       for (const p of this.powerups) {
         p.t += 0.025;
@@ -1154,9 +1154,9 @@
       // Visual cylinder wall
       const geo = new THREE.CylinderGeometry(this.radius, this.radius, 40, 64, 1, true);
       const mat = new THREE.MeshBasicMaterial({
-        color: 0x4400ff,
+        color: 0xff2200,
         transparent: true,
-        opacity: 0.18,
+        opacity: 0.28,
         side: THREE.BackSide,
         wireframe: false,
       });
@@ -1165,8 +1165,8 @@
       scene.add(this.wall);
 
       // Lightning arc ring
-      const ringGeo = new THREE.TorusGeometry(this.radius, 0.3, 4, 128);
-      const ringMat = new THREE.MeshBasicMaterial({ color: 0x8800ff, transparent: true, opacity: 0.7 });
+      const ringGeo = new THREE.TorusGeometry(this.radius, 0.4, 4, 128);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0xff4400, transparent: true, opacity: 0.95 });
       this.ring = new THREE.Mesh(ringGeo, ringMat);
       this.ring.rotation.x = Math.PI / 2;
       scene.add(this.ring);
@@ -1188,10 +1188,11 @@
     }
 
     animate(elapsed) {
-      const flicker = 0.14 + Math.sin(elapsed * 7) * 0.06 + Math.sin(elapsed * 13) * 0.03;
+      const flicker = 0.22 + Math.sin(elapsed * 7) * 0.08 + Math.sin(elapsed * 13) * 0.04;
       this.wall.material.opacity = this.active ? flicker : 0;
-      this.ring.material.opacity = this.active ? (0.6 + Math.sin(elapsed * 10) * 0.3) : 0;
-      this.wall.material.color.setHSL(0.72 + Math.sin(elapsed * 3) * 0.05, 1, 0.5);
+      this.ring.material.opacity = this.active ? (0.85 + Math.sin(elapsed * 10) * 0.12) : 0;
+      // Electric red-orange HSL: hue 0.03–0.07 (red-orange), full saturation, vivid
+      this.wall.material.color.setHSL(0.04 + Math.sin(elapsed * 3) * 0.02, 1, 0.55);
     }
   }
 
@@ -1202,17 +1203,20 @@
     // Ground
     const groundGeo = new THREE.PlaneGeometry(CFG.ARENA_SIZE * 2, CFG.ARENA_SIZE * 2, 40, 40);
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x050520,
-      roughness: 0.9,
-      metalness: 0.1,
+      color: 0x070e28,
+      roughness: 0.85,
+      metalness: 0.15,
+      emissive: 0x050a1e,
+      emissiveIntensity: 0.3,
     });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Grid lines
-    const gridHelper = new THREE.GridHelper(CFG.ARENA_SIZE * 2, 40, 0x111144, 0x111144);
+    // Grid lines - crisp glowing cyber grid lifted 0.02 to avoid z-fighting
+    const gridHelper = new THREE.GridHelper(CFG.ARENA_SIZE * 2, 60, 0x00d4ff, 0x1d3678);
+    gridHelper.position.y = 0.02;
     scene.add(gridHelper);
 
     // 3D Cyber Forcefield Perimeter Barrier Walls (Translucent Glowing Energy Fence)
@@ -1222,13 +1226,13 @@
     const wallMat = new THREE.MeshBasicMaterial({
       color: 0x0099ff,
       transparent: true,
-      opacity: 0.16,
+      opacity: 0.22,
       side: THREE.DoubleSide
     });
     const railMat = new THREE.MeshBasicMaterial({
       color: 0x00f3ff,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.85
     });
 
     const wallGeoH = new THREE.PlaneGeometry(A * 2, wallHeight);
@@ -1270,8 +1274,8 @@
     const beaconGeo = new THREE.CylinderGeometry(0.3, 0.45, wallHeight * 1.4, 8);
     const beaconMat = new THREE.MeshStandardMaterial({
       color: 0x00f3ff,
-      emissive: 0x0099ff,
-      emissiveIntensity: 1.6,
+      emissive: 0x00aaff,
+      emissiveIntensity: 2.6,
       metalness: 0.8,
       roughness: 0.2
     });
@@ -1282,8 +1286,8 @@
     });
 
     // Ambient + directional lights
-    scene.add(new THREE.AmbientLight(0x111133, 0.8));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+    scene.add(new THREE.AmbientLight(0x283a66, 0.95));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.4);
     sun.position.set(30, 60, 20);
     sun.castShadow = true;
     const initialShadowSize = isMobile ? 1024 : 2048;
@@ -1292,11 +1296,11 @@
     scene.add(sun);
 
     // Neon point lights (4 corners)
-    const ptColors = [0xff00ff, 0x00ffff, 0xffff00, 0xff4400];
+    const ptColors = [0x00f3ff, 0xff00aa, 0x00ff88, 0xffaa00];
     for (let i = 0; i < 4; i++) {
-      const pt = new THREE.PointLight(ptColors[i], 2, 60);
+      const pt = new THREE.PointLight(ptColors[i], 2.2, 55);
       const ang = (i / 4) * Math.PI * 2;
-      pt.position.set(Math.cos(ang) * A * 0.9, 10, Math.sin(ang) * A * 0.9);
+      pt.position.set(Math.cos(ang) * A * 0.9, 8, Math.sin(ang) * A * 0.9);
       scene.add(pt);
     }
 
@@ -1442,12 +1446,12 @@
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type    = this.THREE.PCFSoftShadowMap;
       this.renderer.toneMapping       = this.THREE.ACESFilmicToneMapping;
-      this.renderer.toneMappingExposure = 1.25;
+      this.renderer.toneMappingExposure = 1.3;
 
       // Scene
       this.scene = new this.THREE.Scene();
-      this.scene.background = new this.THREE.Color(0x020210);
-      this.scene.fog         = new this.THREE.FogExp2(0x020210, 0.012);
+      this.scene.background = new this.THREE.Color(0x060d24);
+      this.scene.fog         = new this.THREE.FogExp2(0x060d24, 0.0075);
 
       // Camera with Dynamic FOV
       this.camera = new this.THREE.PerspectiveCamera(CFG.FOV_NORMAL, (canvas.clientWidth || 800) / (canvas.clientHeight || 600), 0.1, 500);
@@ -1577,7 +1581,7 @@
       const goldMat = new this.THREE.MeshStandardMaterial({
         color: 0xffd700,
         emissive: 0xff9900,
-        emissiveIntensity: 0.6,
+        emissiveIntensity: 1.6,
         roughness: 0.2,
         metalness: 0.95,
       });
