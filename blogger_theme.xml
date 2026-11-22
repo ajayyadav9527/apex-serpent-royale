@@ -5465,10 +5465,13 @@
         };
 
         // Frame-rate aligned zero-latency input hook (fires right before physics step)
-        engine.hooks.onBeforeStep = () => {
+        engine.hooks.onBeforeStep = (dt) => {
           updateKeyboardSteer();
           if (isMouseActive) {
             updateMouseSteer();
+          }
+          if (engine && typeof engine.elapsed === 'number') {
+            ApexOrbit.reportProgress('time', Math.floor(engine.elapsed));
           }
         };
 
@@ -6676,12 +6679,12 @@
         wins: 0
       };
 
-      // Orbit Missions Definition
+      // Orbit Missions Definition - Accelerated progression targets for fastest task completion
       const MISSION_DEFS = [
-        { id: 1, title: 'Length Pioneer', desc: 'Grow your serpent to length 25', target: 25, rewardText: '+100 Credits', type: 'length', reward: { credits: 100 } },
-        { id: 2, title: 'Apex Predator', desc: 'Eliminate 2 rival serpents in battle', target: 2, rewardText: '1 Revive Token', type: 'kills', reward: { revives: 1 } },
-        { id: 3, title: 'Storm Survivor', desc: 'Survive 90 seconds in electric storm', target: 90, rewardText: '1 Magnet Pack', type: 'time', reward: { magnets: 1 } },
-        { id: 4, title: 'Quantum Harvester', desc: 'Collect 10 energy orbs & capsules', target: 10, rewardText: '+200 Credits', type: 'powerups', reward: { credits: 200 } },
+        { id: 1, title: 'Length Pioneer', desc: 'Grow your serpent to length 10', target: 10, rewardText: '+150 Credits', type: 'length', reward: { credits: 150 } },
+        { id: 2, title: 'Apex Predator', desc: 'Eliminate 1 rival serpent in battle', target: 1, rewardText: '1 Revive Token', type: 'kills', reward: { revives: 1 } },
+        { id: 3, title: 'Storm Survivor', desc: 'Survive 15 seconds in electric storm', target: 15, rewardText: '1 Magnet Pack', type: 'time', reward: { magnets: 1 } },
+        { id: 4, title: 'Quantum Harvester', desc: 'Collect 3 energy orbs & capsules', target: 3, rewardText: '+250 Credits', type: 'powerups', reward: { credits: 250 } },
         { id: 5, title: 'Victory Royale', desc: 'Survive the final collapse & claim Rank #1', target: 1, rewardText: 'VIP Dragon Skin Unlock', type: 'win', reward: { dragonSkin: 3 } }
       ];
 
