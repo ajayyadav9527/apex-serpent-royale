@@ -2711,10 +2711,10 @@
     ARENA_SIZE:        80,          // half-extent of the square play area
     GRID:              1.5,         // snake segment spacing
     TICK_MS:           100,         // base move tick (ms)
-    BASE_SPEED:        24.0,        // fast snappy serpent base velocity (was 15.0)
-    BOOST_MULTIPLIER:  2.2,         // high-octane turbo sprint multiplier (was 2.0)
-    TURN_SPEED:        10.5,        // razor-sharp angular steering velocity (rad/s, was 6.2)
-    BOOST_TURN_SPEED:  14.0,        // high-agility boost turn velocity (rad/s, was 7.5)
+    BASE_SPEED:        26.0,        // fast snappy serpent base velocity (was 15.0 originally)
+    BOOST_MULTIPLIER:  2.3,         // high-octane turbo sprint multiplier (was 2.0 originally)
+    TURN_SPEED:        11.5,        // razor-sharp angular steering velocity (rad/s, was 6.2 originally)
+    BOOST_TURN_SPEED:  15.0,        // high-agility boost turn velocity (rad/s, was 7.5 originally)
     NUM_AI:            9,           // AI snakes (player = 1 → total 10)
     FOOD_COUNT:        200,         // live food pellets (abundant .io arena feel)
     POWERUP_COUNT:     8,           // live power-ups
@@ -3187,6 +3187,8 @@
       this.boostTurnSpeed = CFG.BOOST_TURN_SPEED;
       this.boostMultiplier = CFG.BOOST_MULTIPLIER;
       this.segmentSpacing = 1.05;
+      this._prevHeadX = startPos.x;
+      this._prevHeadZ = startPos.z;
 
       // Active power-ups: map type -> expiry timestamp
       this.powerups = {};
@@ -3360,7 +3362,7 @@
       for (const type of Object.keys(this.powerups)) {
         if (now >= this.powerups[type]) {
           delete this.powerups[type];
-          if (type === 'LIGHTNING_BOOST') this.speed = 1;
+          if (type === 'LIGHTNING_BOOST') this.speed = this.isBoosting ? (this.boostMultiplier || CFG.BOOST_MULTIPLIER) : 1;
         }
       }
       this.tickPhaseShield(now);
@@ -3404,6 +3406,8 @@
       this.dir.z = Math.sin(newAngle);
 
       // 2. Continuous forward translation
+      this._prevHeadX = this.positions[0].x;
+      this._prevHeadZ = this.positions[0].z;
       const baseSpeed = this.baseSpeed || CFG.BASE_SPEED;
       const currentMultiplier = isBoosting ? Math.max(this.speed, (this.boostMultiplier || CFG.BOOST_MULTIPLIER)) : this.speed;
       const moveDist = baseSpeed * currentMultiplier * dt;
@@ -3418,7 +3422,7 @@
       const dFromLast = Math.hypot(dx, dz);
 
       if (dFromLast >= 0.10) {
-        const steps = Math.min(8, Math.floor(dFromLast / 0.12));
+        const steps = Math.max(1, Math.min(8, Math.floor(dFromLast / 0.10)));
         if (steps <= 1) {
           this._trailHead = (this._trailHead + 1) % this._maxTrail;
           this._trailX[this._trailHead] = this.positions[0].x;
@@ -3447,9 +3451,11 @@
       let distNear = 0;
       let distFar = segD;
       let targetD = spacing;
+      let stepsBack = 0;
+      const maxSteps = Math.min(this._trailCount, this._maxTrail) - 1;
 
       for (let seg = 1; seg < this.positions.length; seg++) {
-        while (distFar < targetD && this._trailCount > 2) {
+        while (distFar < targetD && stepsBack < maxSteps) {
           distNear = distFar;
           pNearX = pFarX;
           pNearZ = pFarZ;
@@ -3459,6 +3465,7 @@
           const d = Math.hypot(pNearX - pFarX, pNearZ - pFarZ);
           segD = d;
           distFar += d;
+          stepsBack++;
         }
 
         const span = distFar - distNear;
@@ -3544,7 +3551,7 @@
       let bestScore = -Infinity;
 
       const speedMult = (snake.speed > 1 || snake.isBoosting) ? 1.5 : 1.0;
-      const lookAhead = Math.max(9.0, (14.0 * speedMult) * (snake.scale || 1.0));
+      const lookAhead = Math.max(10.0, (15.0 * speedMult) * (snake.scale || 1.0));
       const A = CFG.ARENA_SIZE - 2.5;
       const dirs = SAMPLE_DIRECTIONS || CARDINAL_DIRECTIONS;
 
@@ -4377,10 +4384,10 @@
 
     setPlayerBoost(boosting) {
       if (!this.player || !this.player.alive) return;
-      this.player.isBoosting = boosting;
+      this.player.isBoosting = !!boosting;
       if (boosting) {
         this.player.speed = (this.player.boostMultiplier || CFG.BOOST_MULTIPLIER);
-        this.audio.boost();
+        if (this.audio) this.audio.boost();
       } else if (!this.player.hasPowerup('LIGHTNING_BOOST')) {
         this.player.speed = 1;
       }
@@ -4452,6 +4459,9 @@
         const remMs = isShielded ? Math.max(0, this.player.phaseShieldExpiry - now) : 0;
         this._fire('onPhaseShield', isShielded, remMs);
       }
+
+      // Fire pre-step hook for 0ms input-to-physics latency
+      this._fire('onBeforeStep', dt);
 
       // Apply queued player input with zero latency before physics step
       this._applyInput();
@@ -4653,13 +4663,14 @@
 
           // Natural smooth magnetic vacuum glide into snake mouth
           if (dist < vacRadius && dist > 0.01) {
-            const pullSpeed = (s.hasPowerup('MAGNET') ? 28.0 : (dist < 2.5 ? 20.0 : 12.0)) * dt;
+            const pullSpeed = (s.hasPowerup('MAGNET') ? 32.0 : (dist < 2.5 ? 24.0 : 14.0)) * dt;
             fPos.x += (dx / dist) * pullSpeed;
             fPos.z += (dz / dist) * pullSpeed;
           }
 
-          const eatDist = (s.scale || 1.0) * 1.5;
-          if (dist < eatDist) {
+          const eatDist = (s.scale || 1.0) * 1.6;
+          const sweptDistSq = distToSegmentSq(fPos.x, fPos.z, s._prevHeadX !== undefined ? s._prevHeadX : head.x, s._prevHeadZ !== undefined ? s._prevHeadZ : head.z, head.x, head.z);
+          if (dist < eatDist || sweptDistSq < eatDist * eatDist) {
             const baseGain = f.isDeathPellet ? (f.value || 20) : 10;
             const scoreGain = s.hasPowerup('SCORE_2X') ? baseGain * 2 : baseGain;
             s.score += scoreGain;
@@ -4835,7 +4846,7 @@
         : ZERO_VEC;
 
       // Framerate-independent camera lerp
-      const lerpAlpha = 1 - Math.exp(-12.0 * (dt || 0.016));
+      const lerpAlpha = 1 - Math.exp(-14.0 * (dt || 0.016));
       this._camTarget.lerp(target, lerpAlpha);
 
       // 1. Logarithmic Altitude & Distance Scaling based on Mass / Length
@@ -4977,10 +4988,10 @@
    *  EXPORT
    * ========================================================= */
   ApexSerpentEngine.CFG = CFG;
+  ApexSerpentEngine.prototype.setBoost = ApexSerpentEngine.prototype.setPlayerBoost;
   global.ApexSerpentEngine = ApexSerpentEngine;
 
 })(typeof window !== 'undefined' ? window : global);
-
 //]]>
 </script>
 
@@ -5453,20 +5464,29 @@
           }
         };
 
+        // Frame-rate aligned zero-latency input hook (fires right before physics step)
+        engine.hooks.onBeforeStep = () => {
+          updateKeyboardSteer();
+          if (isMouseActive) {
+            updateMouseSteer();
+          }
+        };
+
         startBoostLoop();
       }
 
       /* ── Boost Mechanics ─────────────────────────────────── */
       function setBoost(active) {
         if (!engine || !engine.player || !engine.player.alive) return;
-        isBoosting = active;
-        if (active && boostStamina > 5) {
-          if (!engine.player.hasPowerup('LIGHTNING_BOOST')) {
-            engine.player.speed = 1.8;
-          }
-          if (engine.audio) engine.audio.boost();
+        isBoosting = !!(active && boostStamina > 5);
+        if (typeof engine.setPlayerBoost === 'function') {
+          engine.setPlayerBoost(isBoosting);
         } else {
-          if (!engine.player.hasPowerup('LIGHTNING_BOOST')) {
+          engine.player.isBoosting = isBoosting;
+          if (isBoosting) {
+            engine.player.speed = (engine.player.boostMultiplier || 2.3);
+            if (engine.audio) engine.audio.boost();
+          } else if (!engine.player.hasPowerup('LIGHTNING_BOOST')) {
             engine.player.speed = 1;
           }
         }

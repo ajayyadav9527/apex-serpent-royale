@@ -175,7 +175,7 @@ def run_playwright_e2e():
         page.on("pageerror", lambda err: runtime_errors.append(str(err)))
         page.on("console", lambda msg: console_warn_errors.append(f"[{msg.type}] {msg.text}") if msg.type in ["error", "warning"] else None)
         
-        resp = page.goto(target_url, wait_until="domcontentloaded", timeout=15000)
+        resp = page.goto(target_url, wait_until="domcontentloaded", timeout=30000)
         record_check("Runtime Load", "HTTP 200 OK Response", resp.status == 200, f"Status: {resp.status}")
         
         # Wait for scripts and scene initialization

@@ -3590,20 +3590,29 @@
           }
         };
 
+        // Frame-rate aligned zero-latency input hook (fires right before physics step)
+        engine.hooks.onBeforeStep = () => {
+          updateKeyboardSteer();
+          if (isMouseActive) {
+            updateMouseSteer();
+          }
+        };
+
         startBoostLoop();
       }
 
       /* ── Boost Mechanics ─────────────────────────────────── */
       function setBoost(active) {
         if (!engine || !engine.player || !engine.player.alive) return;
-        isBoosting = active;
-        if (active && boostStamina > 5) {
-          if (!engine.player.hasPowerup('LIGHTNING_BOOST')) {
-            engine.player.speed = 1.8;
-          }
-          if (engine.audio) engine.audio.boost();
+        isBoosting = !!(active && boostStamina > 5);
+        if (typeof engine.setPlayerBoost === 'function') {
+          engine.setPlayerBoost(isBoosting);
         } else {
-          if (!engine.player.hasPowerup('LIGHTNING_BOOST')) {
+          engine.player.isBoosting = isBoosting;
+          if (isBoosting) {
+            engine.player.speed = (engine.player.boostMultiplier || 2.3);
+            if (engine.audio) engine.audio.boost();
+          } else if (!engine.player.hasPowerup('LIGHTNING_BOOST')) {
             engine.player.speed = 1;
           }
         }
