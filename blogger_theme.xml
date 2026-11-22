@@ -2685,7 +2685,7 @@
     GRID:              1.5,         // snake segment spacing
     TICK_MS:           100,         // base move tick (ms)
     NUM_AI:            9,           // AI snakes (player = 1 → total 10)
-    FOOD_COUNT:        35,          // live food pellets
+    FOOD_COUNT:        90,          // live food pellets (abundant .io arena feel)
     POWERUP_COUNT:     8,           // live power-ups
     STORM_START_DELAY: 8000,        // ms before storm begins shrinking
     STORM_SHRINK_RATE: 0.012,       // arena fraction lost per second
@@ -2694,7 +2694,8 @@
     CAMERA_LERP:       0.08,        // camera follow smoothing
     PARTICLE_POOL:     600,
     BOOST_DURATION:    5000,
-    MAGNET_RADIUS:     12,
+    MAGNET_RADIUS:     14,
+    VACUUM_RADIUS:     4.5,         // natural magnetic food ingestion pull
     SHIELD_DURATION:   6000,
     GHOST_DURATION:    5000,
     SCORE_MULTI_DURATION: 7000,
@@ -2703,6 +2704,55 @@
     FOV_BOOST:         68,
     COMBO_WINDOW_MS:   700,         // rapid eat combo timeout
   };
+
+  /* =========================================================
+   *  STATIC CONSTANT DIRECTIONAL VECTORS (Zero-GC Optimization)
+   * ========================================================= */
+  let DIR_RIGHT = null;
+  let DIR_LEFT  = null;
+  let DIR_DOWN  = null;
+  let DIR_UP    = null;
+  let CARDINAL_DIRECTIONS = null;
+  let SAMPLE_DIRECTIONS = null;
+  let ZERO_VEC  = null;
+
+  function initStaticVectors(THREE) {
+    if (DIR_RIGHT) return;
+    DIR_RIGHT = Object.freeze(new THREE.Vector3(1, 0, 0));
+    DIR_LEFT  = Object.freeze(new THREE.Vector3(-1, 0, 0));
+    DIR_DOWN  = Object.freeze(new THREE.Vector3(0, 0, 1));
+    DIR_UP    = Object.freeze(new THREE.Vector3(0, 0, -1));
+    CARDINAL_DIRECTIONS = Object.freeze([DIR_RIGHT, DIR_LEFT, DIR_DOWN, DIR_UP]);
+
+    // 16 evenly spaced candidate directions for 360-degree organic AI navigation
+    const dirs = [];
+    const count = 16;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      dirs.push(Object.freeze(new THREE.Vector3(Math.cos(a), 0, Math.sin(a))));
+    }
+    SAMPLE_DIRECTIONS = Object.freeze(dirs);
+    ZERO_VEC  = Object.freeze(new THREE.Vector3(0, 0, 0));
+  }
+
+  /* ── Point-to-segment distance squared (Zero-GC gap-free collision) ── */
+  function distToSegmentSq(px, pz, x1, z1, x2, z2) {
+    const dx = x2 - x1;
+    const dz = z2 - z1;
+    const lenSq = dx * dx + dz * dz;
+    if (lenSq < 0.0001) {
+      const sx = px - x1;
+      const sz = pz - z1;
+      return sx * sx + sz * sz;
+    }
+    let t = ((px - x1) * dx + (pz - z1) * dz) / lenSq;
+    t = Math.max(0, Math.min(1, t));
+    const closeX = x1 + t * dx;
+    const closeZ = z1 + t * dz;
+    const cx = px - closeX;
+    const cz = pz - closeZ;
+    return cx * cx + cz * cz;
+  }
 
   /* =========================================================
    *  WEB AUDIO ENGINE (Procedural Synthesizer)
@@ -2934,6 +2984,7 @@
       this.THREE = THREE;
       this.scene = scene;
       this.pool = [];
+      this.burstScale = 1.0;
       this._buildPool();
     }
 
@@ -2949,8 +3000,9 @@
     }
 
     burst(position, color, count = 20) {
+      const effectiveCount = Math.max(1, Math.round(count * (this.burstScale || 1.0)));
       let spawned = 0;
-      for (let i = 0; i < this.pool.length && spawned < count; i++) {
+      for (let i = 0; i < this.pool.length && spawned < effectiveCount; i++) {
         const p = this.pool[i];
         if (p.life > 0) continue;
         p.mesh.material.color.set(color);
@@ -3080,9 +3132,10 @@
   const POWERUP_TYPES = ['LIGHTNING_BOOST', 'MAGNET', 'SHIELD', 'GHOST', 'SCORE_2X'];
 
   class Snake {
-    constructor(id, isPlayer, color, startPos, scene, THREE) {
+    constructor(id, isPlayer, color, startPos, scene, THREE, engine = null) {
       this.THREE    = THREE;
       this.scene    = scene;
+      this.engine   = engine;
       this.id       = id;
       this.isPlayer = isPlayer;
       this.alive    = true;
@@ -3096,6 +3149,11 @@
       this.speed    = 1;            // multiplier
       this.isBoosting = false;
       this.tickAccum = 0;
+      this.scale    = 1.0;
+      this.slitherTime = Math.random() * 10;
+      this.turnSpeed = 6.2;
+      this.baseSpeed = 15.0;
+      this.segmentSpacing = 1.05;
 
       // Active power-ups: map type -> expiry timestamp
       this.powerups = {};
@@ -3109,19 +3167,20 @@
       this.aiMode  = ['aggressive', 'defensive', 'opportunist', 'random'][Math.floor(Math.random() * 4)];
       this.aiTarget = null;
 
-      // Visuals
-      this._geo  = new THREE.BoxGeometry(1.1, 1.1, 1.1);
+      // Visuals: rounded neon cyber-spheres with seamless overlap for continuous organic serpent body
+      this._geo     = new THREE.SphereGeometry(0.72, 12, 10);
+      this._headGeo = new THREE.SphereGeometry(0.82, 14, 12);
       this._mat  = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 0.4,
-        roughness: 0.3,
-        metalness: 0.6,
+        emissiveIntensity: 0.5,
+        roughness: 0.25,
+        metalness: 0.5,
       });
       this._headMat = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 0.95,
+        emissiveIntensity: 1.1,
         roughness: 0.1,
         metalness: 0.8,
       });
@@ -3133,14 +3192,14 @@
       // Seed segments
       for (let i = 0; i < this.length; i++) {
         const pos = new THREE.Vector3(
-          startPos.x - i * CFG.GRID,
+          startPos.x - i * this.segmentSpacing * this.dir.x,
           startPos.y,
-          startPos.z
+          startPos.z - i * this.segmentSpacing * this.dir.z
         );
         this.positions.push(pos.clone());
-        const mesh = new THREE.Mesh(this._geo, i === 0 ? this._headMat : this._mat);
+        const mesh = new THREE.Mesh(i === 0 ? this._headGeo : this._geo, i === 0 ? this._headMat : this._mat);
         mesh.position.copy(pos);
-        mesh.castShadow = true;
+        mesh.castShadow = i === 0 || (this.engine ? this.engine.castBodyShadows : true);
         scene.add(mesh);
         this.segments.push(mesh);
       }
@@ -3151,7 +3210,7 @@
 
     // ── Cyber Visor Eyes ─────────────────────────────────────
     _attachVisorEyes() {
-      const eyeGeo = new this.THREE.BoxGeometry(0.28, 0.22, 0.28);
+      const eyeGeo = new this.THREE.BoxGeometry(0.24, 0.18, 0.24);
       const eyeMat = new this.THREE.MeshStandardMaterial({
         color: this.isPlayer ? 0x00ffff : 0xff2200,
         emissive: this.isPlayer ? 0x00ffff : 0xff3300,
@@ -3164,8 +3223,8 @@
       this._rightEye = new this.THREE.Mesh(eyeGeo, eyeMat);
 
       // Position on front edges of head segment
-      this._leftEye.position.set(0.45, 0.2, 0.45);
-      this._rightEye.position.set(0.45, 0.2, -0.45);
+      this._leftEye.position.set(0.42, 0.22, 0.38);
+      this._rightEye.position.set(0.42, 0.22, -0.38);
 
       this.segments[0].add(this._leftEye);
       this.segments[0].add(this._rightEye);
@@ -3262,23 +3321,80 @@
         this.positions.push(tail);
         const mesh = new this.THREE.Mesh(this._geo, this._mat);
         mesh.position.copy(tail);
-        mesh.castShadow = true;
+        mesh.castShadow = this.engine ? this.engine.castBodyShadows : true;
         this.scene.add(mesh);
         this.segments.push(mesh);
         this.length++;
       }
+      this.scale = 1.0 + Math.log10(Math.max(1, this.length / 5)) * 0.22;
     }
 
-    // ── Movement step ───────────────────────────────────────
-    step() {
+    // ── Movement step (Continuous & Zero-GC) ─────────────────
+    step(dt) {
       if (!this.alive) return;
-      this.dir.copy(this.nextDir);
-      const newHead = this.positions[0].clone().addScaledVector(this.dir, CFG.GRID);
-      this.positions.unshift(newHead);
-      this.positions.pop();
-      for (let i = 0; i < this.segments.length; i++) {
-        this.segments[i].position.copy(this.positions[i]);
+      if (dt === undefined || dt <= 0) dt = 0.1;
+
+      // 1. Butter-smooth angular turning interpolation
+      const curAngle = Math.atan2(this.dir.z, this.dir.x);
+      const targetAngle = Math.atan2(this.nextDir.z, this.nextDir.x);
+      let diff = targetAngle - curAngle;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+
+      const turnRate = (this.isBoosting || this.speed > 1) ? 7.5 : 6.2;
+      const maxTurn = turnRate * dt;
+      const clampedTurn = Math.max(-maxTurn, Math.min(maxTurn, diff));
+      const newAngle = curAngle + clampedTurn;
+      this.dir.x = Math.cos(newAngle);
+      this.dir.z = Math.sin(newAngle);
+
+      // 2. Continuous forward translation
+      const baseSpeed = this.baseSpeed || 15.0;
+      const moveDist = baseSpeed * this.speed * dt;
+      this.positions[0].x += this.dir.x * moveDist;
+      this.positions[0].z += this.dir.z * moveDist;
+
+      // 3. Inverse Kinematics / Chaining distance constraint
+      const scale = this.scale || 1.0;
+      const spacing = (this.segmentSpacing || 1.05) * scale;
+      for (let i = 1; i < this.positions.length; i++) {
+        const prev = this.positions[i - 1];
+        const curr = this.positions[i];
+        const dx = curr.x - prev.x;
+        const dz = curr.z - prev.z;
+        const dist = Math.hypot(dx, dz);
+        if (dist > spacing) {
+          const f = spacing / dist;
+          curr.x = prev.x + dx * f;
+          curr.z = prev.z + dz * f;
+        }
       }
+
+      // 4. Update Three.js meshes with natural slither undulation
+      this.slitherTime = (this.slitherTime || 0) + dt * this.speed * 8.0;
+      for (let i = 0; i < this.segments.length; i++) {
+        const m = this.segments[i];
+        const p = this.positions[i];
+        if (i === 0) {
+          m.position.set(p.x, p.y, p.z);
+          m.rotation.y = -newAngle;
+        } else {
+          const prev = this.positions[i - 1];
+          const segAngle = Math.atan2(prev.z - p.z, prev.x - p.x);
+          m.rotation.y = -segAngle;
+          // Fluid organic wave undulation
+          const wave = Math.sin(this.slitherTime + i * 0.42) * 0.12 * Math.min(1.0, i * 0.25);
+          m.position.set(
+            p.x - Math.sin(segAngle) * wave,
+            p.y,
+            p.z + Math.cos(segAngle) * wave
+          );
+        }
+        // Subtle tail taper
+        const segScale = scale * (i > this.segments.length - 4 ? (0.6 + (this.segments.length - i) * 0.13) : 1.0);
+        m.scale.set(segScale, segScale, segScale);
+      }
+
       this._updateVisorEyes();
     }
 
@@ -3312,94 +3428,129 @@
   }
 
   /* =========================================================
-   *  AI DIRECTOR
+   *  AI DIRECTOR (Zero-Allocation GC Optimization)
    * ========================================================= */
   class AIDirector {
-    constructor(THREE) { this.THREE = THREE; }
+    constructor(THREE) {
+      this.THREE = THREE;
+      initStaticVectors(THREE);
+      this._scratchNext = new THREE.Vector3();
+    }
 
     steer(snake, foods, powerups, stormCenter, stormRadius, allSnakes, now) {
       if (!snake.alive || snake.isPlayer) return;
 
       const head = snake.headPos();
-      const directions = [
-        new this.THREE.Vector3(1, 0, 0),
-        new this.THREE.Vector3(-1, 0, 0),
-        new this.THREE.Vector3(0, 0, 1),
-        new this.THREE.Vector3(0, 0, -1),
-      ];
-
-      // Filter out 180° reverse
-      const valid = directions.filter(d => {
-        const dot = d.dot(snake.dir);
-        return dot >= 0; // no 180
-      });
-
       let best = null;
       let bestScore = -Infinity;
 
-      for (const d of valid) {
-        const next = head.clone().addScaledVector(d, CFG.GRID);
+      const lookAhead = 4.0 * (snake.scale || 1.0);
+      const A = CFG.ARENA_SIZE - 2;
+      const dirs = SAMPLE_DIRECTIONS || CARDINAL_DIRECTIONS;
+
+      for (let i = 0; i < dirs.length; i++) {
+        const d = dirs[i];
+        if (d.dot(snake.dir) < -0.4) continue; // filter out suicidal >115° reverse
+
+        const candX = head.x + d.x * lookAhead;
+        const candZ = head.z + d.z * lookAhead;
         let score = 0;
 
-        // Stay inside storm
-        const distToStormCenter = next.distanceTo(stormCenter);
-        if (distToStormCenter > stormRadius) score -= 1000;
-        else score += (stormRadius - distToStormCenter) * 0.5;
-
-        // Stay inside arena
-        const A = CFG.ARENA_SIZE;
-        if (Math.abs(next.x) > A || Math.abs(next.z) > A) score -= 2000;
-
-        // Avoid own body
-        for (let i = 1; i < snake.positions.length; i++) {
-          if (next.distanceTo(snake.positions[i]) < CFG.GRID * 0.9) score -= 500;
+        // 1. Arena boundary avoidance
+        if (Math.abs(candX) > A || Math.abs(candZ) > A) {
+          score -= 4000;
+        } else {
+          const edgeDist = Math.min(A - Math.abs(candX), A - Math.abs(candZ));
+          if (edgeDist < 8) score -= (8 - edgeDist) * 120;
         }
 
-        // Mode-based scoring
-        if (snake.aiMode === 'aggressive') {
-          // Chase nearest other snake's head
-          for (const other of allSnakes) {
-            if (other === snake || !other.alive || other.isPlayer) continue;
-            const d2 = next.distanceTo(other.headPos());
-            score -= d2 * 0.3;
+        // 2. Storm boundary avoidance
+        const dxStorm = candX - stormCenter.x;
+        const dzStorm = candZ - stormCenter.z;
+        const distStorm = Math.hypot(dxStorm, dzStorm);
+        if (distStorm > stormRadius - 2) {
+          score -= 3000;
+        } else {
+          score += (stormRadius - distStorm) * 2.0;
+        }
+
+        // 3. Enemy body avoidance & tactical combat
+        let nearHazard = false;
+        for (let j = 0; j < allSnakes.length; j++) {
+          const other = allSnakes[j];
+          if (!other.alive || other === snake) continue;
+
+          // Check distance to other's head
+          const oHead = other.headPos();
+          const distToOHead = Math.hypot(candX - oHead.x, candZ - oHead.z);
+          if (other.length >= snake.length) {
+            // Flee larger snakes
+            if (distToOHead < 12) {
+              score -= (12 - distToOHead) * 350;
+              nearHazard = true;
+            }
+          } else if (snake.aiMode === 'aggressive' && distToOHead < 18) {
+            // Cut off smaller snakes (aim slightly ahead)
+            const cutoffX = oHead.x + other.dir.x * 3.0;
+            const cutoffZ = oHead.z + other.dir.z * 3.0;
+            const distCutoff = Math.hypot(candX - cutoffX, candZ - cutoffZ);
+            score += (25 - distCutoff) * 15;
+          }
+
+          // Check distance to other's body segments
+          for (let k = 1; k < other.positions.length; k += 2) {
+            const p = other.positions[k];
+            const distToSeg = Math.hypot(candX - p.x, candZ - p.z);
+            if (distToSeg < 4.5 * (other.scale || 1.0)) {
+              score -= (4.5 - distToSeg) * 800;
+              nearHazard = true;
+            }
           }
         }
 
-        if (snake.aiMode === 'opportunist' || snake.aiMode === 'aggressive') {
-          // Seek food
-          for (const f of foods) {
-            const d2 = next.distanceTo(f.mesh.position);
-            score += (50 - d2) * 0.4;
+        // 4. Food & Nutrient pellets attraction
+        if (!nearHazard) {
+          const maxFoods = Math.min(25, foods.length);
+          for (let f = 0; f < maxFoods; f++) {
+            const fPos = foods[f].mesh.position;
+            const distF = Math.hypot(candX - fPos.x, candZ - fPos.z);
+            if (distF < 30) {
+              score += (30 - distF) * 4.0;
+            }
           }
-          // Seek power-ups
-          for (const p of powerups) {
-            const d2 = next.distanceTo(p.mesh.position);
-            score += (30 - d2) * 0.3;
-          }
-        }
-
-        if (snake.aiMode === 'defensive') {
-          // Avoid other snakes' heads
-          for (const other of allSnakes) {
-            if (other === snake || !other.alive) continue;
-            const d2 = next.distanceTo(other.headPos());
-            if (d2 < 10) score -= (10 - d2) * 15;
-          }
-          // Still want food
-          for (const f of foods) {
-            const d2 = next.distanceTo(f.mesh.position);
-            score += (40 - d2) * 0.2;
+          const maxPowerups = Math.min(6, powerups.length);
+          for (let p = 0; p < maxPowerups; p++) {
+            const pPos = powerups[p].mesh.position;
+            const distP = Math.hypot(candX - pPos.x, candZ - pPos.z);
+            if (distP < 25) {
+              score += (25 - distP) * 5.0;
+            }
           }
         }
 
-        if (snake.aiMode === 'random') {
-          score += Math.random() * 100;
-        }
+        // Forward momentum bias
+        score += d.dot(snake.dir) * 15;
 
-        if (score > bestScore) { bestScore = score; best = d; }
+        if (score > bestScore) {
+          bestScore = score;
+          best = d;
+        }
       }
 
       if (best) snake.nextDir.copy(best);
+
+      // Tactical boosting logic for AI
+      if (snake.aiMode === 'aggressive' && bestScore > 50) {
+        snake.isBoosting = true;
+        snake.speed = 2;
+      } else if (bestScore < -500) {
+        // Emergency escape boost
+        snake.isBoosting = true;
+        snake.speed = 2;
+      } else {
+        snake.isBoosting = false;
+        snake.speed = 1;
+      }
     }
   }
 
@@ -3473,6 +3624,49 @@
       mesh.add(ring);
       this.scene.add(mesh);
       this.powerups.push({ mesh, ring, type, t: Math.random() * Math.PI * 2 });
+    }
+
+    // ── Glowing Death Burst Nutrient Pellets (Dispersal on snake elimination) ──
+    spawnDeathPellets(positions, color, length) {
+      if (!positions || positions.length === 0) return;
+      const count = Math.min(25, Math.max(5, Math.floor(positions.length * 0.75)));
+      const step = Math.max(1, Math.floor(positions.length / count));
+      const col = new this.THREE.Color(color);
+
+      for (let i = 0; i < positions.length; i += step) {
+        const p = positions[i];
+        const geo = new this.THREE.SphereGeometry(0.65, 8, 8);
+        const mat = new this.THREE.MeshStandardMaterial({
+          color: col,
+          emissive: col,
+          emissiveIntensity: 2.2,
+          roughness: 0.1,
+          metalness: 0.2,
+        });
+        const mesh = new this.THREE.Mesh(geo, mat);
+        mesh.position.set(
+          p.x + (Math.random() - 0.5) * 1.5,
+          0.6,
+          p.z + (Math.random() - 0.5) * 1.5
+        );
+        const haloGeo = new this.THREE.SphereGeometry(0.95, 8, 8);
+        const haloMat = new this.THREE.MeshBasicMaterial({
+          color: col,
+          transparent: true,
+          opacity: 0.35,
+          side: this.THREE.BackSide,
+        });
+        const halo = new this.THREE.Mesh(haloGeo, haloMat);
+        mesh.add(halo);
+        this.scene.add(mesh);
+        this.foods.push({
+          mesh,
+          halo,
+          isDeathPellet: true,
+          value: 20,
+          t: Math.random() * Math.PI * 2,
+        });
+      }
     }
 
     fill() {
@@ -3572,7 +3766,7 @@
   /* =========================================================
    *  ARENA BUILDER
    * ========================================================= */
-  function buildArena(scene, THREE) {
+  function buildArena(scene, THREE, isMobile = false) {
     // Ground
     const groundGeo = new THREE.PlaneGeometry(CFG.ARENA_SIZE * 2, CFG.ARENA_SIZE * 2, 40, 40);
     const groundMat = new THREE.MeshStandardMaterial({
@@ -3612,8 +3806,9 @@
     const sun = new THREE.DirectionalLight(0xffffff, 1.2);
     sun.position.set(30, 60, 20);
     sun.castShadow = true;
-    sun.shadow.mapSize.width  = 2048;
-    sun.shadow.mapSize.height = 2048;
+    const initialShadowSize = isMobile ? 1024 : 2048;
+    sun.shadow.mapSize.width  = initialShadowSize;
+    sun.shadow.mapSize.height = initialShadowSize;
     scene.add(sun);
 
     // Neon point lights (4 corners)
@@ -3624,6 +3819,8 @@
       pt.position.set(Math.cos(ang) * A * 0.9, 10, Math.sin(ang) * A * 0.9);
       scene.add(pt);
     }
+
+    return { sun, ground };
   }
 
   /* =========================================================
@@ -3703,10 +3900,30 @@
         onKingUpdate:       null, // (kingData: { id, isPlayer, position, score, bearingAngleDeg, distanceToPlayer })
         onPhaseShield:      null, // (active, remainingMs)
         onFloatingPop:      null, // (text, worldPos, colorHex)
+        onQualityTierChange: null, // (qualityData: { tier, averageFps, pixelRatio, shadowMapType })
       };
 
-      // Player direction input queue
+      // Player direction input queue & recyclable vector pool
       this._inputQueue = [];
+      this._inputVecPool = [];
+
+      // Adaptive FPS Monitor & Quality Tier
+      this.fpsWindow = new Float32Array(60);
+      this.fpsWindowIndex = 0;
+      this.fpsSampleCount = 0;
+      this.runningFpsSum = 0;
+      this.averageFps = 60;
+      this.isPerformanceTier = false;
+      this.particleBurstScale = 1.0;
+      this.castBodyShadows = true;
+      this.isMobile = false;
+      this.sunLight = null;
+
+      // Zero-Allocation Scratch Calculation Vectors
+      this._scratchVec   = null;
+      this._camOffset    = null;
+      this._camDesired   = null;
+      this._inputScratch = null;
     }
 
     /* ── init ───────────────────────────────────────────────── */
@@ -3715,10 +3932,32 @@
         await this._loadThree();
       }
       this.THREE = global.THREE;
+      initStaticVectors(this.THREE);
 
-      // Renderer
-      this.renderer = new this.THREE.WebGLRenderer({ canvas, antialias: true });
-      this.renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, 2));
+      this._scratchVec   = new this.THREE.Vector3();
+      this._camOffset    = new this.THREE.Vector3();
+      this._camDesired   = new this.THREE.Vector3();
+      this._inputScratch = new this.THREE.Vector3();
+      for (let i = 0; i < 6; i++) {
+        this._inputVecPool.push(new this.THREE.Vector3());
+      }
+
+      // Detect mobile / coarse pointer / low power
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (global.matchMedia && (global.matchMedia('(pointer: coarse)').matches || global.matchMedia('(max-width: 768px)').matches));
+      this.isMobile = !!isMobile;
+
+      // Cap initial pixel ratio to Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2)
+      const maxInitialDpr = this.isMobile ? 1.5 : 2.0;
+      const initialPixelRatio = Math.min(global.devicePixelRatio || 1, maxInitialDpr);
+
+      // WebGLRenderer setup with high-performance powerPreference
+      this.renderer = new this.THREE.WebGLRenderer({
+        canvas,
+        antialias: !this.isMobile,
+        powerPreference: 'high-performance'
+      });
+      this.renderer.setPixelRatio(initialPixelRatio);
       this.renderer.setSize(canvas.clientWidth || 800, canvas.clientHeight || 600);
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type    = this.THREE.PCFSoftShadowMap;
@@ -3738,7 +3977,8 @@
       this._camPos    = new this.THREE.Vector3(0, 35, 40);
 
       // Build arena world
-      buildArena(this.scene, this.THREE);
+      const arena = buildArena(this.scene, this.THREE, this.isMobile);
+      this.sunLight = arena.sun;
 
       // Systems
       this.particles = new ParticleSystem(this.scene, this.THREE);
@@ -3762,12 +4002,14 @@
 
       // Resize handler
       this._onResize = () => {
-        const w = canvas.clientWidth, h = canvas.clientHeight;
+        const w = canvas.clientWidth || (global.innerWidth || 800);
+        const h = canvas.clientHeight || (global.innerHeight || 600);
+        if (w <= 0 || h <= 0) return;
         this.renderer.setSize(w, h);
         this.camera.aspect = w / h;
         this.camera.updateProjectionMatrix();
       };
-      global.addEventListener('resize', this._onResize);
+      global.addEventListener('resize', this._onResize, { passive: true });
 
       this.running   = true;
       this.startTime = performance.now();
@@ -3776,6 +4018,61 @@
 
       this._fire('onGameReady');
       this._loop();
+    }
+
+    /* ── Dynamic Quality Scaling & Performance Tier ───────────── */
+    setPerformanceTier() {
+      if (this.isPerformanceTier) return;
+      this.isPerformanceTier = true;
+      console.warn(`[Apex Engine] Dynamic Adaptive Scaler: Running average FPS dropped to ${this.averageFps.toFixed(1)} (< 48 FPS). Throttling to Performance Tier.`);
+
+      // 1. Lower pixelRatio to 1.0 or 1.25
+      const targetPixelRatio = this.isMobile ? 1.0 : 1.25;
+      if (this.renderer) {
+        this.renderer.setPixelRatio(targetPixelRatio);
+      }
+
+      // 2. Switch renderer.shadowMap.type from PCFSoftShadowMap to BasicShadowMap
+      // and disable shadows on snake body segments (retaining head and ground shadows)
+      if (this.renderer && this.renderer.shadowMap) {
+        this.renderer.shadowMap.type = this.THREE.BasicShadowMap;
+        this.renderer.shadowMap.needsUpdate = true;
+      }
+      this.castBodyShadows = false;
+      for (let s = 0; s < this.snakes.length; s++) {
+        const snake = this.snakes[s];
+        // Keep head segment (index 0) casting shadow, disable body segments (index >= 1)
+        for (let i = 1; i < snake.segments.length; i++) {
+          snake.segments[i].castShadow = false;
+        }
+      }
+
+      // 3. Reduce shadowMap size from 2048 to 1024/512 on mobile
+      if (this.sunLight && this.sunLight.shadow) {
+        const targetMapSize = this.isMobile ? 512 : 1024;
+        this.sunLight.shadow.mapSize.width = targetMapSize;
+        this.sunLight.shadow.mapSize.height = targetMapSize;
+        if (this.sunLight.shadow.map) {
+          this.sunLight.shadow.map.dispose();
+          this.sunLight.shadow.map = null;
+        }
+        if (this.renderer && this.renderer.shadowMap) {
+          this.renderer.shadowMap.needsUpdate = true;
+        }
+      }
+
+      // 4. Scale particle burst count from 20 to 10
+      this.particleBurstScale = 0.5;
+      if (this.particles) {
+        this.particles.burstScale = 0.5;
+      }
+
+      this._fire('onQualityTierChange', {
+        tier: 'performance',
+        averageFps: this.averageFps,
+        pixelRatio: targetPixelRatio,
+        shadowMapType: 'BasicShadowMap'
+      });
     }
 
     /* ── Three.js dynamic loader ─────────────────────────────── */
@@ -3844,39 +4141,35 @@
           0.6,
           Math.sin(angle) * radius
         );
-        const snake = new Snake(i, i === 0, SNAKE_COLORS[i], startPos, this.scene, this.THREE);
+        const snake = new Snake(i, i === 0, SNAKE_COLORS[i], startPos, this.scene, this.THREE, this);
         if (i > 0) {
-          const dirs = [
-            new this.THREE.Vector3(1, 0, 0),
-            new this.THREE.Vector3(-1, 0, 0),
-            new this.THREE.Vector3(0, 0, 1),
-            new this.THREE.Vector3(0, 0, -1),
-          ];
-          const d = dirs[Math.floor(Math.random() * 4)];
-          snake.dir.copy(d);
-          snake.nextDir.copy(d);
+          const a = Math.random() * Math.PI * 2;
+          snake.dir.set(Math.cos(a), 0, Math.sin(a));
+          snake.nextDir.copy(snake.dir);
         }
         this.snakes.push(snake);
       }
       this.player = this.snakes[0];
     }
 
-    /* ── Keyboard & Input Handling ──────────────────────────── */
+    /* ── Keyboard & Input Handling (Zero-Allocation Pool) ────── */
     _bindInput() {
+      const dirMap = {
+        ArrowUp:    DIR_UP,
+        ArrowDown:  DIR_DOWN,
+        ArrowLeft:  DIR_LEFT,
+        ArrowRight: DIR_RIGHT,
+        KeyW:       DIR_UP,
+        KeyS:       DIR_DOWN,
+        KeyA:       DIR_LEFT,
+        KeyD:       DIR_RIGHT,
+      };
+
       this._keyHandler = (e) => {
-        const dirMap = {
-          ArrowUp:    new this.THREE.Vector3(0, 0, -1),
-          ArrowDown:  new this.THREE.Vector3(0, 0, 1),
-          ArrowLeft:  new this.THREE.Vector3(-1, 0, 0),
-          ArrowRight: new this.THREE.Vector3(1, 0, 0),
-          KeyW:       new this.THREE.Vector3(0, 0, -1),
-          KeyS:       new this.THREE.Vector3(0, 0, 1),
-          KeyA:       new this.THREE.Vector3(-1, 0, 0),
-          KeyD:       new this.THREE.Vector3(1, 0, 0),
-        };
-        if (dirMap[e.code]) {
+        const targetDir = dirMap[e.code];
+        if (targetDir) {
           e.preventDefault();
-          this._inputQueue.push(dirMap[e.code]);
+          this._queueDirection(targetDir);
         }
         if (e.code === 'Space') {
           e.preventDefault();
@@ -3894,11 +4187,30 @@
       global.addEventListener('keyup', this._keyUpHandler);
     }
 
+    _queueDirection(targetDir) {
+      if (!this.player || !this.player.alive) return;
+      if (targetDir.dot(this.player.dir) < 0) return; // filter out 180 reverse
+      this.player.nextDir.copy(targetDir);
+      if (this._inputQueue.length > 0) {
+        this._inputQueue[this._inputQueue.length - 1].copy(targetDir);
+      } else {
+        const v = this._inputVecPool.pop() || new this.THREE.Vector3();
+        v.copy(targetDir);
+        this._inputQueue.push(v);
+      }
+    }
+
     setPlayerDirection(dx, dz) {
       if (!this.player || !this.player.alive) return;
-      const d = new this.THREE.Vector3(dx, 0, dz).normalize();
-      if (d.dot(this.player.dir) >= 0) {
-        this._inputQueue.push(d);
+      if (Math.abs(dx) < 0.001 && Math.abs(dz) < 0.001) return;
+      this._inputScratch.set(dx, 0, dz).normalize();
+      this.player.nextDir.copy(this._inputScratch);
+      if (this._inputQueue.length > 0) {
+        this._inputQueue[this._inputQueue.length - 1].copy(this._inputScratch);
+      } else {
+        const v = this._inputVecPool.pop() || new this.THREE.Vector3();
+        v.copy(this._inputScratch);
+        this._inputQueue.push(v);
       }
     }
 
@@ -3919,9 +4231,34 @@
       if (!this.running || this.paused) return;
 
       const now = performance.now();
-      const dt  = Math.min((now - this._lastFrame) / 1000, 0.1);
+      const rawDt = (now - this._lastFrame) / 1000;
+      // Requirement 3: Clamp game loop delta time dt to Math.min(dt, 0.05) to prevent physics stutter or jumpiness
+      const dt  = Math.min(rawDt, 0.05);
       this._lastFrame = now;
       this.elapsed = (now - this.startTime) / 1000;
+
+      // Adaptive FPS Monitor: Track running average FPS over 60 frames
+      if (rawDt > 0.0001) {
+        const instantFps = 1 / rawDt;
+        if (this.fpsSampleCount < 60) {
+          this.fpsWindow[this.fpsWindowIndex] = instantFps;
+          this.runningFpsSum += instantFps;
+          this.fpsSampleCount++;
+          this.fpsWindowIndex = (this.fpsWindowIndex + 1) % 60;
+          this.averageFps = this.runningFpsSum / this.fpsSampleCount;
+        } else {
+          this.runningFpsSum -= this.fpsWindow[this.fpsWindowIndex];
+          this.fpsWindow[this.fpsWindowIndex] = instantFps;
+          this.runningFpsSum += instantFps;
+          this.fpsWindowIndex = (this.fpsWindowIndex + 1) % 60;
+          this.averageFps = this.runningFpsSum / 60;
+
+          // If average FPS dips below 48 FPS on a device, automatically throttle down to Performance Tier
+          if (!this.isPerformanceTier && this.averageFps < 48) {
+            this.setPerformanceTier();
+          }
+        }
+      }
 
       // Storm activation
       if (!this._stormActivated && now - this.startTime > CFG.STORM_START_DELAY) {
@@ -3944,8 +4281,8 @@
       this._updateCrown(dt);
 
       // Tick power-ups & phase shields
-      for (const s of this.snakes) {
-        if (s.alive) s.tickPowerups(now);
+      for (let s = 0; s < this.snakes.length; s++) {
+        if (this.snakes[s].alive) this.snakes[s].tickPowerups(now);
       }
 
       // Phase shield telemetry hook for player
@@ -3955,31 +4292,25 @@
         this._fire('onPhaseShield', isShielded, remMs);
       }
 
-      // Snake movement tick
-      const tickInterval = CFG.TICK_MS / (this.player.alive ? this.player.speed : 1);
-      if (now - this._lastTick >= tickInterval) {
-        this._lastTick = now;
-        this._gameTick(now);
+      // Continuous butter-smooth snake movement & curvature interpolation
+      for (let s = 0; s < this.snakes.length; s++) {
+        const snake = this.snakes[s];
+        if (snake.alive) {
+          snake.step(dt);
+        }
       }
+
+      // Physics, gap-free collision detection, vacuum food ingestion & item pickups
+      this._updatePhysicsAndCollisions(now, dt);
 
       // Apply queued player input
       this._applyInput();
 
       // AI steering
-      for (const s of this.snakes) {
-        if (!s.isPlayer && s.alive) {
-          this.ai.steer(s, this.items.foods, this.items.powerups, this.storm.center, this.storm.radius, this.snakes, now);
-        }
-      }
-
-      // Magnet pull
-      if (this.player.alive && this.player.hasPowerup('MAGNET')) {
-        for (const f of this.items.foods) {
-          const toPlayer = this.player.headPos().clone().sub(f.mesh.position);
-          if (toPlayer.length() < CFG.MAGNET_RADIUS) {
-            toPlayer.normalize().multiplyScalar(dt * 8);
-            f.mesh.position.add(toPlayer);
-          }
+      for (let s = 0; s < this.snakes.length; s++) {
+        const snake = this.snakes[s];
+        if (!snake.isPlayer && snake.alive) {
+          this.ai.steer(snake, this.items.foods, this.items.powerups, this.storm.center, this.storm.radius, this.snakes, now);
         }
       }
 
@@ -4066,27 +4397,25 @@
       };
     }
 
-    /* ── Game tick (discrete snake steps) ───────────────────── */
-    _gameTick(now) {
-      for (const s of this.snakes) {
-        if (s.alive) s.step();
-      }
+    /* ── Physics, Gap-Free Collision, Vacuum Food Ingestion & Pickups ── */
+    _updatePhysicsAndCollisions(now, dt) {
+      const A = CFG.ARENA_SIZE - 0.5;
 
-      // Collisions & pickups
-      for (const s of this.snakes) {
+      // ── Wall, Storm & Snake Combat Collisions ───────────────────
+      for (let sIdx = 0; sIdx < this.snakes.length; sIdx++) {
+        const s = this.snakes[sIdx];
         if (!s.alive) continue;
         const head = s.headPos();
 
-        // ── Wall collision ──────────────────────────────────
-        const A = CFG.ARENA_SIZE;
+        // 1. Arena boundary limit
         if (Math.abs(head.x) > A || Math.abs(head.z) > A) {
           if (!s.hasPowerup('GHOST') && !s.isPhaseShielded) {
             this._eliminate(s, now, null);
+            continue;
           }
-          continue;
         }
 
-        // ── Storm damage ────────────────────────────────────
+        // 2. Storm damage tick
         if (this.storm.active && this.storm.isOutside(head)) {
           if (now - this.storm.lastDmgTick > CFG.STORM_DAMAGE_MS) {
             if (!s.hasPowerup('GHOST') && !s.isPhaseShielded) {
@@ -4097,13 +4426,22 @@
           }
         }
 
-        // ── Snake vs snake collision ────────────────────────
+        // 3. Snake vs snake combat collision (Point-to-segment distance for 100% gap-free cylinder detection)
         let collided = false;
-        for (const other of this.snakes) {
+        const sRadius = 0.72 * (s.scale || 1.0);
+
+        for (let oIdx = 0; oIdx < this.snakes.length; oIdx++) {
+          const other = this.snakes[oIdx];
           if (!other.alive || other === s) continue;
-          // vs other's body
+          const otherRadius = 0.72 * (other.scale || 1.0);
+          const minColDistSq = (sRadius + otherRadius) * (sRadius + otherRadius);
+
+          // vs other's body vertebrae
           for (let i = 1; i < other.positions.length; i++) {
-            if (head.distanceTo(other.positions[i]) < CFG.GRID * 0.8) {
+            const p1 = other.positions[i - 1];
+            const p2 = other.positions[i];
+            const segDistSq = distToSegmentSq(head.x, head.z, p1.x, p1.z, p2.x, p2.z);
+            if (segDistSq < minColDistSq) {
               if (!s.hasPowerup('GHOST') && !s.isPhaseShielded) {
                 this._eliminate(s, now, other);
                 collided = true;
@@ -4114,7 +4452,9 @@
           if (collided) break;
 
           // Head-on collision
-          if (head.distanceTo(other.headPos()) < CFG.GRID * 0.8) {
+          const oHead = other.headPos();
+          const headDistSq = (head.x - oHead.x) * (head.x - oHead.x) + (head.z - oHead.z) * (head.z - oHead.z);
+          if (headDistSq < minColDistSq) {
             if (!s.hasPowerup('GHOST') && !other.hasPowerup('GHOST') && !s.isPhaseShielded && !other.isPhaseShielded) {
               const shorter = s.length <= other.length ? s : other;
               const victor  = s.length <= other.length ? other : s;
@@ -4124,47 +4464,57 @@
             }
           }
         }
-        if (collided) continue;
+      }
 
-        // ── Self collision ─────────────────────────────────
-        for (let i = 2; i < s.positions.length; i++) {
-          if (head.distanceTo(s.positions[i]) < CFG.GRID * 0.7) {
-            if (!s.hasPowerup('GHOST') && !s.isPhaseShielded) {
-              this._eliminate(s, now, null);
-              break;
-            }
+      // ── Food Ingestion & Magnetic Vacuum Pull ────────────────────
+      const foods = this.items.foods;
+      for (let fi = foods.length - 1; fi >= 0; fi--) {
+        const f = foods[fi];
+        const fPos = f.mesh.position;
+
+        for (let sIdx = 0; sIdx < this.snakes.length; sIdx++) {
+          const s = this.snakes[sIdx];
+          if (!s.alive) continue;
+          const head = s.headPos();
+          const dx = head.x - fPos.x;
+          const dz = head.z - fPos.z;
+          const dist = Math.hypot(dx, dz);
+          const vacRadius = s.hasPowerup('MAGNET') ? CFG.MAGNET_RADIUS : CFG.VACUUM_RADIUS;
+
+          // Natural smooth magnetic vacuum glide into snake mouth
+          if (dist < vacRadius && dist > 0.01) {
+            const pullSpeed = (s.hasPowerup('MAGNET') ? 16.0 : (dist < 2.0 ? 12.0 : 6.0)) * dt;
+            fPos.x += (dx / dist) * pullSpeed;
+            fPos.z += (dz / dist) * pullSpeed;
           }
-        }
-        if (!s.alive) continue;
 
-        // ── Food pickup & Floating Popups ───────────────────
-        for (let fi = this.items.foods.length - 1; fi >= 0; fi--) {
-          const f = this.items.foods[fi];
-          if (head.distanceTo(f.mesh.position) < CFG.GRID * 1.1) {
-            const scoreGain = s.hasPowerup('SCORE_2X') ? 20 : 10;
+          const eatDist = (s.scale || 1.0) * 1.25;
+          if (dist < eatDist) {
+            const baseGain = f.isDeathPellet ? (f.value || 20) : 10;
+            const scoreGain = s.hasPowerup('SCORE_2X') ? baseGain * 2 : baseGain;
             s.score += scoreGain;
-            s.grow(1);
-            this.particles.burst(f.mesh.position.clone(), f.mesh.material.color.getHex(), 15);
+            s.grow(f.isDeathPellet ? 2 : 1);
+            s.scale = 1.0 + Math.log10(Math.max(1, s.length / 5)) * 0.22;
 
-            // Floating Pop Number
-            let popText = `+${scoreGain}`;
-            let popColor = s.isPlayer ? 0x00ff88 : 0xffaa00;
-
+            this.particles.burst(fPos, f.mesh.material.color.getHex(), 12);
             if (s.isPlayer) {
+              let popText = `+${scoreGain}`;
+              let popColor = f.isDeathPellet ? 0xffd700 : 0x00ff88;
+
               // Rapid combo detection (< 700ms)
               if (now - this.lastEatTime < CFG.COMBO_WINDOW_MS) {
                 this.eatComboCount++;
                 if (this.eatComboCount >= 3) {
                   popText = `COMBO x${this.eatComboCount} (+${scoreGain * 2})`;
                   popColor = 0xff00ff;
-                  s.score += scoreGain; // bonus combo points
+                  s.score += scoreGain;
                 }
               } else {
                 this.eatComboCount = 1;
               }
               this.lastEatTime = now;
-              this.popups.spawn(popText, f.mesh.position, popColor);
-              this._fire('onFloatingPop', popText, f.mesh.position, popColor);
+              this.popups.spawn(popText, fPos, popColor);
+              this._fire('onFloatingPop', popText, fPos, popColor);
 
               this.audio.eat();
               this._fire('onScoreUpdate', s.score, this._playerRank());
@@ -4172,20 +4522,31 @@
             }
 
             this.items.removeFood(fi);
-            this.items.spawnFood();
+            if (foods.length < CFG.FOOD_COUNT) {
+              this.items.spawnFood();
+            }
             break;
           }
         }
+      }
 
-        // ── Power-up pickup ────────────────────────────────
-        for (let pi = this.items.powerups.length - 1; pi >= 0; pi--) {
-          const pu = this.items.powerups[pi];
-          if (head.distanceTo(pu.mesh.position) < CFG.GRID * 1.3) {
+      // ── Power-up Pickups ────────────────────────────────────────
+      const powerups = this.items.powerups;
+      for (let pi = powerups.length - 1; pi >= 0; pi--) {
+        const pu = powerups[pi];
+        const puPos = pu.mesh.position;
+
+        for (let sIdx = 0; sIdx < this.snakes.length; sIdx++) {
+          const s = this.snakes[sIdx];
+          if (!s.alive) continue;
+          const head = s.headPos();
+          const dist = Math.hypot(head.x - puPos.x, head.z - puPos.z);
+          if (dist < (s.scale || 1.0) * 1.4) {
             s.activatePowerup(pu.type, now);
-            this.particles.burst(pu.mesh.position.clone(), this.items._puColors[pu.type], 25);
+            this.particles.burst(puPos, this.items._puColors[pu.type], 25);
 
             if (s.isPlayer) {
-              this.popups.spawn(pu.type.replace('_', ' '), pu.mesh.position, this.items._puColors[pu.type]);
+              this.popups.spawn(pu.type.replace('_', ' '), puPos, this.items._puColors[pu.type]);
               this.audio.powerup();
               if (pu.type === 'LIGHTNING_BOOST') this.audio.boost();
               const remaining = s.powerups[pu.type] - now;
@@ -4203,14 +4564,27 @@
       this._checkWinCondition(now);
     }
 
+    /* ── Backward-compatible Game Tick Wrapper ───────────────── */
+    _gameTick(now) {
+      this._updatePhysicsAndCollisions(now, 0.1);
+    }
+
     /* ── Elimination & Kill-Streak Processing ────────────────── */
     _eliminate(snake, now, killer) {
       if (!snake.alive) return;
       const wasPlayer = snake.isPlayer;
-      const snakeHead = snake.headPos().clone();
+      const snakeHead = snake.headPos();
+      const savedPositions = snake.positions.map(p => ({ x: p.x, z: p.z }));
+
       snake.eliminate(this.particles);
       this._aliveCount--;
       this.audio.elimination();
+
+      // Spawn glowing death burst nutrient pellets along the fallen serpent's corpse
+      if (this.items && typeof this.items.spawnDeathPellets === 'function') {
+        this.items.spawnDeathPellets(savedPositions, snake.color, savedPositions.length);
+      }
+
       this._fire('onElimination', snake.id, wasPlayer);
 
       // If killer was player, process combat callouts & killstreak
@@ -4286,9 +4660,9 @@
     /* ── Dynamic Camera Auto-Zoom, Sprint FOV Warp & Shake ──── */
     _updateCamera(dt) {
       if (!this.player) return;
-      const target = this.player.alive
+      const target = (this.player.alive && this.player.positions.length > 0)
         ? this.player.headPos()
-        : new this.THREE.Vector3(0, 0, 0);
+        : ZERO_VEC;
 
       this._camTarget.lerp(target, CFG.CAMERA_LERP);
 
@@ -4296,13 +4670,20 @@
       const playerLen = this.player.alive ? this.player.length : 5;
       const zoomFactor = 1.0 + Math.log10(Math.max(1, playerLen / 5)) * 0.82;
 
-      const baseCamY = 28 * zoomFactor;
-      const baseCamZ = 32 * zoomFactor;
-      const camOffset = new this.THREE.Vector3(0, baseCamY, baseCamZ);
-      const desired   = this._camTarget.clone().add(camOffset);
+      // Dynamic Camera Aspect Ratio Adaptation:
+      // On portrait / narrow screens (aspect < 1.0, e.g. phones with aspect 0.45-0.56 or iPads 0.75),
+      // Three.js's vertical FOV narrows the horizontal view into a tight slit.
+      // Scale camera altitude and distance so the horizontal arena playfield remains proportional and unclipped:
+      const aspect = this.camera.aspect || 1.0;
+      const aspectScale = aspect < 1.0 ? Math.max(1.0, 1.0 / Math.pow(aspect, 0.75)) : 1.0;
+
+      const baseCamY = 28 * zoomFactor * aspectScale;
+      const baseCamZ = 32 * zoomFactor * aspectScale;
+      this._camOffset.set(0, baseCamY, baseCamZ);
+      this._camDesired.copy(this._camTarget).add(this._camOffset);
 
       // Smooth camera position interpolation
-      this._camPos.lerp(desired, CFG.CAMERA_LERP);
+      this._camPos.lerp(this._camDesired, CFG.CAMERA_LERP);
       this.camera.position.copy(this._camPos);
 
       // 2. Dynamic FOV Sprint Warp during Turbo Boost
@@ -4329,8 +4710,12 @@
     _applyInput() {
       if (!this.player.alive || this._inputQueue.length === 0) return;
       const d = this._inputQueue.shift();
-      if (d.dot(this.player.dir) < 0) return;
-      this.player.nextDir.copy(d);
+      if (d.dot(this.player.dir) >= 0) {
+        this.player.nextDir.copy(d);
+      }
+      if (this._inputVecPool.length < 8) {
+        this._inputVecPool.push(d);
+      }
     }
 
     /* ── Rank helper ─────────────────────────────────────────── */
@@ -4388,7 +4773,7 @@
       // Respawn player in a safe zone near center
       const angle = Math.random() * Math.PI * 2;
       const startPos = new this.THREE.Vector3(Math.cos(angle) * 12, 0.6, Math.sin(angle) * 12);
-      const newSnake = new Snake(0, true, SNAKE_COLORS[0], startPos, this.scene, this.THREE);
+      const newSnake = new Snake(0, true, SNAKE_COLORS[0], startPos, this.scene, this.THREE, this);
       newSnake.score = Math.floor(prevScore * 0.5); // retain 50% score
       this.snakes[0] = newSnake;
       this.player = newSnake;
@@ -4422,7 +4807,7 @@
 
 })(typeof window !== 'undefined' ? window : global);
 
-  //]]>
+//]]>
 </script>
 
   <script type='text/javascript'>
@@ -5171,10 +5556,81 @@
         setBoost(false);
       });
 
+      // Laptop / PC Mouse & Trackpad Steering (Butter-Smooth 3D Cursor Tracking)
+      let mouseScreenX = window.innerWidth / 2;
+      let mouseScreenY = window.innerHeight / 2;
+      let isMouseActive = false;
+
+      function updateMouseSteer() {
+        if (!isMouseActive || !engine || !engine.running || engine.paused || !engine.player || !engine.player.alive) return;
+        const head = engine.player.headPos();
+        if (!head || !engine.camera) return;
+
+        // Project player's 3D head position onto 2D screen coordinates
+        const pVec = head.clone().project(engine.camera);
+        const headScreenX = (pVec.x * 0.5 + 0.5) * window.innerWidth;
+        const headScreenY = (-pVec.y * 0.5 + 0.5) * window.innerHeight;
+
+        const dx = mouseScreenX - headScreenX;
+        const dz = mouseScreenY - headScreenY;
+        const dist = Math.hypot(dx, dz);
+        if (dist > 15) {
+          engine.setPlayerDirection(dx, dz);
+        }
+      }
+
+      window.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
+          mouseScreenX = e.clientX;
+          mouseScreenY = e.clientY;
+          isMouseActive = true;
+          updateMouseSteer();
+        }
+      }, { passive: true });
+
+      // Continuous cursor steering update in game loop
+      setInterval(() => {
+        if (isMouseActive && engine && engine.running && !engine.paused) {
+          updateMouseSteer();
+        }
+      }, 50);
+
+      // Mouse left/right click or hold to boost
+      window.addEventListener('mousedown', (e) => {
+        if (e.target.closest('button, input, select, .modal-backdrop, .hud-btn, .orbit-nav-btn, .dpad-btn, #mobile-boost-btn')) return;
+        if (engine && engine.running && !engine.paused) {
+          setBoost(true);
+        }
+      });
+      window.addEventListener('mouseup', (e) => {
+        if (engine && engine.running && !engine.paused) {
+          setBoost(false);
+        }
+      });
+
+      // Prevent context menu on canvas to allow smooth right-click boost
+      if (canvas) {
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+      }
+
+      // Desktop Keyboard Controls (WASD / Arrows to steer smoothly, Space to boost)
       window.addEventListener('keydown', (e) => {
+        if (e.target.closest('input, textarea, select')) return;
         if (e.code === 'Space') {
           e.preventDefault();
           setBoost(true);
+        }
+        if (e.code === 'KeyW' || e.code === 'ArrowUp') {
+          if (engine) engine.setPlayerDirection(0, -1);
+        }
+        if (e.code === 'KeyS' || e.code === 'ArrowDown') {
+          if (engine) engine.setPlayerDirection(0, 1);
+        }
+        if (e.code === 'KeyA' || e.code === 'ArrowLeft') {
+          if (engine) engine.setPlayerDirection(-1, 0);
+        }
+        if (e.code === 'KeyD' || e.code === 'ArrowRight') {
+          if (engine) engine.setPlayerDirection(1, 0);
         }
         if (e.code === 'KeyP') {
           togglePause();

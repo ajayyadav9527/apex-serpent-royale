@@ -4091,22 +4091,48 @@
         }
       }, { passive: true });
 
-      // 6. Laptop / PC Mouse & Trackpad Steering (Hover cursor to steer)
+      // 6. Laptop / PC Mouse & Trackpad Steering (Butter-Smooth 3D Cursor Tracking)
+      let mouseScreenX = window.innerWidth / 2;
+      let mouseScreenY = window.innerHeight / 2;
+      let isMouseActive = false;
+
+      function updateMouseSteer() {
+        if (!isMouseActive || !engine || !engine.running || engine.paused || !engine.player || !engine.player.alive) return;
+        const head = engine.player.headPos();
+        if (!head || !engine.camera) return;
+
+        // Project player's 3D head position onto 2D screen coordinates
+        const pVec = head.clone().project(engine.camera);
+        const headScreenX = (pVec.x * 0.5 + 0.5) * window.innerWidth;
+        const headScreenY = (-pVec.y * 0.5 + 0.5) * window.innerHeight;
+
+        const dx = mouseScreenX - headScreenX;
+        const dz = mouseScreenY - headScreenY;
+        const dist = Math.hypot(dx, dz);
+        if (dist > 15) {
+          engine.setPlayerDirection(dx, dz);
+        }
+      }
+
       window.addEventListener('pointermove', (e) => {
-        if (e.pointerType === 'mouse' && engine && engine.running && !engine.paused) {
-          const cx = window.innerWidth / 2;
-          const cy = window.innerHeight / 2;
-          const dx = e.clientX - cx;
-          const dy = e.clientY - cy;
-          if (Math.sqrt(dx * dx + dy * dy) > 35) {
-            engine.setPlayerDirection(dx, dy);
-          }
+        if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
+          mouseScreenX = e.clientX;
+          mouseScreenY = e.clientY;
+          isMouseActive = true;
+          updateMouseSteer();
         }
       }, { passive: true });
 
-      // Mouse click/hold to boost
+      // Continuous cursor steering update in game loop
+      setInterval(() => {
+        if (isMouseActive && engine && engine.running && !engine.paused) {
+          updateMouseSteer();
+        }
+      }, 50);
+
+      // Mouse left/right click or hold to boost
       window.addEventListener('mousedown', (e) => {
-        if (e.target.closest('button, input, select, .modal-backdrop, .hud-btn, .orbit-nav-btn')) return;
+        if (e.target.closest('button, input, select, .modal-backdrop, .hud-btn, .orbit-nav-btn, .dpad-btn, #mobile-boost-btn')) return;
         if (engine && engine.running && !engine.paused) {
           setBoost(true);
         }
@@ -4117,11 +4143,29 @@
         }
       });
 
-      // 7. Desktop Keyboard Controls (WASD / Arrows to steer, Space to boost)
+      // Prevent context menu on canvas to allow smooth right-click boost
+      if (canvas) {
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+      }
+
+      // 7. Desktop Keyboard Controls (WASD / Arrows to steer smoothly, Space to boost)
       window.addEventListener('keydown', (e) => {
+        if (e.target.closest('input, textarea, select')) return;
         if (e.code === 'Space') {
           e.preventDefault();
           setBoost(true);
+        }
+        if (e.code === 'KeyW' || e.code === 'ArrowUp') {
+          if (engine) engine.setPlayerDirection(0, -1);
+        }
+        if (e.code === 'KeyS' || e.code === 'ArrowDown') {
+          if (engine) engine.setPlayerDirection(0, 1);
+        }
+        if (e.code === 'KeyA' || e.code === 'ArrowLeft') {
+          if (engine) engine.setPlayerDirection(-1, 0);
+        }
+        if (e.code === 'KeyD' || e.code === 'ArrowRight') {
+          if (engine) engine.setPlayerDirection(1, 0);
         }
         if (e.code === 'KeyP') {
           togglePause();
