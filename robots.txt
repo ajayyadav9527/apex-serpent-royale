@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ajayyadav9527.github.io/apex-serpent-royale/sitemap.xml

@@ -3111,6 +3111,14 @@
         </button>
       </div>
 
+      <div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--glass-border);">
+        <div style="font-family:var(--font-cyber); font-size:10px; color:var(--cyan); margin-bottom:6px; text-align:center;">🎮 MORE FREE MINI APPS</div>
+        <div style="display:flex; gap:8px;">
+          <a class="cyber-btn cyber-btn-secondary" href="https://t.me/ApexFootballQuizAjayBot" target="_blank" rel="noopener" style="flex:1; font-size:10.5px; text-decoration:none; text-align:center;">⚽ FOOTBALL QUIZ</a>
+          <a class="cyber-btn cyber-btn-secondary" href="https://t.me/OrbitMergeAjayBot" target="_blank" rel="noopener" style="flex:1; font-size:10.5px; text-decoration:none; text-align:center;">🪐 ORBIT MERGE</a>
+        </div>
+      </div>
+
       <button class="cyber-btn cyber-btn-secondary" id="btn-close-records" style="width:100%; margin-top:8px; font-size:11.5px;">
         CLOSE DOSSIER
       </button>
@@ -4720,8 +4728,10 @@
       (function checkIncomingChallenge() {
         try {
           const params = new URLSearchParams(window.location.search);
-          const challenger = params.get('challenger');
-          const target = params.get('target');
+          const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param || '';
+          const beatMatch = String(startParam).match(/^beat_(\d+)$/);
+          const challenger = params.get('challenger') || (beatMatch ? 'A RIVAL' : '');
+          const target = params.get('target') || (beatMatch ? beatMatch[1] : '');
           const banner = document.getElementById('lobby-challenge-banner');
           const bannerText = document.getElementById('challenge-banner-text');
 
