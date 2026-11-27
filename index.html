@@ -5364,6 +5364,17 @@
 
       // Initialize 3D game engine on load so lobby features live vibrant 3D backdrop
       initEngine();
+      // Keep the engine's initial player and AI spawns idle behind the lobby.
+      // Otherwise a Telegram Mini App opened in a slower webview can die before
+      // the player gets a chance to press Start.
+      if (engine) {
+        engine.pause();
+        engine.hooks.onGameReady = () => {
+          if (engine.paused && engine.renderer && engine.scene && engine.camera) {
+            engine.renderer.render(engine.scene, engine.camera);
+          }
+        };
+      }
 
       const initialCfg = ApexAdManager.getConfig();
       if (initialCfg.dragonSkinMatches > 0) {

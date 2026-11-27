@@ -192,6 +192,23 @@ def run_playwright_e2e():
                 header_modal_overlap: (hBox && mBox) ? (hBox.bottom > mBox.top) : false
             };
         }""")
+
+        lobby_idle_eval = page.evaluate("""() => {
+            const lobby = document.getElementById('modal-lobby');
+            const gameOver = document.getElementById('modal-gameover');
+            return {
+                lobbyVisible: !!lobby && getComputedStyle(lobby).display !== 'none',
+                gameOverVisible: !!gameOver && getComputedStyle(gameOver).display !== 'none',
+                gameActive: document.body.classList.contains('game-active'),
+                gameOverClass: document.body.classList.contains('game-over')
+            };
+        }""")
+        lobby_stays_idle = (lobby_idle_eval.get('lobbyVisible', False) and
+                            not lobby_idle_eval.get('gameOverVisible', True) and
+                            not lobby_idle_eval.get('gameActive', True) and
+                            not lobby_idle_eval.get('gameOverClass', True))
+        record_check("Startup Flow", "Lobby remains playable until Start is pressed", lobby_stays_idle,
+                     f"State after idle load: {lobby_idle_eval}")
         
         # Click "Start Game" to bootstrap engine and launch active game loop
         page.evaluate("""() => {
