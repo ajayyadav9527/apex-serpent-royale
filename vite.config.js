@@ -7,6 +7,8 @@ const staticAssets = [
   'telegram-web-app.js',
   'discord-embedded-app-sdk.js',
   'app_icon.png',
+  'app_icon_favicon.png',
+  'app_icon_touch.png',
   'game_banner.png',
   'robots.txt',
   'sitemap.xml',
