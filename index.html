@@ -1967,6 +1967,103 @@
       100% { transform: translate(-50%, -140%) scale(0.8); opacity: 0; }
     }
 
+    /* Keep the live HUD crisp on narrow phones and the lobby easy to start. */
+    #modal-lobby .cyber-modal {
+      overscroll-behavior: contain;
+      scroll-padding-block: 16px;
+    }
+    #modal-lobby .lobby-header-bar { gap: 8px; }
+    #modal-lobby .orbit-nav-btn { min-height: 36px; }
+    #modal-lobby .cyber-input { min-height: 44px; }
+    #modal-lobby .skin-swatch { width: 42px; height: 42px; }
+    #modal-lobby .lobby-start-action {
+      position: sticky;
+      bottom: 0;
+      z-index: 6;
+      margin: 10px -6px 4px !important;
+      padding: 8px 6px max(8px, env(safe-area-inset-bottom, 0px));
+      border: 1px solid rgba(0, 243, 255, 0.12);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(8, 12, 26, 0.82), rgba(8, 12, 26, 0.98) 24%);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    #modal-lobby #btn-start-game {
+      min-height: 54px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 243, 255, 0.22);
+    }
+    #modal-lobby #btn-start-game:focus-visible,
+    .cyber-modal :where(button, a, input):focus-visible,
+    #hud-overlay :where(button):focus-visible {
+      outline: 3px solid rgba(0, 243, 255, 0.95);
+      outline-offset: 2px;
+    }
+    .hud-radar-box .hud-header-label,
+    .hud-leaderboard-box .hud-header-label {
+      min-width: 0;
+      gap: 4px;
+      align-items: center;
+    }
+    .hud-leaderboard-box .hud-header-label > span:first-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #hud-player-rank,
+    #radar-player-coords { flex: 0 0 auto; white-space: nowrap; }
+    .leaderboard-item .lb-rank,
+    .leaderboard-item .lb-score,
+    #leaderboard-player-sticky .lb-rank,
+    #leaderboard-player-sticky .lb-score { flex: 0 0 auto; }
+    .leaderboard-item .lb-name,
+    #leaderboard-player-sticky .lb-name {
+      min-width: 0;
+      margin-inline: 3px;
+    }
+    .hud-boost-container { filter: drop-shadow(0 2px 8px rgba(0, 243, 255, 0.18)); }
+    .game-active #btn-toggle-guide { display: none; }
+
+    @media (max-width: 768px) {
+      #modal-lobby .cyber-modal { scrollbar-gutter: stable; }
+      #modal-lobby .orbit-nav-pills { gap: 7px; margin-bottom: 12px; }
+      #modal-lobby .orbit-nav-btn { padding: 7px 9px; }
+      #modal-lobby .lobby-start-action { margin-inline: -2px !important; }
+      .hud-boost-container {
+        bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+        width: min(150px, 42vw) !important;
+      }
+      .hud-leaderboard-box .hud-header-label { letter-spacing: 0.35px; }
+      .leaderboard-list { overflow: hidden; }
+    }
+
+    @media (max-width: 420px) {
+      .hud-radar-box .hud-header-label {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 1px;
+      }
+      #radar-player-coords { font-size: 7px; line-height: 1; opacity: 0.8; }
+      .hud-leaderboard-box { width: 92px; }
+      .leaderboard-item { gap: 2px; }
+      .leaderboard-item .lb-name { font-size: 7px; }
+      .leaderboard-item .lb-score { width: 24px; }
+    }
+
+    @media (max-width: 360px) {
+      .hud-leaderboard-box { width: 84px !important; }
+      .hud-leaderboard-box .hud-header-label { font-size: 7px; }
+      .leaderboard-item .lb-rank { width: 17px; }
+      .leaderboard-item .lb-score { width: 21px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cyber-modal,
+      .cyber-btn,
+      .orbit-nav-btn { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
     /* =========================================================
      *  RESPONSIVE QUERIES: TABLET (<= 1024px)
      * ========================================================= */
@@ -2368,6 +2465,23 @@
       }
     }
 
+    /* Final mobile overrides follow the legacy breakpoints so the footer ad and HUD never compete. */
+    @media (max-width: 768px) {
+      .hud-boost-container {
+        bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+        width: min(150px, 42vw) !important;
+      }
+    }
+    @media (max-width: 420px) {
+      .hud-leaderboard-box { width: 92px !important; }
+      .leaderboard-item { gap: 2px; }
+      .leaderboard-item .lb-name { font-size: 7px; }
+      .leaderboard-item .lb-score { width: 24px; }
+    }
+    @media (max-width: 360px) {
+      .hud-leaderboard-box { width: 84px !important; }
+      .hud-leaderboard-box .hud-header-label { font-size: 7px; }
+    }
   </style>
 </head>
 <body>
@@ -2511,7 +2625,7 @@
     <!-- Real-time Leaderboard -->
     <div class="hud-leaderboard-box">
       <div class="hud-header-label">
-        <span>LEADERBOARD</span>
+        <span>TOP 5</span>
         <span id="hud-player-rank">#1</span>
       </div>
       <ul class="leaderboard-list" id="leaderboard-items"></ul>
@@ -2625,7 +2739,7 @@
       </div>
 
       <!-- Primary START BATTLE Button -->
-      <div style="margin: 14px 0 10px 0;">
+      <div class="lobby-start-action">
         <button class="cyber-btn cyber-btn-primary" id="btn-start-game" style="font-size:17px; padding:13px 26px; width:100%; box-shadow:0 0 25px rgba(0,243,255,0.45); letter-spacing:1.8px;">
           Start solo battle
         </button>
@@ -4352,6 +4466,7 @@
       /* ── Button Action Listeners ─────────────────────────── */
       document.getElementById('btn-start-game').addEventListener('click', () => {
         playerName = document.getElementById('player-callsign').value.trim() || 'CYBER_VIPER_01';
+        document.body.classList.add('game-active');
         modalLobby.style.display = 'none';
         hudOverlay.style.display = 'block';
 
@@ -4438,6 +4553,7 @@
 
       document.getElementById('btn-menu-return').addEventListener('click', () => {
         modalGameOver.style.display = 'none';
+        document.body.classList.remove('game-active');
         hudOverlay.style.display = 'none';
         modalLobby.style.display = 'flex';
       });
