@@ -1,7 +1,7 @@
 {
   "name": "apex-serpent-royale",
   "version": "1.0.0",
-  "description": "3D Battle Royale Snake Game — Cyber-Neon Apex aesthetic, Adsterra monetized, Blogger-embeddable",
+  "description": "3D Battle Royale Snake Game with Telegram rewarded ads and optional promoted links",
   "type": "module",
   "scripts": {
     "dev": "vite",

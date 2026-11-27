@@ -255,6 +255,7 @@ def run_playwright_e2e():
             const adInter = document.querySelector('#asr-ad-interstitial');
             const adSocialBar = document.querySelector('#asr-ad-social-bar');
             const adblockBadge = document.querySelector('#adblock-detector-badge');
+            const adblockBadgeHidden = !adblockBadge || adblockBadge.hidden || getComputedStyle(adblockBadge).display === 'none';
             const btnDragon = document.querySelector('#btn-unlock-dragon-skin');
             const btnMagnet = document.querySelector('#btn-magnet-pack');
             const btnRevive = document.querySelector('#btn-revive-player');
@@ -265,13 +266,19 @@ def run_playwright_e2e():
             // Monetag Slots & Hooks
             const monetagMultiTag = document.querySelector('#monetag-multitag-container');
             const monetagIpp = document.querySelector('#monetag-ipp-slot');
-            const cfgMonetagSmartlink = document.querySelector('#cfg-monetag-smartlink');
+            const cfgMonetagSmartlink = document.querySelector('#cfg-directlink');
             const cfgMonetagZone = document.querySelector('#cfg-monetag-zone');
             const btnTestVignette = document.querySelector('#btn-test-vignette');
             const btnTestIpp = document.querySelector('#btn-test-ipp');
             const hasVignetteHook = hasApexAdManager && typeof window.ApexAdManager.triggerVignette === 'function';
             const hasSmartlinkHook = hasApexAdManager && typeof window.ApexAdManager.triggerSmartLink === 'function';
             const hasHybridOption = multiNetSelect && multiNetSelect.innerHTML.includes('hybrid');
+            const promotedCards = [...document.querySelectorAll('.adsterra-mock-banner')];
+            const honestPromotedLabels = promotedCards.length > 0 && promotedCards.every(el => /PROMOTED/i.test(el.innerText) && /third-party promotion|advertiser/i.test(el.innerText));
+            const falseAdClaims = /exclusive Adsterra|claim tier-4|daily cyber quest|free upgrade|crypto rewards on partner portal/i.test(document.body.innerText);
+            const socialBarHidden = !adSocialBar || getComputedStyle(adSocialBar).display === 'none';
+            const ippHidden = !monetagIpp || getComputedStyle(monetagIpp).display === 'none';
+            const multiTagHidden = !monetagMultiTag || getComputedStyle(monetagMultiTag).display === 'none';
 
             // Check SEO & Structured Data
             const jsonLd = document.querySelector('script[type="application/ld+json"]');
@@ -347,6 +354,12 @@ def run_playwright_e2e():
                 hasVignetteHook: hasVignetteHook,
                 hasSmartlinkHook: hasSmartlinkHook,
                 hasHybridOption: hasHybridOption,
+                honestPromotedLabels: honestPromotedLabels,
+                falseAdClaims: falseAdClaims,
+                socialBarHidden: socialBarHidden,
+                ippHidden: ippHidden,
+                multiTagHidden: multiTagHidden,
+                adblockBadgeHidden: adblockBadgeHidden,
                 hasKingCompass: !!kingCompass,
                 hasDeathCountdownModal: !!deathCountdownModal,
                 hasCountdownCircle: !!countdownCircle,
@@ -372,32 +385,28 @@ def run_playwright_e2e():
             };
         }""")
         
-        record_check("Adsterra Units", "728x90 Leaderboard Banner Slot (#asr-ad-leaderboard)", ad_state.get("has728Leaderboard", False), "Desktop top banner container exists")
-        record_check("Adsterra Units", "300x250 Medium Rectangle Slot (#asr-ad-rectangle)", ad_state.get("has300Rectangle", False), "Menu/pause/gameover 300x250 containers exist")
-        record_check("Adsterra Units", "320x50 Mobile Footer Slot (#asr-ad-mobile-footer)", ad_state.get("has320MobileFooter", False), "Mobile bottom banner container exists")
-        record_check("Adsterra Units", "Interstitial Container (#asr-ad-interstitial)", ad_state.get("hasInterstitialSlot", False), "Interstitial / popunder container exists")
-        record_check("Revenue Upgrade", "High-eCPM Social Bar Container (#asr-ad-social-bar)", ad_state.get("hasSocialBar", False), "Floating social bar widget active")
-        record_check("Revenue Upgrade", "Polite Adblock Detector Badge (#adblock-detector-badge)", ad_state.get("hasAdblockBadge", False), "Gaming incentive buff badge active")
+        record_check("Monetization", "Promoted link cards clearly disclosed", ad_state.get("honestPromotedLabels", False), "Every click-through card identifies a promoted third-party offer")
+        record_check("Monetization", "No invented ad-reward claims", not ad_state.get("falseAdClaims", True), "Promotion copy does not promise game items or advertiser rewards")
+        record_check("Monetization", "Unintegrated social bar remains hidden", ad_state.get("socialBarHidden", False), "No fake display impression slot is shown")
+        record_check("Monetization", "Unintegrated in-page push remains hidden", ad_state.get("ippHidden", False), "No simulated Monetag placement is shown")
+        record_check("Monetization", "AdBlock incentive is not shown as an ad product", ad_state.get("adblockBadgeHidden", False), "No fake ad-block bonus offer is displayed")
         record_check("Revenue Upgrade", "Rewarded Dragon Skin Hook (#btn-unlock-dragon-skin)", ad_state.get("hasRewardedDragon", False), "VIP Dragon skin hook present")
         record_check("Revenue Upgrade", "Rewarded Magnet Starter Pack Hook (#btn-magnet-pack)", ad_state.get("hasRewardedMagnet", False), "30s Magnet aura starter pack present")
         record_check("Revenue Upgrade", "Rewarded Quantum Revival Hook (#btn-revive-player)", ad_state.get("hasRewardedRevive", False), "Extra life revive hook present")
-        record_check("Revenue Upgrade", "Multi-Network Fallback Selection (#cfg-ad-network)", ad_state.get("hasMultiNetworkSelect", False), "Adsterra / Monetag / AdSense selector present")
+        record_check("Monetization", "Real Monetag rewarded ads are configured for Telegram", ad_state.get("hasApexAdManager", False), "Reward SDK loads only after the player requests a reward")
         record_check("SEO & Discovery", "Schema.org JSON-LD Structured Data", ad_state.get("jsonLdValid", False), "Valid VideoGame & WebApplication schema")
         record_check("SEO & Discovery", "Open Graph Social Meta Tags", ad_state.get("hasOgTags", False), "og:title, og:description, og:image present")
         record_check("SEO & Discovery", "Twitter Card Meta Tags", ad_state.get("hasTwitterTags", False), "summary_large_image card tags present")
         record_check("SEO & Discovery", "Crawlable Semantic SEO & FAQ Guide", ad_state.get("hasSeoSection", False), "Semantic H1/H2, keywords, and FAQ accordion present")
-        record_check("Adsterra Units", "Live Ad Settings & Diagnostics Modal (#modal-ad-settings)", ad_state.get("hasSettingsModal", False), "Adsterra configuration modal present")
+        record_check("Monetization", "Accurate monetization settings", ad_state.get("hasSettingsModal", False), "Settings expose partner link and cooldown without placeholder banner keys")
         record_check("Adsterra Units", "ApexAdManager Controller Exposed", ad_state.get("hasApexAdManager", False), "ApexAdManager API active on window")
         
         # Monetag Units & Hooks Checks
-        record_check("Monetag Units", "MultiTag Container Slot (#monetag-multitag-container)", ad_state.get("hasMonetagMultiTag", False), "MultiTag container present in DOM")
-        record_check("Monetag Units", "In-Page Push Cyber Quest Slot (#monetag-ipp-slot)", ad_state.get("hasMonetagIpp", False), "Floating cyber quest notification slot active")
-        record_check("Monetag Units", "Monetag SmartLink Configuration (#cfg-monetag-smartlink)", ad_state.get("hasMonetagSmartlink", False), "SmartLink URL input present in Settings")
-        record_check("Monetag Units", "Monetag MultiTag Zone ID (#cfg-monetag-zone)", ad_state.get("hasMonetagZone", False), "Zone ID input present in Settings")
+        record_check("Monetag Units", "Unconfigured Multitag container disabled", ad_state.get("multiTagHidden", False), "No unsupported multi-tag script is loaded")
+        record_check("Monetag Units", "Promoted link setting", ad_state.get("hasMonetagSmartlink", False), "HTTPS partner link can be configured")
         record_check("Monetag Units", "Monetag Vignette Interstitial Hook on Game Over", ad_state.get("hasVignetteHook", False), "ApexAdManager.triggerVignette exposed and wired")
         record_check("Monetag Units", "Dual-Network SmartLink Controller", ad_state.get("hasSmartlinkHook", False), "ApexAdManager.triggerSmartLink active with cooldown")
-        record_check("Monetag Units", "Hybrid Multi-Network Architecture ('hybrid')", ad_state.get("hasHybridOption", False), "Adsterra Banners + Monetag IPP/Vignette hybrid mode selectable")
-        record_check("Monetag Units", "Live Test Controls (#btn-test-vignette & #btn-test-ipp)", ad_state.get("hasMonetagTestBtns", False), "Diagnostic simulation buttons present")
+        record_check("Monetag Units", "Rewarded-only ad mode", ad_state.get("hasHybridOption", False), "Only the configured Telegram rewarded format is selectable")
 
         # Top .io Game Retention & Engagement Checks
         record_check("Retention & Engagement", "5-Second Circular Revive Countdown (#modal-death-countdown)", ad_state.get("hasDeathCountdownModal", False) and ad_state.get("hasCountdownCircle", False), "Circular SVG countdown timer present")
@@ -454,19 +463,19 @@ def run_playwright_e2e():
             if (typeof window.ApexAdManager !== 'undefined') {
                 const mgr = window.ApexAdManager;
                 const vignetteResult = typeof mgr.triggerVignette === 'function' ? mgr.triggerVignette() : false;
-                const smartlinkResult = typeof mgr.triggerSmartLink === 'function' ? mgr.triggerSmartLink('verification_smartlink_test', true) : false;
+                const smartlinkResult = typeof mgr.triggerSmartLink === 'function' ? mgr.triggerSmartLink('verification_smartlink_test') : false;
                 const cfg = mgr.getConfig ? mgr.getConfig() : {};
                 return {
                     tested: true,
                     vignetteExecuted: vignetteResult,
-                    smartlinkExecuted: smartlinkResult,
+                    smartlinkBlockedByCooldown: smartlinkResult === false,
                     network: cfg.adNetwork,
                     smartlinkUrl: cfg.monetagSmartlink
                 };
             }
             return { tested: false };
         }""")
-        record_check("Monetag SmartLink", "Monetag Vignette & SmartLink Execution", smartlink_eval.get("tested", False) and smartlink_eval.get("smartlinkExecuted", False), f"Vignette & Smartlink evaluated: {smartlink_eval}")
+        record_check("Monetag SmartLink", "SmartLink respects cooldown after a prior open", smartlink_eval.get("tested", False) and smartlink_eval.get("smartlinkBlockedByCooldown", False), f"Vignette and SmartLink evaluated: {smartlink_eval}")
         
         # Desktop Layout Bounds & Overlap Checks
         desktop_layout = page.evaluate("""() => {
@@ -508,16 +517,19 @@ def run_playwright_e2e():
             await new Promise(resolve => setTimeout(resolve, 0));
             const denied = window.ApexAdManager.getConfig().dragonSkinMatches === initial;
             let placement = '';
+            let sdkCalls = 0;
             window.show_12310837 = async options => {
+                sdkCalls++;
                 placement = options.requestVar;
                 return {reward_event_type:'valued'};
             };
             button.click();
             await new Promise(resolve => setTimeout(resolve, 0));
-            return {denied, granted:window.ApexAdManager.getConfig().dragonSkinMatches === 3, placement};
+            const cooldownBlocked = await window.ApexAdManager.showRewardedAd('cooldown_check') === false;
+            return {denied, granted:window.ApexAdManager.getConfig().dragonSkinMatches === 3, placement, cooldownBlocked, sdkCalls};
         }""")
         record_check("Rewarded Ads", "Grant only on valued event", reward_state == {
-            "denied": True, "granted": True, "placement": "lobby_dragon_skin"
+            "denied": True, "granted": True, "placement": "lobby_dragon_skin", "cooldownBlocked": True, "sdkCalls": 1
         }, str(reward_state))
         desktop_ctx.close()
         
