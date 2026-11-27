@@ -3247,11 +3247,21 @@
         </div>
       </div>
 
-      <div class="btn-row" style="margin-top:10px;">
-        <button class="cyber-btn cyber-btn-primary" id="btn-share-records" style="width:100%; font-size:11.5px;">
-          📢 SHARE DOSSIER &amp; INVITE RIVALS
-        </button>
-      </div>
+      <section class="viral-share-box records-share-box" id="viral-share-records-container" aria-label="Share pilot dossier">
+        <div class="viral-share-header">
+          <span>⚡</span>
+          <span>CHALLENGE THE ARENA // 1-CLICK SHARE</span>
+          <span>⚡</span>
+        </div>
+        <div class="viral-share-buttons">
+          <button class="share-btn share-whatsapp" id="btn-share-records-whatsapp" type="button" title="Share via WhatsApp">💬 WhatsApp</button>
+          <button class="share-btn share-telegram" id="btn-share-records" type="button" title="Share via Telegram">✈️ Telegram</button>
+          <button class="share-btn share-x" id="btn-share-records-x" type="button" title="Share on X / Twitter">𝕏 Share</button>
+          <button class="share-btn share-native" id="btn-share-records-copy" type="button" title="Copy challenge link">🔗 Copy Link</button>
+        </div>
+        <input class="cyber-input" id="share-records-copy-field" aria-label="Pilot challenge link" type="url" readonly hidden>
+        <p id="share-records-feedback" role="status" aria-live="polite" style="min-height:14px; margin:6px 0 0; color:var(--cyan); font-size:11px; text-align:center;"></p>
+      </section>
 
       <div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--glass-border);">
         <div style="font-family:var(--font-cyber); font-size:10px; color:var(--cyan); margin-bottom:6px; text-align:center;">🎮 MORE FREE MINI APPS</div>
@@ -4827,11 +4837,29 @@
         return { webUrl: webUrl.href, telegramUrl, shareText };
       }
 
+      function getDossierSharePayload() {
+        const rec = ApexOrbit.getRecords();
+        const score = Math.max(0, Math.floor(Number(rec.bestScore) || 0));
+        const { webUrl, telegramUrl } = getChallengeSharePayload(score);
+        const kills = Math.max(0, Math.floor(Number(rec.totalKills) || 0));
+        const wins = Math.max(0, Math.floor(Number(rec.wins) || 0));
+        const shareText = `🐍 APEX SERPENT PILOT DOSSIER: Best Score: ${score.toLocaleString()} PTS | Eliminations: ${kills.toLocaleString()} | Wins: ${wins.toLocaleString()} Royale! Can you beat my record?`;
+        return { webUrl, telegramUrl, shareText };
+      }
+
+      function openExternalShareTarget(url) {
+        const tg = window.Telegram?.WebApp;
+        if (tg?.openLink) {
+          try { tg.openLink(url); return; } catch {}
+        }
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+
       const btnShareWhatsapp = document.getElementById('btn-share-whatsapp');
       if (btnShareWhatsapp) {
         btnShareWhatsapp.addEventListener('click', () => {
           const { webUrl, shareText } = getChallengeSharePayload();
-          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + webUrl)}`, '_blank', 'noopener');
+          openExternalShareTarget(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + webUrl)}`);
           ApexAdManager.log('[Viral] Shared challenge via WhatsApp');
         });
       }
@@ -4845,7 +4873,7 @@
           if (tg?.initData && tg.openTelegramLink) {
             try { tg.openTelegramLink(shareUrl); return; } catch {}
           }
-          window.open(shareUrl, '_blank', 'noopener');
+          openExternalShareTarget(shareUrl);
           ApexAdManager.log('[Viral] Shared challenge via Telegram');
         });
       }
@@ -4854,7 +4882,7 @@
       if (btnShareX) {
         btnShareX.addEventListener('click', () => {
           const { webUrl, shareText } = getChallengeSharePayload();
-          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(webUrl)}`, '_blank', 'noopener');
+          openExternalShareTarget(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(webUrl)}`);
           ApexAdManager.log('[Viral] Shared challenge via X');
         });
       }
@@ -5331,14 +5359,45 @@
 
       // Share Dossier / Records Brag Button
       document.getElementById('btn-share-records').addEventListener('click', () => {
-        const rec = ApexOrbit.getRecords();
-        const msg = `🐍 APEX SERPENT PILOT DOSSIER: Best Score: ${rec.bestScore} PTS | Eliminations: ${rec.totalKills} | Wins: ${rec.wins} Royale! Can you beat my record? Play free: https://ajayyadav9527.github.io/apex-serpent-royale/`;
-        if (window.Telegram?.WebApp) {
-          window.open(`https://t.me/share/url?url=${encodeURIComponent('https://ajayyadav9527.github.io/apex-serpent-royale/')}&text=${encodeURIComponent(msg)}`, '_blank');
-        } else if (navigator.share) {
-          navigator.share({ title: 'Apex Serpent 3D Royale Dossier', text: msg, url: 'https://ajayyadav9527.github.io/apex-serpent-royale/' }).catch(()=>{});
-        } else {
-          navigator.clipboard.writeText(msg).then(() => alert('📋 Pilot Dossier copied to clipboard!'));
+        const { webUrl, telegramUrl, shareText } = getDossierSharePayload();
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(telegramUrl)}&text=${encodeURIComponent(shareText)}`;
+        const tg = window.Telegram?.WebApp;
+        if (tg?.initData && tg.openTelegramLink) {
+          try { tg.openTelegramLink(shareUrl); return; } catch {}
+        }
+        openExternalShareTarget(shareUrl);
+      });
+
+      document.getElementById('btn-share-records-whatsapp').addEventListener('click', () => {
+        const { webUrl, shareText } = getDossierSharePayload();
+        openExternalShareTarget(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText} ${webUrl}`)}`);
+        ApexAdManager.log('[Viral] Shared pilot dossier via WhatsApp');
+      });
+
+      document.getElementById('btn-share-records-x').addEventListener('click', () => {
+        const { webUrl, shareText } = getDossierSharePayload();
+        openExternalShareTarget(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(webUrl)}`);
+        ApexAdManager.log('[Viral] Shared pilot dossier via X');
+      });
+
+      document.getElementById('btn-share-records-copy').addEventListener('click', async (event) => {
+        const { webUrl } = getDossierSharePayload();
+        const field = document.getElementById('share-records-copy-field');
+        const feedback = document.getElementById('share-records-feedback');
+        const button = event.currentTarget;
+        const originalLabel = button.textContent;
+        try {
+          await navigator.clipboard.writeText(webUrl);
+          feedback.textContent = 'Challenge link copied.';
+          button.textContent = '✓ COPIED';
+          window.setTimeout(() => { button.textContent = originalLabel; }, 1400);
+        } catch {
+          field.value = webUrl;
+          field.hidden = false;
+          field.focus();
+          field.select();
+          const copied = (() => { try { return document.execCommand('copy'); } catch { return false; } })();
+          feedback.textContent = copied ? 'Challenge link copied.' : 'Link selected. Copy it to share.';
         }
       });
 

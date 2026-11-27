@@ -328,6 +328,11 @@ def run_playwright_e2e():
             const shareTelegram = document.querySelector('#btn-share-telegram');
             const shareX = document.querySelector('#btn-share-x');
             const shareNative = document.querySelector('#btn-share-native');
+            const recordsShareContainer = document.querySelector('#viral-share-records-container');
+            const recordsShareWhatsapp = document.querySelector('#btn-share-records-whatsapp');
+            const recordsShareTelegram = document.querySelector('#btn-share-records');
+            const recordsShareX = document.querySelector('#btn-share-records-x');
+            const recordsShareCopy = document.querySelector('#btn-share-records-copy');
 
             // Discovery metadata
             const hreflangTags = document.querySelectorAll('link[hreflang]');
@@ -389,6 +394,8 @@ def run_playwright_e2e():
                 hasLobbyChallengeBanner: !!lobbyChallengeBanner,
                 hasViralShareContainer: !!viralShareContainer,
                 hasViralShareBtns: !!(shareWhatsapp && shareTelegram && shareX && shareNative),
+                hasRecordsShareContainer: !!recordsShareContainer,
+                hasRecordsShareBtns: !!(recordsShareWhatsapp && recordsShareTelegram && recordsShareX && recordsShareCopy),
                 hreflangCount: hreflangTags.length,
                 hasCanonical: canonicalTag?.href === document.querySelector('meta[property="og:url"]')?.content,
                 hasVideoGameSchema: hasVideoGameSchema,
@@ -437,6 +444,7 @@ def run_playwright_e2e():
         record_check("PWA Engine", "Lobby Native Install App Button (#btn-install-pwa)", ad_state.get("hasPwaInstallBtn", False), "Lobby installation trigger present")
         record_check("Viral Growth", "Incoming Challenge Banner (#lobby-challenge-banner)", ad_state.get("hasLobbyChallengeBanner", False), "Viral referral challenge banner active in Lobby")
         record_check("Viral Growth", "1-Click Viral Social Share Suite (#viral-share-container)", ad_state.get("hasViralShareContainer", False) and ad_state.get("hasViralShareBtns", False), "WhatsApp, Telegram, X & Copy challenge buttons present")
+        record_check("Viral Growth", "Pilot Records 1-Click Share Suite", ad_state.get("hasRecordsShareContainer", False) and ad_state.get("hasRecordsShareBtns", False), "WhatsApp, Telegram, X & Copy dossier buttons present")
 
         # Advanced Multi-Graph Schema & SEO Checks
         record_check("Advanced SEO", "Accurate VideoGame Entity", ad_state.get("hasVideoGameSchema", False), "Single-player game metadata with no unsupported rating")
