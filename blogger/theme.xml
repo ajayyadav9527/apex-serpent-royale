@@ -5105,7 +5105,7 @@
 
       function isTelegramApp() {
         const tg = window.Telegram?.WebApp;
-        return !!(tg?.initData || tg?.initDataUnsafe?.user || new URLSearchParams(location.search).has('tgWebAppPlatform'));
+        return !!(tg?.initData || tg?.initDataUnsafe?.user || (tg?.platform && tg.platform !== 'unknown') || new URLSearchParams(location.search).has('tgWebAppPlatform'));
       }
 
       let rewardSdkPromise;
@@ -6994,9 +6994,9 @@
         const pill = document.getElementById('platform-pill');
         const tg = window.Telegram?.WebApp;
 
-        if (tg && (tg.initData || tg.initDataUnsafe?.user)) {
-          tg.ready();
-          tg.expand();
+        tg?.ready?.();
+        if (tg && window.ApexAdManager?.isTelegramApp()) {
+          tg.expand?.();
           if (pill) {
             pill.innerText = '💬 TELEGRAM MINI APP';
             pill.className = 'platform-pill tg';
