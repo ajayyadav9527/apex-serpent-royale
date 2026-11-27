@@ -373,6 +373,10 @@
       box-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
       transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
+    /* Keep promotions visible in the lobby and results, out of active play. */
+    body.game-active:not(.game-over) #fixed-header-ad-bar {
+      display: none;
+    }
     #reward-status {
       position: fixed;
       z-index: 9999;
@@ -629,6 +633,45 @@
       font-weight: bold;
       border-radius: var(--radius-sm);
       box-shadow: 0 0 10px var(--magenta-glow);
+    }
+    .postgame-promotion {
+      width: min(300px, 100%);
+      min-height: 82px;
+      margin: 10px auto 4px;
+      background: rgba(8, 11, 20, 0.95);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.12);
+      overflow: hidden;
+      border-radius: var(--radius-md);
+    }
+    .postgame-promotion .adsterra-mock-banner {
+      min-height: 82px;
+      height: auto;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      align-content: center;
+      align-items: center;
+      gap: 4px 8px;
+      padding: 8px 10px;
+    }
+    .postgame-promotion .ad-title {
+      grid-column: 1 / -1;
+      margin-right: 58px;
+      font-size: 11px;
+    }
+    .postgame-promotion .ad-desc {
+      grid-column: 1;
+      font-size: 9.5px;
+      line-height: 1.25;
+    }
+    .postgame-promotion .ad-cta {
+      grid-column: 2;
+      grid-row: 2;
+      white-space: nowrap;
+      padding: 4px 7px;
+      font-size: 9px;
     }
 
     /* =========================================================
@@ -2744,7 +2787,7 @@
         <button class="cyber-btn cyber-btn-primary" id="btn-start-game" style="font-size:17px; padding:13px 26px; width:100%; box-shadow:0 0 25px rgba(0,243,255,0.45); letter-spacing:1.8px;">
           Start solo battle
         </button>
-        <p class="solo-match-details">Outlast nine AI rivals as the arena shrinks.</p>
+        <p class="solo-match-details">Drag or swipe to steer · hold ⚡ to boost. Outlast nine AI rivals.</p>
       </div>
 
       <!-- Universal Controls Guide -->
@@ -2765,9 +2808,6 @@
         </button>
         <button class="cyber-btn cyber-btn-secondary" id="btn-open-spin-wheel" style="font-size:10.5px; border-color:#ffd700; color:#ffd700; text-shadow:0 0 8px rgba(255,215,0,0.5);">
           🎰 LUCKY WHEEL
-        </button>
-        <button class="cyber-btn cyber-btn-secondary" id="btn-vip-rewards" onclick="ApexAdManager.triggerDirectLink('lobby_vip_btn')" style="font-size:10.5px;">
-          Promoted link
         </button>
       </div>
 
@@ -2794,16 +2834,6 @@
         </div>
       </div>
 
-      <!-- 300x250 Medium Rectangle Ad Slot -->
-      <div class="ad-slot-300x250" id="asr-ad-rectangle">
-        <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('lobby_300x250')">
-          <span class="ad-badge">PROMOTED</span>
-          <div class="ad-title">PARTNER PROMOTION</div>
-          <div class="ad-desc">Opens a third-party promotion. Offers and terms are provided by the advertiser.</div>
-          <div class="ad-cta">OPEN PROMOTION &gt;</div>
-        </a>
-      </div>
-
       <!-- Controls footer hint -->
       <p style="font-size:9.5px; color:#64748b; margin-top:8px; font-family:var(--font-mono); text-align:center;">
         🎮 Multi-Device Ready: Mobile Touch Joystick &amp; Swipe • PC Keyboard WASD &amp; Mouse Steering
@@ -2818,15 +2848,6 @@
     <div class="cyber-modal">
       <h2 class="modal-title" style="color:var(--yellow); text-shadow:0 0 15px var(--yellow);">SYSTEM PAUSED</h2>
       <p class="modal-subtitle">NEURAL LINK SUSPENDED // COMBAT IN PROGRESS</p>
-
-      <div class="ad-slot-300x250" id="asr-ad-rectangle-pause">
-        <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('pause_300x250')">
-          <span class="ad-badge">PROMOTED</span>
-          <div class="ad-title">PARTNER PROMOTION</div>
-          <div class="ad-desc">Opens a third-party promotion. Offers and terms are provided by the advertiser.</div>
-          <div class="ad-cta">OPEN PROMOTION &gt;</div>
-        </a>
-      </div>
 
       <div class="btn-row">
         <button class="cyber-btn cyber-btn-primary" id="btn-resume-game">▶ RESUME</button>
@@ -2935,7 +2956,7 @@
       </div>
 
       <!-- 300x250 Medium Rectangle Ad Slot -->
-      <div class="ad-slot-300x250" id="asr-ad-rectangle-gameover">
+      <div class="postgame-promotion" id="asr-ad-rectangle-gameover">
         <a class="adsterra-mock-banner" href="javascript:void(0)" onclick="ApexAdManager.triggerDirectLink('gameover_300x250')">
           <span class="ad-badge">PROMOTED</span>
           <div class="ad-title">PARTNER PROMOTION</div>
@@ -4061,6 +4082,7 @@
 
       /* ── Game Over & Victory ─────────────────────────────── */
       function showGameOver(isVictory, finalScore, rank) {
+        document.body.classList.add('game-over');
         lastGameScore = finalScore;
         const challengeResult = document.getElementById('battle-challenge-result');
         challengeResult.hidden = !friendTarget;
@@ -4440,6 +4462,7 @@
       /* ── Button Action Listeners ─────────────────────────── */
       document.getElementById('btn-start-game').addEventListener('click', () => {
         playerName = document.getElementById('player-callsign').value.trim() || 'CYBER_VIPER_01';
+        document.body.classList.remove('game-over');
         document.body.classList.add('game-active');
         modalLobby.style.display = 'none';
         hudOverlay.style.display = 'block';
@@ -4485,7 +4508,6 @@
         } else {
           engine.pause();
           modalPause.style.display = 'flex';
-          ApexAdManager.refreshBanners();
         }
       }
       document.getElementById('btn-pause').addEventListener('click', togglePause);
@@ -4514,6 +4536,7 @@
         try {
           if (!await ApexAdManager.showRewardedAd('gameover_revive', event.currentTarget)) return;
           modalGameOver.style.display = 'none';
+          document.body.classList.remove('game-over');
           if (engine) engine.revivePlayer();
         } finally {
           replay.disabled = false;
@@ -4522,11 +4545,13 @@
 
       document.getElementById('btn-play-again').addEventListener('click', () => {
         modalGameOver.style.display = 'none';
+        document.body.classList.remove('game-over');
         if (engine) engine.restart();
       });
 
       document.getElementById('btn-menu-return').addEventListener('click', () => {
         modalGameOver.style.display = 'none';
+        document.body.classList.remove('game-over');
         document.body.classList.remove('game-active');
         hudOverlay.style.display = 'none';
         modalLobby.style.display = 'flex';
@@ -4614,6 +4639,7 @@
             showGameOver(false, pendingDeathScore, pendingDeathRank);
             return;
           }
+          document.body.classList.remove('game-over');
           if (engine) engine.revivePlayer();
           ApexAdManager.log('[Revive] Player revived via 5s countdown with 50% mass + Phase Shield!');
         });

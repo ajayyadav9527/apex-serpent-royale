@@ -24,10 +24,10 @@
     ARENA_SIZE:        80,          // half-extent of the square play area
     GRID:              1.5,         // snake segment spacing
     TICK_MS:           100,         // base move tick (ms)
-    BASE_SPEED:        26.0,        // fast snappy serpent base velocity (was 15.0 originally)
-    BOOST_MULTIPLIER:  2.3,         // high-octane turbo sprint multiplier (was 2.0 originally)
-    TURN_SPEED:        11.5,        // razor-sharp angular steering velocity (rad/s, was 6.2 originally)
-    BOOST_TURN_SPEED:  15.0,        // high-agility boost turn velocity (rad/s, was 7.5 originally)
+    BASE_SPEED:        18.0,        // Medium default pace for controlled steering and longer early runs
+    BOOST_MULTIPLIER:  2.0,         // Clear, short burst above the medium base pace
+    TURN_SPEED:        7.5,         // Responsive steering without the previous sharp, twitchy turn rate
+    BOOST_TURN_SPEED:  10.0,        // Faster steering while boosting, with room to correct course
     NUM_AI:            9,           // AI snakes (player = 1 → total 10)
     FOOD_COUNT:        200,         // live food pellets (abundant .io arena feel)
     POWERUP_COUNT:     8,           // live power-ups
@@ -1636,7 +1636,13 @@
         );
         const col = i === 0 ? pColor : SNAKE_COLORS[i];
         const snake = new Snake(i, i === 0, col, startPos, this.scene, this.THREE, this);
-        if (i > 0) {
+        if (i === 0) {
+          // Face the player into the arena. The previous fixed +X heading sent
+          // the default spawn directly toward the east wall before a new player
+          // had time to discover the controls.
+          snake.dir.set(-Math.cos(angle), 0, -Math.sin(angle));
+          snake.nextDir.copy(snake.dir);
+        } else {
           const a = Math.random() * Math.PI * 2;
           snake.dir.set(Math.cos(a), 0, Math.sin(a));
           snake.nextDir.copy(snake.dir);
@@ -2283,6 +2289,8 @@
       const angle = Math.random() * Math.PI * 2;
       const startPos = new this.THREE.Vector3(Math.cos(angle) * 12, 0.6, Math.sin(angle) * 12);
       const newSnake = new Snake(0, true, prevColor, startPos, this.scene, this.THREE, this);
+      newSnake.dir.set(-Math.cos(angle), 0, -Math.sin(angle));
+      newSnake.nextDir.copy(newSnake.dir);
       newSnake.score = Math.floor(prevScore * 0.5); // retain 50% score
       this.snakes[0] = newSnake;
       this.player = newSnake;

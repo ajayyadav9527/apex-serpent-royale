@@ -825,6 +825,26 @@ if __name__ == "__main__":
     
     server = start_background_server()
     xml_success = verify_blogger_xml()
+    engine_source = (BASE_DIR / "game_engine.js").read_text(encoding="utf-8")
+    page_source = (BASE_DIR / "index.html").read_text(encoding="utf-8")
+    medium_pace = ("BASE_SPEED:        18.0" in engine_source and
+                   "BOOST_MULTIPLIER:  2.0" in engine_source and
+                   "TURN_SPEED:        7.5" in engine_source and
+                   "BOOST_TURN_SPEED:  10.0" in engine_source)
+    record_check("Gameplay", "Medium movement and steering", medium_pace,
+                 "Base speed 18, boost 2x, turn 7.5, boost turn 10")
+    safe_spawn = ("snake.dir.set(-Math.cos(angle), 0, -Math.sin(angle))" in engine_source and
+                  "newSnake.dir.set(-Math.cos(angle), 0, -Math.sin(angle))" in engine_source)
+    record_check("Gameplay", "Player spawn and revive face inward", safe_spawn,
+                 "Initial and revived snakes head toward arena center")
+    controls_explained = "Drag or swipe to steer" in page_source and "hold ⚡ to boost" in page_source
+    record_check("Gameplay", "Lobby shows mobile controls before play", controls_explained,
+                 "Steering and boost are described beside the start action")
+    promotion_timing = ("body.game-active:not(.game-over) #fixed-header-ad-bar" in page_source and
+                        "<div class=\"postgame-promotion\" id=\"asr-ad-rectangle-gameover\">" in page_source and
+                        "id=\"asr-ad-rectangle-pause\"" not in page_source)
+    record_check("Gameplay", "Promotions stay out of active play", promotion_timing,
+                 "Header hidden in play; compact promotion appears after a run")
     browser_success = False
     try:
         run_playwright_e2e()
