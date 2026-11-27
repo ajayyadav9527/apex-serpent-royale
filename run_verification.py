@@ -845,6 +845,10 @@ if __name__ == "__main__":
                         "id=\"asr-ad-rectangle-pause\"" not in page_source)
     record_check("Gameplay", "Promotions stay out of active play", promotion_timing,
                  "Header hidden in play; compact promotion appears after a run")
+    gameover_source = page_source.split("function showGameOver(", 1)[-1].split("Universal Multi-Device Control System", 1)[0]
+    no_automatic_popup = "triggerVignette(" not in gameover_source
+    record_check("Gameplay", "Game over does not open ads automatically", no_automatic_popup,
+                 "Partner ads only open after an explicit user click")
     browser_success = False
     try:
         run_playwright_e2e()
