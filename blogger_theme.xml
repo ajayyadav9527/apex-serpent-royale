@@ -50,7 +50,7 @@
         "gamePlatform": ["Web Browser", "PC", "Mobile", "Tablet"],
         "applicationCategory": "Game",
         "operatingSystem": "Any",
-        "playMode": "MultiPlayer",
+        "playMode": "SinglePlayer",
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -240,6 +240,65 @@
       box-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
       transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
+    #reward-status {
+      position: fixed;
+      z-index: 9999;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      left: 50%;
+      width: max-content;
+      max-width: calc(100vw - 32px);
+      transform: translateX(-50%);
+      padding: 10px 14px;
+      border: 1px solid var(--cyan);
+      border-radius: 10px;
+      background: #101927;
+      color: #eef8ff;
+      font: 600 13px/1.4 system-ui, sans-serif;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #btn-start-game {
+      min-height: 48px;
+    }
+
+    #modal-lobby .solo-match-details {
+      margin: 6px 0 0;
+      text-align: center;
+      color: #b8cbdf;
+      font: 500 12px/1.4 system-ui, sans-serif;
+    }
+
+    .lobby-game-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin: 12px 0;
+      font: 600 12px/1.4 system-ui, sans-serif;
+    }
+
+    .lobby-game-links a {
+      color: var(--cyan);
+      text-underline-offset: 3px;
+    }
+
+    #reward-telegram-link {
+      display: inline-block;
+      color: var(--cyan);
+      text-underline-offset: 3px;
+    }
+
+    #reward-telegram-link[hidden],
+    #adblock-detector-badge[hidden] {
+      display: none;
+    }
+
+    #fixed-header-ad-bar:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: -3px;
+    }
+
     #fixed-header-ad-bar:hover {
       background: rgba(12, 18, 36, 0.98);
       border-bottom-color: var(--cyan);
@@ -2181,24 +2240,25 @@
 <body>
 
   <!-- Sleek Fixed Rotating Header Ad Banner (#fixed-header-ad-bar) -->
-  <div id='fixed-header-ad-bar' onclick='ApexAdManager.triggerDirectLink("header_ad_rotation")' title='Click sponsor offer'>
-    <div class='header-ad-slide active' data-index='0'>
-      <span class='header-ad-tag sponsor'>[SPONSOR]</span>
-      <span class='header-ad-text'>&#128640; Claim 500 Quantum Credits &amp; VIP Boosters! &#187; Tap to Claim</span>
+  <div id="fixed-header-ad-bar" role="link" tabindex="0" aria-label="Open external sponsor offer" onclick="ApexAdManager.triggerDirectLink('header_ad_rotation')">
+    <div class="header-ad-slide active" data-index="0">
+      <span class="header-ad-tag sponsor">[SPONSOR]</span>
+      <span class="header-ad-text">Apex Serpent sponsor offer · Visit sponsor ↗</span>
     </div>
-    <div class='header-ad-slide' data-index='1'>
-      <span class='header-ad-tag featured'>[FEATURED]</span>
-      <span class='header-ad-text'>&#9889; Turbo Plasma Skin &amp; 120% Boost Stamina &#187; Unlock Now</span>
+    <div class="header-ad-slide" data-index="1">
+      <span class="header-ad-tag sponsor">[SPONSOR]</span>
+      <span class="header-ad-text">Featured sponsor offer · Visit sponsor ↗</span>
     </div>
-    <div class='header-ad-slide' data-index='2'>
-      <span class='header-ad-tag hot'>[HOT]</span>
-      <span class='header-ad-text'>&#127918; Top Trending Web3 &amp; Telegram Mini Games &#187; Play &amp; Win</span>
+    <div class="header-ad-slide" data-index="2">
+      <span class="header-ad-tag sponsor">[SPONSOR]</span>
+      <span class="header-ad-text">Explore a sponsor offer ↗</span>
     </div>
-    <div class='header-ad-slide' data-index='3'>
-      <span class='header-ad-tag reward'>[REWARD]</span>
-      <span class='header-ad-text'>&#127873; Daily Arena Airdrop &amp; Rare Cyber Aura &#187; Claim Shards</span>
+    <div class="header-ad-slide" data-index="3">
+      <span class="header-ad-tag sponsor">[SPONSOR]</span>
+      <span class="header-ad-text">Support Apex Serpent · Visit sponsor ↗</span>
     </div>
   </div>
+  <div id="reward-status" role="status" aria-live="polite" hidden='hidden'></div>
 
   <div class='scanlines'></div>
   <div class='vignette'></div>
@@ -2364,7 +2424,7 @@
       </div>
 
       <div class='form-group'>
-        <label class='form-label'>SERPENT CALLSIGN</label>
+        <label class='form-label' for='player-callsign'>Serpent callsign</label>
         <input class='cyber-input' id='player-callsign' maxlength='15' type='text' value='CYBER_VIPER_01'/>
       </div>
 
@@ -2381,14 +2441,20 @@
       </div>
 
       <!-- Rewarded Gameplay Offers -->
+      <nav class="lobby-game-links" aria-label="More free games">
+        <a href="https://ajayyadav9527.github.io/orbit-merge/?ref=from_serpent" data-telegram-game="https://t.me/OrbitMergeAjayBot?startapp=from_serpent" target="_blank" rel="noopener">Orbit Merge</a>
+        <a href="https://ajayyadav9527.github.io/football-quiz-tma/?ref=from_serpent" data-telegram-game="https://t.me/ApexFootballQuizAjayBot?startapp=from_serpent" target="_blank" rel="noopener">Football Quiz</a>
+      </nav>
+
       <div class='rewarded-hooks-box'>
+        <p class='solo-match-details'><a id='reward-telegram-link' href='https://t.me/ApexSerpent3DRoyaleBot?startapp'>Open in Telegram for rewarded ads</a></p>
         <div class='reward-item'>
           <div class='reward-info'>
             <strong style='color:var(--gold);'>&#128009; VIP CYBER DRAGON SKIN</strong><br/>
             <span style='font-size:10px; color:#94a3b8;'>Unlock legendary golden serpent skin for 3 matches</span>
           </div>
           <button class='cyber-btn cyber-btn-gold' id='btn-unlock-dragon-skin' style='font-size:10px; padding:6px 12px;'>
-            UNLOCK (FREE)
+            Watch ad
           </button>
         </div>
         <div class='reward-item'>
@@ -2397,7 +2463,7 @@
             <span style='font-size:10px; color:#94a3b8;'>Spawn with +30 seconds auto-collect magnet power</span>
           </div>
           <button class='cyber-btn cyber-btn-secondary' id='btn-magnet-pack' style='font-size:10px; padding:6px 12px; border-color:var(--yellow); color:var(--yellow);'>
-            CLAIM BUFF
+            Watch ad
           </button>
         </div>
       </div>
@@ -2413,7 +2479,7 @@
 
       <div class='btn-row'>
         <button class='cyber-btn cyber-btn-primary' id='btn-start-game' style='font-size:16px; padding:12px 36px;'>
-          &#128640; START BATTLE
+          Start solo battle
         </button>
         <button class='cyber-btn cyber-btn-secondary' id='btn-vip-rewards' onclick='ApexAdManager.triggerDirectLink("lobby_vip_btn")'>
           &#127873; VIP BONUS
@@ -2462,7 +2528,7 @@
         RESPAWN WITH 50% MASS + 3.5s PHASE SHIELD
       </p>
       <button class='cyber-btn cyber-btn-primary' id='btn-countdown-revive' style='width:100%; margin-bottom:8px; font-size:13px; background:linear-gradient(135deg, #00f3ff, #ff0055);'>
-        &#9889; INSTANT REVIVE (AD / TOKEN)
+        &#9889; Watch ad to revive
       </button>
       <button class='cyber-btn cyber-btn-secondary' id='btn-countdown-skip' style='width:100%; font-size:11px; opacity:0.8;'>
         SKIP TO STATS &#10095;
@@ -2474,6 +2540,7 @@
     <div class='cyber-modal'>
       <h2 class='modal-title' id='gameover-title' style='color:var(--magenta);'>ELIMINATED</h2>
       <p class='modal-subtitle' id='gameover-subtitle'>CIRCUIT DISCONNECTED // RANK #5</p>
+      <p class='solo-match-details' id='battle-challenge-result' hidden='hidden'></p>
 
       <div class='match-stats-grid'>
         <div class='stat-pill'>
@@ -2496,7 +2563,7 @@
           Watch quick sponsor video to instantly respawn with current score!
         </div>
         <button class='cyber-btn cyber-btn-magenta' id='btn-revive-player' style='font-size:11px; padding:6px 14px;'>
-          REVIVE NOW
+          Watch ad
         </button>
       </div>
 
@@ -2521,9 +2588,7 @@
             &#128279; Copy Challenge Link
           </button>
         </div>
-        <div id='share-copy-toast' style='display:none; font-size:11px; color:var(--green); margin-top:6px; font-weight:700;'>
-          &#10003; CHALLENGE LINK COPIED TO CLIPBOARD!
-        </div>
+        <input class='cyber-input' id='share-copy-field' aria-label='Browser challenge link' type='url' readonly='readonly' hidden='hidden'/>
       </div>
 
       <div class='ad-slot-300x250' id='asr-ad-rectangle-gameover'>
@@ -5040,14 +5105,47 @@
 
       function isTelegramApp() {
         const tg = window.Telegram?.WebApp;
-        return !!((tg && (tg.initData || tg.initDataUnsafe?.user)) || typeof window.show_12310837 === 'function' || window.location.search.includes('tgWebAppPlatform'));
+        return !!(tg?.initData || tg?.initDataUnsafe?.user || new URLSearchParams(location.search).has('tgWebAppPlatform'));
       }
 
-      async function triggerTelegramRewarded() {
-        if (typeof window.show_12310837 === 'function') {
-          return window.show_12310837();
-        }
-        return false;
+      let rewardSdkPromise;
+      function loadRewardSdk() {
+        if (typeof window.show_12310837 === 'function') return Promise.resolve(window.show_12310837);
+        if (rewardSdkPromise) return rewardSdkPromise;
+        rewardSdkPromise = new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://libtl.com/sdk.js';
+          script.async = true;
+          script.dataset.zone = '12310837';
+          script.dataset.sdk = 'show_12310837';
+          function fail() {
+            clearTimeout(timer);
+            script.remove();
+            reject(new Error('Rewarded ads are unavailable.'));
+          }
+          const timer = setTimeout(fail, 4000);
+          script.onerror = fail;
+          script.onload = () => {
+            if (typeof window.show_12310837 !== 'function') return fail();
+            clearTimeout(timer);
+            resolve(window.show_12310837);
+          };
+          document.head.append(script);
+        }).catch(error => {
+          rewardSdkPromise = null;
+          throw error;
+        });
+        return rewardSdkPromise;
+      }
+
+      async function triggerTelegramRewarded(source) {
+        const show = await loadRewardSdk();
+        return show({
+          type: 'end',
+          ymid: crypto.randomUUID(),
+          requestVar: source,
+          timeout: 10
+        });
       }
 
       async function triggerTelegramPopup() {
@@ -5057,20 +5155,35 @@
         return false;
       }
 
-      async function showRewardedAd(source = 'rewarded_flow') {
-        log(`[AdManager] showRewardedAd requested (${source})`);
-        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
-          log('[Monetag TMA] Triggering Telegram Mini App Rewarded Ad (Zone: 12310837)...');
-          try {
-            const res = await triggerTelegramRewarded();
-            log('[Monetag TMA] Telegram Rewarded Ad completed successfully.');
-            return res;
-          } catch (e) {
-            log('[Monetag TMA] Telegram Rewarded Ad closed or error: ' + (e.message || e));
-            return false;
-          }
+      let rewardInFlight = false;
+      let statusTimer;
+      function rewardStatus(message) {
+        const status = document.getElementById('reward-status');
+        status.textContent = message;
+        status.hidden = false;
+        clearTimeout(statusTimer);
+        statusTimer = setTimeout(() => { status.hidden = true; }, 4500);
+      }
+
+      async function showRewardedAd(source, button) {
+        if (rewardInFlight) return false;
+        if (!isTelegramApp() && typeof window.show_12310837 !== 'function') {
+          rewardStatus('Rewarded ads are unavailable. You can keep playing for free.');
+          return false;
         }
-        return triggerSmartLink(source, true);
+        rewardInFlight = true;
+        if (button) button.disabled = true;
+        try {
+          const result = await triggerTelegramRewarded(source);
+          if (result?.reward_event_type === 'valued') return true;
+          rewardStatus('Ad reward was not confirmed. You can try again.');
+        } catch {
+          rewardStatus('Rewarded ad could not load. Try again later.');
+        } finally {
+          rewardInFlight = false;
+          if (button) button.disabled = false;
+        }
+        return false;
       }
 
       let inAppInterstitialInitialized = false;
@@ -5161,12 +5274,11 @@
         log(`[SmartLink] (${config.adNetwork.toUpperCase()}) Triggered from: ${source} -> ${targetUrl}`);
 
         try {
-          const win = window.open(targetUrl, '_blank');
-          if (win) {
-            win.focus();
-          } else {
-            log('[SmartLink] Popup blocked by browser policy.');
-          }
+          const destination = new URL(targetUrl);
+          if (destination.protocol !== 'https:') return false;
+          const tg = window.Telegram?.WebApp;
+          if (tg?.initData && tg.openLink) tg.openLink(destination.href);
+          else window.open(destination.href, '_blank', 'noopener,noreferrer');
         } catch (e) {
           log(`[SmartLink] Exception: ${e.message}`);
         }
@@ -5181,26 +5293,16 @@
 
       // Rewarded Gameplay Hook 1: Unlock VIP Dragon Skin for 3 matches
       function unlockDragonSkin() {
-        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
-          triggerTelegramRewarded();
-        } else {
-          triggerSmartLink('rewarded_dragon_skin', true);
-        }
         config.dragonSkinMatches = 3;
         saveConfig({ dragonSkinMatches: 3 });
         const swatch = document.getElementById('swatch-dragon-skin');
         if (swatch) swatch.style.display = 'flex';
-        alert('🐉 VIP Cyber Dragon Skin UNLOCKED for 3 matches!');
+        rewardStatus('Cyber Dragon skin unlocked for three matches.');
         log('[Rewarded] VIP Dragon skin awarded for 3 matches.');
       }
 
       // Rewarded Gameplay Hook 2: Magnet Starter Pack
       function activateMagnetPack() {
-        if (isTelegramApp() || typeof window.show_12310837 === 'function') {
-          triggerTelegramRewarded();
-        } else {
-          triggerSmartLink('rewarded_magnet_pack', true);
-        }
         config.magnetPackActive = true;
         saveConfig({ magnetPackActive: true });
         const btn = document.getElementById('btn-magnet-pack');
@@ -5209,7 +5311,7 @@
           btn.style.color = 'var(--green)';
           btn.style.borderColor = 'var(--green)';
         }
-        alert('🧲 Magnet Starter Pack ACTIVATED! You will start your next match with a 30s Magnet aura.');
+        rewardStatus('Your next match starts with a 30-second magnet.');
         log('[Rewarded] Magnet Starter Pack activated.');
       }
 
@@ -5224,29 +5326,13 @@
         });
       }
 
-      // AdBlock Detection & Gaming Incentive
+      // Keep the previously earned stamina benefit for returning players.
       function checkAdBlock() {
         const badge = document.getElementById('adblock-detector-badge');
-        const badgeText = document.getElementById('adblock-badge-text');
-        if (!badge || !badgeText) return;
-
-        const hasBuff = localStorage.getItem(BUFF_KEY) === 'true';
-        if (hasBuff) {
-          badge.classList.add('buff-active');
-          badgeText.innerText = '⚡ +20% Boost Stamina Active!';
-          window.apexMaxStamina = 120;
-          return;
-        }
-
-        badgeText.innerText = '🛡️ AdBlock Detected: Click for +20% Boost Stamina!';
-        badge.onclick = () => {
-          triggerSmartLink('adblock_support_whitelist', true);
-          localStorage.setItem(BUFF_KEY, 'true');
-          badge.classList.add('buff-active');
-          badgeText.innerText = '⚡ +20% Boost Stamina Unlocked!';
-          window.apexMaxStamina = 120;
-          alert('⚡ Gaming Buff Granted: Turbo Boost stamina boosted to 120%!');
-        };
+        if (badge) badge.hidden = true;
+        try {
+          if (localStorage.getItem(BUFF_KEY) === 'true') window.apexMaxStamina = 120;
+        } catch {}
       }
 
       setInterval(() => {
@@ -5269,6 +5355,7 @@
         triggerTelegramRewarded,
         triggerTelegramPopup,
         showRewardedAd,
+        rewardStatus,
         initTelegramInAppInterstitial,
         checkAndInitTelegramAds,
         unlockDragonSkin,
@@ -5782,6 +5869,13 @@
       /* ── Game Over & Victory ─────────────────────────────── */
       function showGameOver(isVictory, finalScore, rank) {
         lastGameScore = finalScore;
+        const challengeResult = document.getElementById('battle-challenge-result');
+        challengeResult.hidden = !friendTarget;
+        if (friendTarget) {
+          challengeResult.textContent = finalScore > friendTarget
+            ? 'Challenge beaten!'
+            : `Score ${(friendTarget + 1 - finalScore).toLocaleString()} more to beat the challenge.`;
+        }
         document.getElementById('stat-final-score').innerText = finalScore;
         document.getElementById('stat-final-length').innerText = engine.player ? engine.player.length : 5;
         document.getElementById('stat-final-rank').innerText = `#${rank}`;
@@ -6142,12 +6236,12 @@
       });
 
       /* ── Rewarded Hooks Buttons ──────────────────────────── */
-      document.getElementById('btn-unlock-dragon-skin').addEventListener('click', () => {
-        ApexAdManager.unlockDragonSkin();
+      document.getElementById('btn-unlock-dragon-skin').addEventListener('click', async (event) => {
+        if (await ApexAdManager.showRewardedAd('lobby_dragon_skin', event.currentTarget)) ApexAdManager.unlockDragonSkin();
       });
 
-      document.getElementById('btn-magnet-pack').addEventListener('click', () => {
-        ApexAdManager.activateMagnetPack();
+      document.getElementById('btn-magnet-pack').addEventListener('click', async (event) => {
+        if (await ApexAdManager.showRewardedAd('lobby_magnet_pack', event.currentTarget)) ApexAdManager.activateMagnetPack();
       });
 
       /* ── Button Action Listeners ─────────────────────────── */
@@ -6220,26 +6314,19 @@
         btn.style.color = isAudioMuted ? 'var(--magenta)' : 'var(--cyan)';
       });
 
-      document.getElementById('btn-revive-player').addEventListener('click', async () => {
-        ApexAdManager.log('[RewardedAd] Revive ad requested. Showing sponsor video...');
-        if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
-          try {
-            await ApexAdManager.showRewardedAd('rewarded_revive_tma');
-          } catch (e) {
-            ApexAdManager.log('[RewardedAd] TMA ad error: ' + (e.message || e));
-          }
-        } else {
-          ApexAdManager.triggerDirectLink('rewarded_revive', true);
-        }
-        setTimeout(() => {
+      document.getElementById('btn-revive-player').addEventListener('click', async (event) => {
+        const replay = document.getElementById('btn-play-again');
+        replay.disabled = true;
+        try {
+          if (!await ApexAdManager.showRewardedAd('gameover_revive', event.currentTarget)) return;
           modalGameOver.style.display = 'none';
           if (engine) engine.revivePlayer();
-          ApexAdManager.log('[Engine] Player revived via rewarded extra life!');
-        }, 400);
+        } finally {
+          replay.disabled = false;
+        }
       });
 
       document.getElementById('btn-play-again').addEventListener('click', () => {
-        ApexAdManager.triggerDirectLink('play_again');
         modalGameOver.style.display = 'none';
         if (engine) engine.restart();
       });
@@ -6363,14 +6450,9 @@
             deathCountdownInterval = null;
           }
           document.getElementById('modal-death-countdown').style.display = 'none';
-          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
-            try {
-              await ApexAdManager.showRewardedAd('countdown_revive_tma');
-            } catch (e) {
-              ApexAdManager.log('[Revive] TMA ad error: ' + (e.message || e));
-            }
-          } else {
-            ApexAdManager.triggerSmartLink('countdown_revive', true);
+          if (!await ApexAdManager.showRewardedAd('countdown_revive')) {
+            showGameOver(false, pendingDeathScore, pendingDeathRank);
+            return;
           }
           if (engine) engine.revivePlayer();
           ApexAdManager.log('[Revive] Player revived via 5s countdown with 50% mass + Phase Shield!');
@@ -6543,20 +6625,28 @@
 
       /* ── Viral High-Score Challenge & Social Sharing ─────── */
       let lastGameScore = 0;
+      let friendTarget = 0;
 
-      function getChallengeSharePayload() {
-        const score = lastGameScore || 1200;
+      function getChallengeSharePayload(scoreToShare = lastGameScore) {
+        const score = Math.max(0, Math.floor(scoreToShare));
         const name = playerName || 'VIPER';
-        const challengeUrl = `https://apexserpentroyale.blogspot.com/?challenger=${encodeURIComponent(name)}&target=${score}`;
-        const shareText = `🐍 I just scored ${score} in Apex Serpent Royale 3D! Can you survive the shrinking electric storm and beat my high score? Play free unblocked: ${challengeUrl}`;
-        return { score, name, challengeUrl, shareText };
+        const webUrl = new URL('https://ajayyadav9527.github.io/apex-serpent-royale/');
+        if (score) {
+          webUrl.searchParams.set('challenger', name);
+          webUrl.searchParams.set('target', String(score));
+        }
+        const telegramUrl = 'https://t.me/ApexSerpent3DRoyaleBot?startapp' + (score ? `=beat_${score}` : '');
+        const shareText = score
+          ? `🐍 Can you beat ${score.toLocaleString()} points in Apex Serpent Royale 3D?`
+          : '🐍 Play Apex Serpent Royale 3D and see how long you can survive.';
+        return { webUrl: webUrl.href, telegramUrl, shareText };
       }
 
       const btnShareWhatsapp = document.getElementById('btn-share-whatsapp');
       if (btnShareWhatsapp) {
         btnShareWhatsapp.addEventListener('click', () => {
-          const { shareText } = getChallengeSharePayload();
-          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+          const { webUrl, shareText } = getChallengeSharePayload();
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + webUrl)}`, '_blank', 'noopener');
           ApexAdManager.log('[Viral] Shared challenge via WhatsApp');
         });
       }
@@ -6564,8 +6654,13 @@
       const btnShareTelegram = document.getElementById('btn-share-telegram');
       if (btnShareTelegram) {
         btnShareTelegram.addEventListener('click', () => {
-          const { challengeUrl, shareText } = getChallengeSharePayload();
-          window.open(`https://t.me/share/url?url=${encodeURIComponent(challengeUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
+          const { telegramUrl, shareText } = getChallengeSharePayload();
+          const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(telegramUrl)}&text=${encodeURIComponent(shareText)}`;
+          const tg = window.Telegram?.WebApp;
+          if (tg?.initData && tg.openTelegramLink) {
+            try { tg.openTelegramLink(shareUrl); return; } catch {}
+          }
+          window.open(shareUrl, '_blank', 'noopener');
           ApexAdManager.log('[Viral] Shared challenge via Telegram');
         });
       }
@@ -6573,32 +6668,26 @@
       const btnShareX = document.getElementById('btn-share-x');
       if (btnShareX) {
         btnShareX.addEventListener('click', () => {
-          const { shareText } = getChallengeSharePayload();
-          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+          const { webUrl, shareText } = getChallengeSharePayload();
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(webUrl)}`, '_blank', 'noopener');
           ApexAdManager.log('[Viral] Shared challenge via X');
         });
       }
 
       const btnShareNative = document.getElementById('btn-share-native');
       if (btnShareNative) {
-        btnShareNative.addEventListener('click', () => {
-          const { challengeUrl, shareText } = getChallengeSharePayload();
-          if (navigator.share) {
-            navigator.share({
-              title: 'Apex Serpent Royale 3D Challenge',
-              text: shareText,
-              url: challengeUrl
-            }).catch(() => {});
-          } else {
-            navigator.clipboard.writeText(challengeUrl).then(() => {
-              const toast = document.getElementById('share-copy-toast');
-              if (toast) {
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 3000);
-              }
-            });
+        btnShareNative.addEventListener('click', async () => {
+          const { webUrl } = getChallengeSharePayload();
+          try {
+            await navigator.clipboard.writeText(webUrl);
+            ApexAdManager.rewardStatus('Browser challenge link copied.');
+          } catch {
+            const field = document.getElementById('share-copy-field');
+            field.value = webUrl;
+            field.hidden = false;
+            field.focus();
+            field.select();
           }
-          ApexAdManager.log('[Viral] Challenge link copied to clipboard');
         });
       }
 
@@ -6606,15 +6695,18 @@
       (function checkIncomingChallenge() {
         try {
           const params = new URLSearchParams(window.location.search);
-          const challenger = params.get('challenger');
-          const target = params.get('target');
+          const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param || params.get('tgWebAppStartParam') || '';
+          const beatMatch = String(startParam).match(/^beat_(\d+)$/);
+          const challenger = (params.get('challenger') || 'A rival').slice(0, 24);
+          const target = Number(params.get('target') || beatMatch?.[1]);
           const banner = document.getElementById('lobby-challenge-banner');
           const bannerText = document.getElementById('challenge-banner-text');
 
           if (banner && bannerText) {
-            if (challenger && target) {
+            if (Number.isSafeInteger(target) && target > 0) {
+              friendTarget = target;
               banner.style.display = 'flex';
-              bannerText.innerHTML = `⚡ <strong>CHALLENGE FROM ${challenger.toUpperCase()}:</strong> BEAT <strong>${target} PTS</strong> TO CLAIM RANK #1!`;
+              bannerText.textContent = `${challenger} challenges you to beat ${target.toLocaleString()} points.`;
             } else {
               banner.style.display = 'flex';
               bannerText.innerHTML = `⚡ <strong>DAILY ARENA BOUNTY:</strong> SURVIVE THE COLLAPSE & BEAT 10,000 PTS FOR VIP STATUS!`;
@@ -6646,20 +6738,7 @@
       if (btnSpinWheel) {
         btnSpinWheel.addEventListener('click', async () => {
           if (isSpinning) return;
-          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
-            btnSpinWheel.disabled = true;
-            const originalText = btnSpinWheel.innerText;
-            btnSpinWheel.innerText = '⏳ WATCHING SPONSOR AD...';
-            try {
-              ApexAdManager.log('[LuckyWheel] Showing Monetag TMA rewarded ad to spin wheel...');
-              await ApexAdManager.triggerTelegramRewarded();
-            } catch (err) {
-              ApexAdManager.log('[LuckyWheel] Monetag TMA ad exception: ' + (err.message || err));
-            } finally {
-              btnSpinWheel.disabled = false;
-              btnSpinWheel.innerText = originalText;
-            }
-          }
+          if (ApexAdManager.isTelegramApp() && !await ApexAdManager.showRewardedAd('lucky_wheel', btnSpinWheel)) return;
           spinWheel();
         });
       }
@@ -7009,7 +7088,7 @@
       }
 
       // Shop Booster Purchasing
-      document.getElementById('btn-buy-revive').addEventListener('click', async () => {
+      document.getElementById('btn-buy-revive').addEventListener('click', async (event) => {
         const inv = ApexOrbit.getInventory();
         if (inv.credits >= 200) {
           inv.credits -= 200;
@@ -7019,11 +7098,7 @@
           ApexOrbit.playTone(660, 'sine', 0.2);
           alert('⚡ Purchased 1 Quantum Revive Token!');
         } else {
-          if (ApexAdManager.isTelegramApp() || typeof window.show_12310837 === 'function') {
-            await ApexAdManager.showRewardedAd('shop_revive_free');
-          } else {
-            ApexAdManager.triggerDirectLink('shop_revive_free', true);
-          }
+          if (!await ApexAdManager.showRewardedAd('shop_revive', event.currentTarget)) return;
           inv.revives += 1;
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
@@ -7031,7 +7106,7 @@
         }
       });
 
-      document.getElementById('btn-buy-magnet').addEventListener('click', () => {
+      document.getElementById('btn-buy-magnet').addEventListener('click', async (event) => {
         const inv = ApexOrbit.getInventory();
         if (inv.credits >= 150) {
           inv.credits -= 150;
@@ -7041,7 +7116,7 @@
           ApexOrbit.playTone(660, 'sine', 0.2);
           alert('🧲 Purchased 1 Quantum Magnet Pack!');
         } else {
-          ApexAdManager.triggerDirectLink('shop_magnet_free', true);
+          if (!await ApexAdManager.showRewardedAd('shop_magnet', event.currentTarget)) return;
           inv.magnets += 1;
           ApexOrbit.saveData();
           ApexOrbit.updateInventoryUI();
@@ -7049,7 +7124,7 @@
         }
       });
 
-      document.getElementById('btn-buy-overdrive').addEventListener('click', () => {
+      document.getElementById('btn-buy-overdrive').addEventListener('click', async (event) => {
         const inv = ApexOrbit.getInventory();
         if (inv.credits >= 100) {
           inv.credits -= 100;
@@ -7060,7 +7135,7 @@
           ApexOrbit.playTone(660, 'sine', 0.2);
           alert('⚡ Turbo Overdrive Activated (+50% Stamina for 3 matches)!');
         } else {
-          ApexAdManager.triggerDirectLink('shop_overdrive_free', true);
+          if (!await ApexAdManager.showRewardedAd('shop_overdrive', event.currentTarget)) return;
           inv.overdriveMatches += 3;
           window.apexMaxStamina = 150;
           ApexOrbit.saveData();
@@ -7084,6 +7159,17 @@
 
       // Initialize Platform and UI on load
       ApexOrbit.initPlatformIntegration();
+      document.getElementById('reward-telegram-link').hidden = ApexAdManager.isTelegramApp();
+      if (ApexAdManager.isTelegramApp()) {
+        for (const link of document.querySelectorAll('[data-telegram-game]')) {
+          link.href = link.dataset.telegramGame;
+          link.addEventListener('click', event => {
+            const tg = window.Telegram?.WebApp;
+            if (!tg?.openTelegramLink) return;
+            try { tg.openTelegramLink(link.href); event.preventDefault(); } catch {}
+          });
+        }
+      }
       ApexOrbit.updateInventoryUI();
       ApexOrbit.updateRecordsUI();
       ApexOrbit.renderMissionsUI();
@@ -7120,7 +7206,13 @@
 
       // Sleek Fixed Rotating Header Ad Banner (8s CSS opacity crossfade)
       (function initHeaderAdRotation() {
-        const slides = document.querySelectorAll('#fixed-header-ad-bar .header-ad-slide');
+        const sponsor = document.getElementById('fixed-header-ad-bar');
+        const slides = sponsor.querySelectorAll('.header-ad-slide');
+        sponsor.addEventListener('keydown', event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          sponsor.click();
+        });
         if (!slides || slides.length === 0) return;
         let activeIdx = 0;
         setInterval(() => {

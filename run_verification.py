@@ -168,6 +168,7 @@ def run_playwright_e2e():
         # --- TEST 1 & 2: Desktop 1920x1080 (Engine, Canvas, WebGL, No Syntax Errors) ---
         print("\n--- Testing Desktop Viewport (1920x1080) ---")
         desktop_ctx = browser.new_context(viewport={"width": 1920, "height": 1080})
+        desktop_ctx.add_init_script("window.open = () => null;")
         page = desktop_ctx.new_page()
         
         runtime_errors = []
@@ -304,7 +305,7 @@ def run_playwright_e2e():
             const shareX = document.querySelector('#btn-share-x');
             const shareNative = document.querySelector('#btn-share-native');
 
-            // Multilingual Hreflang & Multi-Graph Schema
+            // Discovery metadata
             const hreflangTags = document.querySelectorAll('link[hreflang]');
             const canonicalTag = document.querySelector('link[rel="canonical"]');
             let hasVideoGameSchema = false;
@@ -317,7 +318,8 @@ def run_playwright_e2e():
                     const parsed = JSON.parse(jsonLd.textContent);
                     const graph = parsed['@graph'] || [parsed];
                     const types = graph.map(item => item['@type']);
-                    hasVideoGameSchema = types.includes('VideoGame');
+                    const game = graph.find(item => item['@type'] === 'VideoGame');
+                    hasVideoGameSchema = game?.playMode === 'SinglePlayer' && !game.aggregateRating;
                     hasFaqSchema = types.includes('FAQPage');
                     hasHowToSchema = types.includes('HowTo');
                     hasBreadcrumbSchema = types.includes('BreadcrumbList');
@@ -358,7 +360,7 @@ def run_playwright_e2e():
                 hasViralShareContainer: !!viralShareContainer,
                 hasViralShareBtns: !!(shareWhatsapp && shareTelegram && shareX && shareNative),
                 hreflangCount: hreflangTags.length,
-                hasCanonical: !!canonicalTag,
+                hasCanonical: canonicalTag?.href === document.querySelector('meta[property="og:url"]')?.content,
                 hasVideoGameSchema: hasVideoGameSchema,
                 hasFaqSchema: hasFaqSchema,
                 hasHowToSchema: hasHowToSchema,
@@ -411,11 +413,11 @@ def run_playwright_e2e():
         record_check("Viral Growth", "1-Click Viral Social Share Suite (#viral-share-container)", ad_state.get("hasViralShareContainer", False) and ad_state.get("hasViralShareBtns", False), "WhatsApp, Telegram, X & Copy challenge buttons present")
 
         # Advanced Multi-Graph Schema & SEO Checks
-        record_check("Advanced SEO", "Schema.org VideoGame Entity (4.9/5 Rating)", ad_state.get("hasVideoGameSchema", False), "VideoGame entity with 18,420 ratings")
+        record_check("Advanced SEO", "Accurate VideoGame Entity", ad_state.get("hasVideoGameSchema", False), "Single-player game metadata with no unsupported rating")
         record_check("Advanced SEO", "Schema.org FAQPage Entity (6 Rich SERP Q&As)", ad_state.get("hasFaqSchema", False), "FAQPage entity with rich question/answer pairs")
         record_check("Advanced SEO", "Schema.org HowTo Entity (5 Tactical Steps)", ad_state.get("hasHowToSchema", False), "HowTo entity detailing tactical steps to victory")
         record_check("Advanced SEO", "Schema.org BreadcrumbList Entity", ad_state.get("hasBreadcrumbSchema", False), "Valid breadcrumb hierarchy")
-        record_check("Advanced SEO", "Multilingual Hreflang Tags (en, es, pt, ru, hi, fr)", ad_state.get("hreflangCount", 0) >= 6, f"Found {ad_state.get('hreflangCount', 0)} hreflang alternate tags")
+        record_check("Advanced SEO", "Current Language Only", ad_state.get("hreflangCount") == 0, "English page does not advertise translated variants")
         record_check("Advanced SEO", "Canonical URL Declaration", ad_state.get("hasCanonical", False), "Canonical points to primary domain")
         
         # Direct Link Trigger & Frequency Cooldown Evaluation
@@ -498,6 +500,25 @@ def run_playwright_e2e():
         record_check("Layout & Bounds", "Desktop Header vs Controls Clearance", not desktop_layout.get("header_ctrl_overlap", True), "Header banner cleanly above controls on 1920x1080")
         record_check("Layout & Bounds", "Desktop Header vs Modal Clearance", not desktop_modal_eval.get("header_modal_overlap", True), "Header banner cleanly above lobby modal on 1920x1080")
 
+        reward_state = page.evaluate("""async () => {
+            const initial = window.ApexAdManager.getConfig().dragonSkinMatches;
+            const button = document.getElementById('btn-unlock-dragon-skin');
+            window.show_12310837 = async () => ({reward_event_type:'non_valued'});
+            button.click();
+            await new Promise(resolve => setTimeout(resolve, 0));
+            const denied = window.ApexAdManager.getConfig().dragonSkinMatches === initial;
+            let placement = '';
+            window.show_12310837 = async options => {
+                placement = options.requestVar;
+                return {reward_event_type:'valued'};
+            };
+            button.click();
+            await new Promise(resolve => setTimeout(resolve, 0));
+            return {denied, granted:window.ApexAdManager.getConfig().dragonSkinMatches === 3, placement};
+        }""")
+        record_check("Rewarded Ads", "Grant only on valued event", reward_state == {
+            "denied": True, "granted": True, "placement": "lobby_dragon_skin"
+        }, str(reward_state))
         desktop_ctx.close()
         
         # --- TEST 5A: Mobile Viewport (iPhone 13/14 390x844, Touch Enabled) ---

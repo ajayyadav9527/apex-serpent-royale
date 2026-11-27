@@ -1,32 +1,28 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 
+const staticAssets = [
+  'game_engine.js',
+  'three.min.js',
+  'telegram-web-app.js',
+  'discord-embedded-app-sdk.js',
+  'app_icon.png',
+  'game_banner.png',
+  'robots.txt',
+  'sitemap.xml',
+];
+
 export default defineConfig({
-  root: 'public',
-  publicDir: '../public/assets',
-  build: {
-    outDir: '../dist',
-    emptyOutDir: true,
-    rollupOptions: {
-      input: { main: '../src/main.js' },
-      output: {
-        manualChunks: {
-          three:  ['three'],
-          howler: ['howler'],
-          nipple: ['nipplejs'],
-          socketio: ['socket.io-client'],
-        },
-      },
+  base: './',
+  publicDir: false,
+  plugins: [{
+    name: 'apex-static-game-assets',
+    generateBundle() {
+      for (const fileName of staticAssets) {
+        const source = readFileSync(new URL(fileName, import.meta.url));
+        this.emitFile({ type: 'asset', fileName, source });
+      }
     },
-    target: 'es2020',
-    minify: 'terser',
-  },
-  server: {
-    port: 5173,
-    host: '0.0.0.0',
-  },
-  define: {
-    'import.meta.env.VITE_GAME_SERVER_URL': JSON.stringify(
-      process.env.VITE_GAME_SERVER_URL || 'ws://localhost:3000'
-    ),
-  },
+  }],
+  server: { port: 5173, host: '0.0.0.0' },
 });
